@@ -135,6 +135,7 @@ export default function ManageServicesPage() {
 
   // Select Service for Editing
   const handleEditSelect = (service) => {
+    console.log('[FRONTEND] Editing service:', service);
     setIsEditing(true);
     setEditingId(service._id);
     setFormFields({
@@ -170,19 +171,25 @@ export default function ManageServicesPage() {
   const handleDelete = async (id, title) => {
     if (!confirm(`Are you absolutely sure you want to delete the service: "${title}"?`)) return;
 
+    console.log('[FRONTEND] Deleting service with ID:', id);
+    console.log('[FRONTEND] Service title:', title);
+
     try {
       const res = await fetch(`/api/services/${id}`, {
         method: 'DELETE',
       });
       const data = await res.json();
+      console.log('[FRONTEND] Delete response:', res.status, data);
       if (res.ok) {
         fetchServices();
         setSubmitSuccess('Service deleted successfully.');
         setTimeout(() => setSubmitSuccess(null), 3000);
       } else {
+        console.error('[FRONTEND] Delete failed:', data.error);
         alert(data.error || 'Failed to delete service.');
       }
     } catch (err) {
+      console.error('[FRONTEND] Delete error:', err);
       alert('Failed to delete service. Connection error.');
     }
   };
@@ -201,6 +208,13 @@ export default function ManageServicesPage() {
     const url = isEditing ? `/api/services/${editingId}` : '/api/services';
     const method = isEditing ? 'PUT' : 'POST';
 
+    console.log('[FRONTEND] Submitting form:');
+    console.log('[FRONTEND] isEditing:', isEditing);
+    console.log('[FRONTEND] editingId:', editingId);
+    console.log('[FRONTEND] URL:', url);
+    console.log('[FRONTEND] Method:', method);
+    console.log('[FRONTEND] Form data:', formFields);
+
     try {
       const res = await fetch(url, {
         method,
@@ -208,6 +222,7 @@ export default function ManageServicesPage() {
         body: JSON.stringify(formFields),
       });
       const data = await res.json();
+      console.log('[FRONTEND] Submit response:', res.status, data);
 
       if (res.ok) {
         setSubmitSuccess(isEditing ? 'Service updated successfully!' : 'Service created successfully!');
@@ -215,9 +230,11 @@ export default function ManageServicesPage() {
         fetchServices();
         setTimeout(() => setSubmitSuccess(null), 3000);
       } else {
+        console.error('[FRONTEND] Submit failed:', data.error);
         setSubmitError(data.error || 'Operation failed.');
       }
     } catch (err) {
+      console.error('[FRONTEND] Submit error:', err);
       setSubmitError('Failed to execute database query. Connection error.');
     }
   };
@@ -236,197 +253,203 @@ export default function ManageServicesPage() {
         </div>
       </div>
 
-      {/* Form Section */}
-      <div className="relative">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg opacity-50 blur-sm" />
-        <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-8 shadow-2xl shadow-black/20">
-          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
-          
-          <h3 className="font-sans font-bold text-lg text-offwhite mb-6 border-b border-hairline/60 pb-3">
-            {isEditing ? `Edit Service Details [REF: ${formFields.id || 'N/A'}]` : 'Create New Engineering Service'}
-          </h3>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <label htmlFor="id" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-                Service Ref ID (Optional)
-              </label>
-              <input
-                id="id"
-                type="text"
-                name="id"
-                value={formFields.id}
-                onChange={handleChange}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
-                placeholder="e.g. 06"
-              />
+      {/* Form Section - Premium Dark Design */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-2xl">
+          <div className="bg-navy/80 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden border border-hairline">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-navy/60 to-navy/80 px-8 py-6 border-b border-hairline">
+              <h3 className="font-sans font-semibold text-xl text-offwhite">
+                {isEditing ? 'Edit Service Details' : 'Create New Engineering Service'}
+              </h3>
+              {isEditing && (
+                <p className="font-sans text-sm text-steelblue mt-1">
+                  Reference ID: {formFields.id || 'N/A'}
+                </p>
+              )}
             </div>
-            
-            <div className="md:col-span-2">
-              <label htmlFor="title" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-                Service Title *
-              </label>
-              <input
-                id="title"
-                type="text"
-                name="title"
-                value={formFields.title}
-                onChange={handleChange}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
-                placeholder="e.g. Aerodynamic Flow Simulation"
-                required
-              />
-            </div>
-          </div>
 
-          <div>
-            <label htmlFor="shortDescription" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-              Short Description (BOM view) *
-            </label>
-            <input
-              id="shortDescription"
-              type="text"
-              name="shortDescription"
-              value={formFields.shortDescription}
-              onChange={handleChange}
-              className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
-              placeholder="A brief 1-2 sentence overview of scope..."
-              required
-            />
-          </div>
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div>
+                  <label htmlFor="id" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                    Service Ref ID
+                  </label>
+                  <input
+                    id="id"
+                    type="text"
+                    name="id"
+                    value={formFields.id}
+                    onChange={handleChange}
+                    className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                    placeholder="06"
+                  />
+                </div>
+                
+                <div className="md:col-span-2">
+                  <label htmlFor="title" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                    Service Title <span className="text-accent">*</span>
+                  </label>
+                  <input
+                    id="title"
+                    type="text"
+                    name="title"
+                    value={formFields.title}
+                    onChange={handleChange}
+                    className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                    placeholder="Aerodynamic Flow Simulation"
+                    required
+                  />
+                </div>
+              </div>
 
-          <div>
-            <label htmlFor="detail" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-              Specification Details (Detail page) *
-            </label>
-            <textarea
-              id="detail"
-              name="detail"
-              value={formFields.detail}
-              onChange={handleChange}
-              rows="4"
-              className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent resize-none"
-              placeholder="Fully detailed engineering specifications, methodologies, solvers and parameters..."
-              required
-            />
-          </div>
+              <div>
+                <label htmlFor="shortDescription" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                  Short Description <span className="text-accent">*</span>
+                </label>
+                <input
+                  id="shortDescription"
+                  type="text"
+                  name="shortDescription"
+                  value={formFields.shortDescription}
+                  onChange={handleChange}
+                  className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                  placeholder="A brief 1-2 sentence overview of scope..."
+                  required
+                />
+              </div>
 
-          {/* Price input removed */}
+              <div>
+                <label htmlFor="detail" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                  Specification Details <span className="text-accent">*</span>
+                </label>
+                <textarea
+                  id="detail"
+                  name="detail"
+                  value={formFields.detail}
+                  onChange={handleChange}
+                  rows="5"
+                  className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all resize-none"
+                  placeholder="Fully detailed engineering specifications..."
+                  required
+                />
+              </div>
 
-          <div>
-            <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-              Features / Key Points (Bullet points)
-            </label>
-            <div className="space-y-3">
-              {formFields.points.map((point, index) => (
-                <div key={index} className="flex gap-3 items-center">
+              <div>
+                <label className="block font-sans text-sm font-medium text-steelblue mb-2">
+                  Service Features
+                </label>
+                <div className="space-y-3">
+                  {formFields.points.map((point, index) => (
+                    <div key={index} className="flex gap-3 items-center">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          value={point}
+                          onChange={(e) => handlePointChange(index, e.target.value)}
+                          className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                          placeholder={`Feature ${index + 1}`}
+                        />
+                      </div>
+                      {formFields.points.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removePointField(index)}
+                          className="px-4 py-2.5 text-steelblue hover:text-accent hover:bg-accent/10 rounded-lg transition-colors font-sans text-sm"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addPointField}
+                    className="w-full py-2.5 border-2 border-dashed border-hairline hover:border-accent text-steelblue hover:text-accent rounded-lg transition-colors font-sans text-sm font-medium"
+                  >
+                    + Add Feature
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block font-sans text-sm font-medium text-steelblue mb-2">
+                    Image URL
+                  </label>
                   <input
                     type="text"
-                    value={point}
-                    onChange={(e) => handlePointChange(index, e.target.value)}
-                    className="flex-1 bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
-                    placeholder={`Point #${index + 1} (e.g. 3D Model Optimization)`}
+                    name="image"
+                    value={formFields.image}
+                    onChange={handleChange}
+                    className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                    placeholder="/images/services/aerodynamics.jpg"
                   />
-                  {formFields.points.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removePointField(index)}
-                      className="border border-accent/40 text-accent hover:bg-accent/10 px-4 py-3 transition-colors font-mono text-xs uppercase"
-                    >
-                      Remove
-                    </button>
-                  )}
                 </div>
-              ))}
-              <button
-                type="button"
-                onClick={addPointField}
-                className="border border-hairline border-dashed hover:border-accent text-steelblue hover:text-offwhite px-4 py-2 transition-colors font-mono text-xs uppercase mt-2"
-              >
-                + Add Point
-              </button>
-            </div>
-          </div>
+                
+                <div>
+                  <label className="block font-sans text-sm font-medium text-steelblue mb-2">
+                    Upload Image
+                  </label>
+                  <div className="flex gap-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      id="image-file-upload"
+                      disabled={uploadingImage}
+                    />
+                    <label
+                      htmlFor="image-file-upload"
+                      className="flex-1 cursor-pointer border border-hairline hover:border-accent hover:bg-accent/5 font-sans text-sm px-4 py-2.5 rounded-lg transition-colors text-center text-steelblue hover:text-accent font-medium"
+                    >
+                      {uploadingImage ? 'Uploading...' : 'Choose File'}
+                    </label>
+                    {formFields.image && (
+                      <span className="flex items-center text-green-400 font-sans text-sm">
+                        ✓ Uploaded
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
 
-          {/* Image Upload Block */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
-            <div>
-              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-                Image Source URL
-              </label>
-              <input
-                type="text"
-                name="image"
-                value={formFields.image}
-                onChange={handleChange}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
-                placeholder="e.g. /images/services/aerodynamics.jpg"
-              />
-            </div>
-            
-            <div>
-              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-                Upload Work Sample Image (Max 5MB)
-              </label>
-              <div className="flex gap-4 items-center">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                  id="image-file-upload"
-                  disabled={uploadingImage}
-                />
-                <label
-                  htmlFor="image-file-upload"
-                  className="cursor-pointer border border-hairline hover:border-accent hover:bg-accent/5 font-mono text-xs uppercase tracking-wider px-6 py-3.5 transition-colors select-none text-steelblue hover:text-offwhite"
+              {submitError && (
+                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 font-sans text-sm">
+                  {submitError}
+                </div>
+              )}
+
+              {submitSuccess && (
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 font-sans text-sm">
+                  {submitSuccess}
+                </div>
+              )}
+
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-accent hover:bg-accent/90 text-offwhite font-sans font-medium px-8 py-3 rounded-lg transition-all shadow-md hover:shadow-lg"
                 >
-                  {uploadingImage ? 'Uploading Image...' : 'Select File'}
-                </label>
-                {formFields.image && (
-                  <span className="font-mono text-3xs text-green-400 truncate max-w-xs">
-                    Uploaded: {formFields.image.split('/').pop()}
-                  </span>
+                  {isEditing ? 'Save Changes' : 'Add Service'}
+                </button>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="px-8 py-3 border border-hairline hover:bg-white/5 text-steelblue hover:text-offwhite font-sans font-medium rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
                 )}
               </div>
-            </div>
+            </form>
           </div>
-
-          {submitError && (
-            <div className="p-3 border border-accent bg-accent/5 text-offwhite font-mono text-xs">
-              {submitError}
-            </div>
-          )}
-
-          {submitSuccess && (
-            <div className="p-3 border border-white/10 bg-white/5 text-green-400 font-mono text-xs">
-              {submitSuccess}
-            </div>
-          )}
-
-          <div className="flex gap-4 pt-2">
-            <button
-              type="submit"
-              className="bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-3 border border-transparent transition-colors shadow-lg hover:shadow-accent/25"
-            >
-              {isEditing ? 'Save Specification' : 'Add Service'}
-            </button>
-            {isEditing && (
-              <button
-                type="button"
-                onClick={handleCancelEdit}
-                className="border border-hairline hover:bg-white/5 text-steelblue hover:text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-3 transition-colors"
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
         </div>
       </div>
 
-      {/* Services Table */}
+      {/* Services Cards */}
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-b border-hairline/60 pb-3">
           <h3 className="font-sans font-bold text-lg text-offwhite">
@@ -438,7 +461,7 @@ export default function ManageServicesPage() {
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
-                setCurrentPage(1); // Reset to page 1 when searching
+                setCurrentPage(1);
               }}
               placeholder="Search services..."
               className="w-full bg-navy/80 border border-hairline px-4 py-2 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
@@ -458,47 +481,43 @@ export default function ManageServicesPage() {
           <>
             <div className="relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/5 to-accent/5 rounded-lg opacity-30 blur-sm" />
-              <div className="relative border border-hairline overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-2xl shadow-black/20">
-                <table className="w-full text-left font-sans text-sm border-collapse">
-                  <thead>
-                    <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
-                      <th className="p-4 w-20">REF</th>
-                      <th className="p-4 w-48">Title</th>
-                      <th className="p-4">Short Description</th>
-                      <th className="p-4 w-40">Thumbnail</th>
-                      <th className="p-4 w-40 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-hairline/60">
-                    {paginatedServices.map((service) => (
-                      <tr key={service._id} className="hover:bg-white/[0.02] hover:shadow-inner transition-all duration-200">
-                        <td className="p-4 font-mono font-bold text-accent">{service.id}</td>
-                        <td className="p-4 font-semibold text-offwhite">{service.title}</td>
-                        <td className="p-4 text-steelblue leading-relaxed text-xs">{service.shortDescription}</td>
-                        <td className="p-4 font-mono text-3xs text-steelblue/50 truncate max-w-[140px]">
-                           {service.image}
-                        </td>
-                        <td className="p-4 text-right">
-                          <div className="inline-flex gap-3">
-                            <button
-                              onClick={() => handleEditSelect(service)}
-                              className="font-mono text-2xs uppercase tracking-wider text-accent border-b border-accent/20 hover:text-offwhite hover:border-offwhite hover:shadow-accent/50 transition-all pb-0.5"
-                            >
-                              Edit
-                            </button>
-                            <span className="text-steelblue/20">/</span>
-                            <button
-                              onClick={() => handleDelete(service._id, service.title)}
-                              className="font-mono text-2xs uppercase tracking-wider text-steelblue/60 hover:text-accent transition-all pb-0.5"
-                            >
-                              Delete
-                            </button>
+              <div className="relative overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-2xl shadow-black/20 p-4">
+                <div className="flex gap-4 pb-2">
+                  {paginatedServices.map((service) => (
+                    <div key={service._id} className="flex-shrink-0 w-80 border border-hairline bg-navy/60 p-4 rounded-lg hover:border-accent/50 transition-all duration-200">
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono font-bold text-accent text-sm">REF: {service.id}</span>
+                        </div>
+                        
+                        <h4 className="font-semibold text-offwhite text-sm leading-tight">{service.title}</h4>
+                        
+                        <p className="text-steelblue text-xs leading-relaxed line-clamp-2">{service.shortDescription}</p>
+                        
+                        {service.image && (
+                          <div className="font-mono text-3xs text-steelblue/50 truncate">
+                            {service.image}
                           </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        )}
+                        
+                        <div className="flex gap-2 pt-2 border-t border-hairline/40">
+                          <button
+                            onClick={() => handleEditSelect(service)}
+                            className="flex-1 font-mono text-2xs uppercase tracking-wider text-accent border border-accent/30 hover:bg-accent/10 px-3 py-2 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(service._id, service.title)}
+                            className="flex-1 font-mono text-2xs uppercase tracking-wider text-steelblue/60 hover:text-accent border border-hairline hover:border-accent/30 px-3 py-2 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row justify-between items-center pt-6 gap-4 font-mono text-xs">

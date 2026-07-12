@@ -148,86 +148,100 @@ export default function ManageDiscountsPage() {
         </div>
       </div>
 
-      {/* Form Section */}
-      <div className="border border-hairline bg-navy/40 p-8 relative">
-        <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
-        
-        <h3 className="font-sans font-bold text-lg text-offwhite mb-6 border-b border-hairline/60 pb-3">
-          {isEditing ? 'Edit Discount Tier Details' : 'Create New Discount Tier'}
-        </h3>
+      {/* Form Section - Premium Dark Design */}
+      <div className="flex justify-center">
+        <div className="w-full max-w-xl">
+          <div className="bg-navy/80 backdrop-blur-sm rounded-xl shadow-2xl overflow-hidden border border-hairline">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-navy/60 to-navy/80 px-8 py-6 border-b border-hairline">
+              <h3 className="font-sans font-semibold text-xl text-offwhite">
+                {isEditing ? 'Edit Discount Tier' : 'Create New Discount Tier'}
+              </h3>
+              <p className="font-sans text-sm text-steelblue mt-1">
+                Volume discount rules for bundle purchases
+              </p>
+            </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label htmlFor="minCourses" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-                Minimum Courses Selected *
-              </label>
-              <input
-                id="minCourses"
-                type="number"
-                name="minCourses"
-                value={formFields.minCourses}
-                onChange={handleChange}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
-                placeholder="e.g. 2"
-                min="2"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="discountPercent" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
-                Discount Percentage (%) *
-              </label>
-              <input
-                id="discountPercent"
-                type="number"
-                name="discountPercent"
-                value={formFields.discountPercent}
-                onChange={handleChange}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
-                placeholder="e.g. 20"
-                min="1"
-                max="100"
-                step="any"
-                required
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label htmlFor="minCourses" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                    Minimum Courses <span className="text-accent">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-steelblue font-sans text-sm">+</span>
+                    <input
+                      id="minCourses"
+                      type="number"
+                      name="minCourses"
+                      value={formFields.minCourses}
+                      onChange={handleChange}
+                      className="w-full bg-navy/50 border border-hairline rounded-lg pl-8 pr-4 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                      placeholder="2"
+                      min="2"
+                      required
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label htmlFor="discountPercent" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                    Discount Percentage <span className="text-accent">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="discountPercent"
+                      type="number"
+                      name="discountPercent"
+                      value={formFields.discountPercent}
+                      onChange={handleChange}
+                      className="w-full bg-navy/50 border border-hairline rounded-lg pl-4 pr-10 py-2.5 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent transition-all"
+                      placeholder="20"
+                      min="1"
+                      max="100"
+                      step="any"
+                      required
+                    />
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-steelblue font-sans text-sm">%</span>
+                  </div>
+                </div>
+              </div>
+
+              {submitError && (
+                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 font-sans text-sm">
+                  {submitError}
+                </div>
+              )}
+
+              {submitSuccess && (
+                <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 font-sans text-sm">
+                  {submitSuccess}
+                </div>
+              )}
+
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="submit"
+                  className="flex-1 bg-accent hover:bg-accent/90 text-offwhite font-sans font-medium px-8 py-3 rounded-lg transition-all shadow-md hover:shadow-lg"
+                >
+                  {isEditing ? 'Save Changes' : 'Add Discount Tier'}
+                </button>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={handleCancelEdit}
+                    className="px-8 py-3 border border-hairline hover:bg-white/5 text-steelblue hover:text-offwhite font-sans font-medium rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                )}
+              </div>
+            </form>
           </div>
-
-          {submitError && (
-            <div className="p-3 border border-accent bg-accent/5 text-offwhite font-mono text-xs">
-              {submitError}
-            </div>
-          )}
-
-          {submitSuccess && (
-            <div className="p-3 border border-white/10 bg-white/5 text-green-400 font-mono text-xs">
-              {submitSuccess}
-            </div>
-          )}
-
-          <div className="flex gap-4 pt-2">
-            <button
-              type="submit"
-              className="bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-3 border border-transparent transition-colors"
-            >
-              {isEditing ? 'Save Discount Tier' : 'Add Discount Tier'}
-            </button>
-            {isEditing && (
-              <button
-                type="button"
-                onClick={handleCancelEdit}
-                className="border border-hairline hover:bg-white/5 text-steelblue hover:text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-3 transition-colors"
-              >
-                Cancel
-              </button>
-            )}
-          </div>
-        </form>
+        </div>
       </div>
 
-      {/* Tiers Table */}
+      {/* Discount Tiers Cards */}
       <div className="space-y-6">
         <h3 className="font-sans font-bold text-lg text-offwhite border-b border-hairline/60 pb-3">
           Discount Tiers Configuration
@@ -242,41 +256,41 @@ export default function ManageDiscountsPage() {
             NO DISCOUNT TIERS CONFIGURED. BUNDLE DISCOUNTS WILL NOT BE CALCULATED.
           </div>
         ) : (
-          <div className="border border-hairline overflow-x-auto bg-navy/40">
-            <table className="w-full text-left font-sans text-sm border-collapse">
-              <thead>
-                <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
-                  <th className="p-4 w-40">Minimum Courses</th>
-                  <th className="p-4">Discount %</th>
-                  <th className="p-4 w-40 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-hairline/60">
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/5 to-accent/5 rounded-lg opacity-30 blur-sm" />
+            <div className="relative overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-2xl shadow-black/20 p-4">
+              <div className="flex gap-4 pb-2">
                 {tiers.map((tier) => (
-                  <tr key={tier._id} className="hover:bg-white/[0.01] transition-all">
-                    <td className="p-4 font-mono font-bold text-accent">{tier.minCourses} Courses</td>
-                    <td className="p-4 font-semibold text-offwhite">{tier.discountPercent}% Off</td>
-                    <td className="p-4 text-right">
-                      <div className="inline-flex gap-3">
+                  <div key={tier._id} className="flex-shrink-0 w-64 border border-hairline bg-navy/60 p-4 rounded-lg hover:border-accent/50 transition-all duration-200">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono font-bold text-accent text-sm">{tier.minCourses}+ Courses</span>
+                        <span className="font-mono font-bold text-offwhite text-lg">{tier.discountPercent}%</span>
+                      </div>
+                      
+                      <div className="text-steelblue text-xs">
+                        Discount applies when users register for {tier.minCourses} or more courses
+                      </div>
+                      
+                      <div className="flex gap-2 pt-2 border-t border-hairline/40">
                         <button
                           onClick={() => handleEditSelect(tier)}
-                          className="font-mono text-2xs uppercase tracking-wider text-accent border-b border-accent/20 hover:text-offwhite hover:border-offwhite transition-all pb-0.5"
+                          className="flex-1 font-mono text-2xs uppercase tracking-wider text-accent border border-accent/30 hover:bg-accent/10 px-3 py-2 transition-colors"
                         >
                           Edit
                         </button>
-                        <span className="text-steelblue/20">/</span>
                         <button
                           onClick={() => handleDelete(tier._id, tier.minCourses)}
-                          className="font-mono text-2xs uppercase tracking-wider text-steelblue/60 hover:text-accent transition-all pb-0.5"
+                          className="flex-1 font-mono text-2xs uppercase tracking-wider text-steelblue/60 hover:text-accent border border-hairline hover:border-accent/30 px-3 py-2 transition-colors"
                         >
                           Delete
                         </button>
                       </div>
-                    </td>
-                  </tr>
+                    </div>
+                  </div>
                 ))}
-              </tbody>
-            </table>
+              </div>
+            </div>
           </div>
         )}
       </div>
