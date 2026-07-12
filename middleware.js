@@ -19,8 +19,12 @@ export async function middleware(req) {
 
   // 1. If not authenticated
   if (!token) {
-    // If trying to access protected paths: /admin/* (except public admin paths) or /dashboard/*
-    if ((isAdminPath && !isPublicAdminPath) || isDashboardPath) {
+    // Protected admin paths → /admin/login (not the general user /login)
+    if (isAdminPath && !isPublicAdminPath) {
+      return NextResponse.redirect(new URL('/admin/login', req.url));
+    }
+    // Protected dashboard paths → regular user /login
+    if (isDashboardPath) {
       return NextResponse.redirect(new URL('/login', req.url));
     }
     return NextResponse.next();

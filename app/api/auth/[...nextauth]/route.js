@@ -51,10 +51,12 @@ export const authOptions = {
     strategy: 'jwt',
     maxAge: 24 * 60 * 60, // 24 hours session lifetime
   },
-  pages: {
-    signIn: '/login',
-    error: '/login',
-  },
+  // NOTE: No global `pages` config here. This app has two separate login UIs
+  // (/login for regular users, /admin/login for admins) sharing one NextAuth
+  // instance. All auth redirects are handled precisely by middleware.js instead,
+  // which correctly routes each role to the right login page. Adding a global
+  // pages.signIn would force ALL NextAuth-internal redirects to one page,
+  // breaking the admin login flow.
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

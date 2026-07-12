@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:NODE_PATH='node_modules'; next dev\"",
+    "prebuild": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-next-junction.ps1",
+    "build": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:NODE_PATH='node_modules'; npx next build\"",
+    "prestart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-next-junction.ps1",
+    "start": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:NODE_PATH='node_modules'; next start\"",
     "lint": "next lint",
     "dedupe": "node scripts/dedupe.js"
   },

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 
 export default function ContactForm() {
   const [formData, setFormData] = useState({
@@ -11,10 +11,6 @@ export default function ContactForm() {
     website: '', // Honeypot field
   });
 
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const turnstileContainerRef = useRef(null);
-  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
-
   const [status, setStatus] = useState({
     submitting: false,
     submitted: false,
@@ -22,46 +18,6 @@ export default function ContactForm() {
   });
 
   const [errors, setErrors] = useState({});
-
-  useEffect(() => {
-    if (!siteKey) return;
-
-    let turnstileWidgetId = null;
-
-    const initializeTurnstile = () => {
-      if (window.turnstile && turnstileContainerRef.current && turnstileWidgetId === null) {
-        try {
-          turnstileWidgetId = window.turnstile.render(turnstileContainerRef.current, {
-            sitekey: siteKey,
-            callback: (token) => {
-              setTurnstileToken(token);
-              setErrors((prev) => ({ ...prev, captcha: null }));
-            },
-            'expired-callback': () => {
-              setTurnstileToken('');
-            },
-            'error-callback': () => {
-              setTurnstileToken('');
-            },
-          });
-        } catch (e) {
-          console.error('Turnstile render error:', e);
-        }
-      }
-    };
-
-    if (window.turnstile) {
-      initializeTurnstile();
-    } else {
-      const interval = setInterval(() => {
-        if (window.turnstile) {
-          initializeTurnstile();
-          clearInterval(interval);
-        }
-      }, 500);
-      return () => clearInterval(interval);
-    }
-  }, [siteKey]);
 
   const validate = () => {
     const tempErrors = {};
@@ -74,10 +30,6 @@ export default function ContactForm() {
     }
     
     if (!formData.message.trim()) tempErrors.message = 'Message is required.';
-    
-    if (siteKey && !turnstileToken) {
-      tempErrors.captcha = 'Please complete the CAPTCHA verification.';
-    }
 
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
@@ -118,7 +70,6 @@ export default function ContactForm() {
           email: formData.email,
           phone: formData.phone,
           message: formData.message,
-          turnstileToken,
         }),
       });
 
@@ -127,11 +78,6 @@ export default function ContactForm() {
       if (response.ok) {
         setStatus({ submitting: false, submitted: true, error: null });
         setFormData({ name: '', email: '', phone: '', message: '', website: '' });
-        setTurnstileToken('');
-        // Reset turnstile if it exists
-        if (window.turnstile) {
-          window.turnstile.reset();
-        }
       } else {
         throw new Error(resData.error || 'Failed to submit form.');
       }
@@ -141,11 +87,6 @@ export default function ContactForm() {
         submitted: false,
         error: err.message || 'An error occurred. Please try again later.',
       });
-      // Reset turnstile on error
-      if (window.turnstile) {
-        window.turnstile.reset();
-        setTurnstileToken('');
-      }
     }
   };
 
@@ -254,14 +195,6 @@ export default function ContactForm() {
             />
             {errors.message && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.message}</span>}
           </div>
-
-          {/* Cloudflare Turnstile Widget Container */}
-          {siteKey && (
-            <div className="py-2 flex justify-start">
-              <div ref={turnstileContainerRef} />
-            </div>
-          )}
-          {errors.captcha && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.captcha}</span>}
 
           {status.error && (
             <div className="p-4 border border-accent bg-accent/5 text-offwhite font-mono text-xs">

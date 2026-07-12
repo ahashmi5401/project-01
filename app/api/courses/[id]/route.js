@@ -28,7 +28,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { title, description, image, id: courseNum } = body;
+    const { title, description, image, id: courseNum, price, points } = body;
 
     // Validation
     if (!title?.trim() || !description?.trim()) {
@@ -58,6 +58,8 @@ export async function PUT(req, { params }) {
       title: title.trim(),
       slug,
       description: description.trim(),
+      price: price ? Number(price) : 0,
+      points: Array.isArray(points) ? points.map(p => p.trim()).filter(Boolean) : [],
       image: image || course.image,
       id: courseNum || course.id,
       updatedAt: new Date()

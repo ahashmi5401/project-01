@@ -28,7 +28,7 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { title, shortDescription, detail, image, id: serviceNum } = body;
+    const { title, shortDescription, detail, image, id: serviceNum, points } = body;
 
     // Validation
     if (!title?.trim() || !shortDescription?.trim() || !detail?.trim()) {
@@ -59,6 +59,7 @@ export async function PUT(req, { params }) {
       slug,
       shortDescription: shortDescription.trim(),
       detail: detail.trim(),
+      points: Array.isArray(points) ? points.map(p => p.trim()).filter(Boolean) : [],
       image: image || service.image,
       id: serviceNum || service.id,
       updatedAt: new Date()

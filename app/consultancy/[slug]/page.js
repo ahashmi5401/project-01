@@ -96,7 +96,7 @@ export default async function ServiceDetailPage({ params }) {
                 {displayService.title}
               </h1>
             </div>
-            <div className="font-mono text-xs text-steelblue/50 select-none">
+            <div className="font-mono text-xs text-steelblue/55 select-none">
               DISCIPLINE SPEC ID: {displayService.id}
             </div>
           </div>
@@ -117,6 +117,23 @@ export default async function ServiceDetailPage({ params }) {
                 <p className="font-sans text-base sm:text-lg text-offwhite leading-relaxed whitespace-pre-wrap">
                   {displayService.detail}
                 </p>
+
+                {/* Service Highlights / Points */}
+                {displayService.points && displayService.points.length > 0 && (
+                  <div className="pt-4">
+                    <h3 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-3">
+                      [ SERVICE HIGHLIGHTS ]
+                    </h3>
+                    <ul className="space-y-2">
+                      {displayService.points.map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5 text-sm sm:text-base text-steelblue leading-relaxed">
+                          <span className="text-accent mt-0.5 select-none font-bold">✓</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </AnimatedReveal>
 

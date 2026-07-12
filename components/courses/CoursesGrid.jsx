@@ -62,10 +62,17 @@ export default function CoursesGrid({ courses = [] }) {
                 <h3 className="font-sans font-bold text-xl text-offwhite mb-2 group-hover:text-accent transition-colors">
                   {course.title}
                 </h3>
-                {/* Online delivery label */}
-                <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-wider text-accent/70 border border-accent/20 bg-accent/5 px-2 py-0.5 mb-3">
-                  ● Online Delivery
-                </span>
+                {/* Online delivery and price labels */}
+                <div className="flex flex-wrap gap-2 items-center mb-3">
+                  <span className="inline-flex items-center gap-1.5 font-mono text-2xs uppercase tracking-wider text-accent/70 border border-accent/20 bg-accent/5 px-2 py-0.5">
+                    ● Online Delivery
+                  </span>
+                  {course.price && (
+                    <span className="inline-flex items-center font-mono text-2xs uppercase tracking-wider text-offwhite border border-white/10 bg-white/5 px-2 py-0.5">
+                      PKR {course.price.toLocaleString()}
+                    </span>
+                  )}
+                </div>
                 <p className="font-sans text-sm sm:text-base text-steelblue leading-relaxed">
                   {course.description}
                 </p>

@@ -30,6 +30,8 @@ export default function ManageCoursesPage() {
     title: '',
     description: '',
     image: '',
+    price: '',
+    points: [''], // Points array initialized with one empty field
   });
 
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -87,6 +89,28 @@ export default function ManageCoursesPage() {
     setFormFields((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePointChange = (index, value) => {
+    setFormFields((prev) => {
+      const newPoints = [...prev.points];
+      newPoints[index] = value;
+      return { ...prev, points: newPoints };
+    });
+  };
+
+  const addPointField = () => {
+    setFormFields((prev) => ({
+      ...prev,
+      points: [...prev.points, ''],
+    }));
+  };
+
+  const removePointField = (index) => {
+    setFormFields((prev) => {
+      const newPoints = prev.points.filter((_, i) => i !== index);
+      return { ...prev, points: newPoints.length > 0 ? newPoints : [''] };
+    });
+  };
+
   // Image Upload handler
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
@@ -127,10 +151,12 @@ export default function ManageCoursesPage() {
     setIsEditing(true);
     setEditingId(course._id);
     setFormFields({
-      id: course.id,
-      title: course.title,
-      description: course.description,
+      id: course.id || '',
+      title: course.title || '',
+      description: course.description || '',
       image: course.image || '',
+      price: course.price !== undefined ? course.price : '',
+      points: Array.isArray(course.points) && course.points.length > 0 ? course.points : [''],
     });
     setSubmitError(null);
     setSubmitSuccess(null);
@@ -141,7 +167,14 @@ export default function ManageCoursesPage() {
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditingId(null);
-    setFormFields({ id: '', title: '', description: '', image: '' });
+    setFormFields({
+      id: '',
+      title: '',
+      description: '',
+      image: '',
+      price: '',
+      points: [''],
+    });
     setSubmitError(null);
     setSubmitSuccess(null);
   };
@@ -274,6 +307,59 @@ export default function ManageCoursesPage() {
             />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="price" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                Course Price (PKR) *
+              </label>
+              <input
+                id="price"
+                type="number"
+                name="price"
+                value={formFields.price}
+                onChange={handleChange}
+                className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
+                placeholder="e.g. 15000"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+              Features / Key Points (Bullet points)
+            </label>
+            <div className="space-y-3">
+              {formFields.points.map((point, index) => (
+                <div key={index} className="flex gap-3 items-center">
+                  <input
+                    type="text"
+                    value={point}
+                    onChange={(e) => handlePointChange(index, e.target.value)}
+                    className="flex-1 bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
+                    placeholder={`Point #${index + 1} (e.g. Hands-on ANSYS Workbench projects)`}
+                  />
+                  {formFields.points.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removePointField(index)}
+                      className="border border-accent/40 text-accent hover:bg-accent/10 px-4 py-3 transition-colors font-mono text-xs uppercase"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addPointField}
+                className="border border-hairline border-dashed hover:border-accent text-steelblue hover:text-offwhite px-4 py-2 transition-colors font-mono text-xs uppercase mt-2"
+              >
+                + Add Point
+              </button>
+            </div>
+          </div>
+
           {/* Image Upload Block */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
             <div>
@@ -371,7 +457,8 @@ export default function ManageCoursesPage() {
                 <thead>
                   <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
                     <th className="p-4 w-20">REF</th>
-                    <th className="p-4 w-60">Title</th>
+                    <th className="p-4 w-48">Title</th>
+                    <th className="p-4 w-32">Price</th>
                     <th className="p-4">Description</th>
                     <th className="p-4 w-40">Thumbnail</th>
                     <th className="p-4 w-40 text-right">Actions</th>
@@ -382,6 +469,7 @@ export default function ManageCoursesPage() {
                     <tr key={course._id} className="hover:bg-white/[0.01] transition-all">
                       <td className="p-4 font-mono font-bold text-accent">{course.id}</td>
                       <td className="p-4 font-semibold text-offwhite">{course.title}</td>
+                      <td className="p-4 font-mono text-offwhite">PKR {course.price?.toLocaleString() || '0'}</td>
                       <td className="p-4 text-steelblue leading-relaxed text-xs">{course.description}</td>
                       <td className="p-4 font-mono text-3xs text-steelblue/50 truncate max-w-[140px]">
                         {course.image}

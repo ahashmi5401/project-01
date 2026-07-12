@@ -31,6 +31,7 @@ export default function ManageServicesPage() {
     shortDescription: '',
     detail: '',
     image: '',
+    points: [''], // Points array initialized with one empty field
   });
 
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -63,6 +64,28 @@ export default function ManageServicesPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormFields((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePointChange = (index, value) => {
+    setFormFields((prev) => {
+      const newPoints = [...prev.points];
+      newPoints[index] = value;
+      return { ...prev, points: newPoints };
+    });
+  };
+
+  const addPointField = () => {
+    setFormFields((prev) => ({
+      ...prev,
+      points: [...prev.points, ''],
+    }));
+  };
+
+  const removePointField = (index) => {
+    setFormFields((prev) => {
+      const newPoints = prev.points.filter((_, i) => i !== index);
+      return { ...prev, points: newPoints.length > 0 ? newPoints : [''] };
+    });
   };
 
   // Image Upload handler
@@ -105,11 +128,12 @@ export default function ManageServicesPage() {
     setIsEditing(true);
     setEditingId(service._id);
     setFormFields({
-      id: service.id,
-      title: service.title,
-      shortDescription: service.shortDescription,
-      detail: service.detail,
-      image: service.image,
+      id: service.id || '',
+      title: service.title || '',
+      shortDescription: service.shortDescription || '',
+      detail: service.detail || '',
+      image: service.image || '',
+      points: Array.isArray(service.points) && service.points.length > 0 ? service.points : [''],
     });
     setSubmitError(null);
     setSubmitSuccess(null);
@@ -120,7 +144,14 @@ export default function ManageServicesPage() {
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditingId(null);
-    setFormFields({ id: '', title: '', shortDescription: '', detail: '', image: '' });
+    setFormFields({
+      id: '',
+      title: '',
+      shortDescription: '',
+      detail: '',
+      image: '',
+      points: [''],
+    });
     setSubmitError(null);
     setSubmitSuccess(null);
   };
@@ -269,6 +300,43 @@ export default function ManageServicesPage() {
             />
           </div>
 
+          {/* Price input removed */}
+
+          <div>
+            <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+              Features / Key Points (Bullet points)
+            </label>
+            <div className="space-y-3">
+              {formFields.points.map((point, index) => (
+                <div key={index} className="flex gap-3 items-center">
+                  <input
+                    type="text"
+                    value={point}
+                    onChange={(e) => handlePointChange(index, e.target.value)}
+                    className="flex-1 bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent"
+                    placeholder={`Point #${index + 1} (e.g. 3D Model Optimization)`}
+                  />
+                  {formFields.points.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removePointField(index)}
+                      className="border border-accent/40 text-accent hover:bg-accent/10 px-4 py-3 transition-colors font-mono text-xs uppercase"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={addPointField}
+                className="border border-hairline border-dashed hover:border-accent text-steelblue hover:text-offwhite px-4 py-2 transition-colors font-mono text-xs uppercase mt-2"
+              >
+                + Add Point
+              </button>
+            </div>
+          </div>
+
           {/* Image Upload Block */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
             <div>
@@ -366,7 +434,7 @@ export default function ManageServicesPage() {
                 <thead>
                   <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
                     <th className="p-4 w-20">REF</th>
-                    <th className="p-4 w-60">Title</th>
+                    <th className="p-4 w-48">Title</th>
                     <th className="p-4">Short Description</th>
                     <th className="p-4 w-40">Thumbnail</th>
                     <th className="p-4 w-40 text-right">Actions</th>

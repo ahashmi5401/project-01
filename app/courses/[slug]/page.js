@@ -95,10 +95,17 @@ export default async function CourseDetailPage({ params }) {
               <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-offwhite uppercase tracking-tight">
                 {displayCourse.title}
               </h1>
-              {/* Online-only delivery indicator */}
-              <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-accent/80 border border-accent/25 bg-accent/5 px-3 py-1 mt-4">
-                ● Delivered Online
-              </span>
+              {/* Online-only delivery indicator and Price */}
+              <div className="flex flex-wrap gap-3 mt-4 items-center">
+                <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-accent/80 border border-accent/25 bg-accent/5 px-3 py-1">
+                  ● Delivered Online
+                </span>
+                {displayCourse.price && (
+                  <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-offwhite border border-white/20 bg-white/5 px-3 py-1">
+                    PKR {displayCourse.price.toLocaleString()}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="font-mono text-xs text-steelblue/50 select-none">
               CURRICULUM SPEC ID: {displayCourse.id}
@@ -123,19 +130,37 @@ export default async function CourseDetailPage({ params }) {
                     {displayCourse.detail}
                   </p>
                 )}
+
+                {/* Course Highlights / Points */}
+                {displayCourse.points && displayCourse.points.length > 0 && (
+                  <div className="pt-4">
+                    <h3 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-3">
+                      [ COURSE HIGHLIGHTS ]
+                    </h3>
+                    <ul className="space-y-2">
+                      {displayCourse.points.map((point, idx) => (
+                        <li key={idx} className="flex items-start gap-2.5 text-sm sm:text-base text-steelblue leading-relaxed">
+                          <span className="text-accent mt-0.5 select-none font-bold">✓</span>
+                          <span>{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </AnimatedReveal>
 
             <AnimatedReveal delay={0.2}>
               <div className="border-t border-hairline pt-8 space-y-4">
                 <p className="text-xs font-mono uppercase tracking-wider text-steelblue select-none">
-                  Initialize query or coordinate training scoping:
+                  Initialize registration and secure custom package discount:
                 </p>
-                <InquiryTrigger 
-                  targetName={displayCourse.title}
-                  targetType="course"
-                  buttonText="Inquire About This Course"
-                />
+                <Link 
+                  href={`/enroll?course=${displayCourse.slug}`}
+                  className="inline-block bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-mono uppercase tracking-wider text-xs px-8 py-4 border border-transparent transition-all select-none hover:shadow-lg hover:shadow-accent/15"
+                >
+                  Enroll Now
+                </Link>
               </div>
             </AnimatedReveal>
           </div>

@@ -10,6 +10,7 @@ const BASE_URL = 'https://simuflux.com';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+
   webpack: (config) => {
     // Use in-memory cache on Windows (avoids OneDrive file-locking issues with .next/cache)
     config.cache = {

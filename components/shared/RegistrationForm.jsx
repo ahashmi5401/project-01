@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
-export default function RegistrationForm({ courses, initialCourse = '', isLocked = false }) {
+export default function RegistrationForm({ courses, discountTiers = [], initialCourse = '', isLocked = false }) {
+  const [selectedCourses, setSelectedCourses] = useState(initialCourse ? [initialCourse] : []);
+
   const [formData, setFormData] = useState({
     name: '',
     cnic: '',
@@ -13,7 +15,6 @@ export default function RegistrationForm({ courses, initialCourse = '', isLocked
     reason: '',
     highestQualification: '',
     currentlyPursuing: '',
-    course: initialCourse,
   });
   
   const [screenshot, setScreenshot] = useState(null);
@@ -51,7 +52,7 @@ export default function RegistrationForm({ courses, initialCourse = '', isLocked
     if (!formData.reason.trim()) tempErrors.reason = 'Please explain why you want to enroll.';
     if (!formData.highestQualification) tempErrors.highestQualification = 'Highest qualification selection is required.';
     if (!formData.currentlyPursuing) tempErrors.currentlyPursuing = 'Current degree path selection is required.';
-    if (!formData.course) tempErrors.course = 'Please select a course.';
+    if (selectedCourses.length === 0) tempErrors.course = 'Please select at least one course.';
     if (!screenshot) tempErrors.screenshot = 'Payment receipt screenshot proof is required.';
 
     setErrors(tempErrors);
@@ -116,7 +117,11 @@ export default function RegistrationForm({ courses, initialCourse = '', isLocked
     submissionData.append('reason', formData.reason);
     submissionData.append('highestQualification', formData.highestQualification);
     submissionData.append('currentlyPursuing', formData.currentlyPursuing);
-    submissionData.append('course', formData.course);
+    selectedCourses.forEach(title => {
+      submissionData.append('courses', title);
+    });
+    submissionData.append('clientDiscountPercent', discountPercent);
+    submissionData.append('clientTotalPrice', totalPrice);
     submissionData.append('screenshot', screenshot);
 
     try {
@@ -144,8 +149,8 @@ export default function RegistrationForm({ courses, initialCourse = '', isLocked
           reason: '',
           highestQualification: '',
           currentlyPursuing: '',
-          course: isLocked ? initialCourse : '',
         });
+        setSelectedCourses(initialCourse ? [initialCourse] : []);
         setScreenshot(null);
       } else {
         throw new Error(resData.error || 'Failed to submit registration.');
@@ -163,6 +168,24 @@ export default function RegistrationForm({ courses, initialCourse = '', isLocked
 
   const qualificationOptions = ['Matric', 'Intermediate', "Bachelor's", "Master's", 'PhD', 'Other'];
   const degreeOptions = ['BS', 'BE', 'ADP', 'MS', 'Not currently studying', 'Other'];
+
+  // Pricing calculations
+  const selectedCoursesList = courses.filter(c => selectedCourses.includes(c.title));
+  const subtotal = selectedCoursesList.reduce((sum, c) => sum + (c.price || 0), 0);
+  const selectedCount = selectedCoursesList.length;
+
+  let activeTier = null;
+  const sortedTiers = [...discountTiers].sort((a, b) => a.minCourses - b.minCourses);
+  for (let i = sortedTiers.length - 1; i >= 0; i--) {
+    if (selectedCount >= sortedTiers[i].minCourses) {
+      activeTier = sortedTiers[i];
+      break;
+    }
+  }
+
+  const discountPercent = activeTier ? activeTier.discountPercent : 0;
+  const discountAmount = (subtotal * discountPercent) / 100;
+  const totalPrice = subtotal - discountAmount;
 
   return (
     <div className="max-w-3xl mx-auto border border-hairline bg-navy/60 p-8 sm:p-12 relative text-offwhite font-sans">
@@ -361,34 +384,63 @@ export default function RegistrationForm({ courses, initialCourse = '', isLocked
             {errors.currentlyPursuing && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.currentlyPursuing}</span>}
           </div>
 
-          {/* Radio Buttons for Courses */}
+          {/* Checkboxes for Courses */}
           <div>
             <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-3">
-              Enrolling Course *
+              Select Enrolling Course(s) *
             </label>
-            {isLocked ? (
-              <div className="border border-accent/40 bg-accent/5 px-4 py-4 font-sans font-bold text-offwhite flex justify-between items-center text-sm">
-                <span>{formData.course}</span>
-                <span className="font-mono text-3xs text-accent uppercase select-none">[ PRE-SELECTED & LOCKED ]</span>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {courses.map((c) => (
-                  <label key={c._id || c.id} className="flex items-center gap-3 border border-hairline/60 bg-navy/40 px-4 py-4 cursor-pointer hover:border-accent/60 transition-colors">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {courses.map((c) => {
+                const isChecked = selectedCourses.includes(c.title);
+                return (
+                  <label key={c._id || c.id} className={`flex items-center gap-3 border px-4 py-4 cursor-pointer hover:border-accent/60 transition-colors ${
+                    isChecked ? 'border-accent bg-accent/5' : 'border-hairline/60 bg-navy/40'
+                  }`}>
                     <input
-                      type="radio"
-                      name="course"
+                      type="checkbox"
+                      name="courses"
                       value={c.title}
-                      checked={formData.course === c.title}
-                      onChange={handleChange}
+                      checked={isChecked}
+                      onChange={(e) => {
+                        const { value, checked } = e.target;
+                        setSelectedCourses(prev =>
+                          checked ? [...prev, value] : prev.filter(item => item !== value)
+                        );
+                      }}
                       className="accent-accent w-4 h-4 cursor-pointer"
                     />
-                    <span className="text-sm font-bold text-offwhite select-none">{c.title}</span>
+                    <div className="select-none">
+                      <span className="text-sm font-bold text-offwhite block">{c.title}</span>
+                      {c.price && (
+                        <span className="text-xs font-mono text-steelblue/75">PKR {c.price.toLocaleString()}</span>
+                      )}
+                    </div>
                   </label>
-                ))}
+                );
+              })}
+            </div>
+            {errors.course && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.course}</span>}
+
+            {/* Dynamic Price Calculation display */}
+            {selectedCount > 0 && (
+              <div className="border border-hairline bg-navy/40 p-6 space-y-3 font-sans mt-4 relative animate-fade-in">
+                <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/5 pointer-events-none" />
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-steelblue">Subtotal</span>
+                  <span className="font-mono text-offwhite">PKR {subtotal.toLocaleString()}</span>
+                </div>
+                {discountPercent > 0 && (
+                  <div className="flex justify-between items-center text-sm text-accent">
+                    <span>Bundle Savings ({discountPercent}%)</span>
+                    <span className="font-mono">- PKR {discountAmount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="border-t border-hairline pt-3 flex justify-between items-center text-base font-bold text-offwhite">
+                  <span>Total Package Price</span>
+                  <span className="font-mono text-accent">PKR {totalPrice.toLocaleString()}</span>
+                </div>
               </div>
             )}
-            {errors.course && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.course}</span>}
           </div>
 
           {/* Why do you want to learn this course textarea */}

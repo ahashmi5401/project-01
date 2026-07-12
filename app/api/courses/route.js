@@ -39,7 +39,7 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { title, description, image, id } = body;
+    const { title, description, image, id, price, points } = body;
 
     // Validation
     if (!title?.trim() || !description?.trim()) {
@@ -69,6 +69,8 @@ export async function POST(req) {
       slug,
       title: title.trim(),
       description: description.trim(),
+      price: price ? Number(price) : 0,
+      points: Array.isArray(points) ? points.map(p => p.trim()).filter(Boolean) : [],
       image: image || '/images/courses/placeholder.jpg',
       createdAt: new Date(),
       updatedAt: new Date()

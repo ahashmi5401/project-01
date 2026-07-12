@@ -26,13 +26,6 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Message is too long (max 5000 characters).' }, { status: 400 });
     }
 
-    // Verify Turnstile CAPTCHA
-    const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || '127.0.0.1';
-    const isTokenValid = await verifyTurnstileToken(turnstileToken, ip);
-    if (!isTokenValid) {
-      return NextResponse.json({ error: 'Turnstile verification failed. Please try again.' }, { status: 400 });
-    }
-
     // HTML-escape all user inputs before embedding in email
     const safeName = escapeHtml(name.trim());
     const safeEmail = escapeHtml(email.trim());
@@ -44,8 +37,8 @@ export async function POST(req) {
     if (resend) {
       try {
         await resend.emails.send({
-          from: 'SimuFlux Site <system@simuflux.com>',
-          to: 'info@simuflux.com', // Recipient business inbox
+          from: process.env.RESEND_FROM_EMAIL || 'system@simuflux.com',
+          to: process.env.ADMIN_EMAIL || 'info@simuflux.com', // Recipient business inbox
           subject: `New Contact Inquiry from ${safeName}`,
           text: `
 Name: ${name.trim()}

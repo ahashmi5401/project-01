@@ -36,8 +36,8 @@ export async function POST(req) {
 
       try {
         await resend.emails.send({
-          from: 'SimuFlux Inquiries <system@simuflux.com>',
-          to: 'info@simuflux.com',
+          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          to: process.env.ADMIN_EMAIL,
           subject: `[New Inquiry] ${safeTargetType.toUpperCase()} - ${safeTargetName}`,
           text: `
 You have received a new inquiry from SimuFlux.

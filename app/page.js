@@ -3,6 +3,7 @@ import Hero from "@/components/home/Hero";
 import StatsBar from "@/components/home/StatsBar";
 import ScopeList from "@/components/home/ScopeList";
 import CoursesPreview from "@/components/home/CoursesPreview";
+import DiscountPromo from "@/components/home/DiscountPromo";
 import { connectToDatabase } from '@/lib/mongodb';
 
 // Force every request to be server-rendered live from MongoDB (no static caching)
@@ -27,6 +28,11 @@ async function getHomeData() {
       .sort({ id: 1 })
       .toArray();
 
+    const discountTiersData = await db.collection('discountTiers')
+      .find({})
+      .sort({ minCourses: 1 })
+      .toArray();
+
     // Serialize ObjectIds for Client Components
     const services = servicesData.map(s => ({
       ...s,
@@ -42,15 +48,22 @@ async function getHomeData() {
       updatedAt: c.updatedAt ? c.updatedAt.toISOString() : null,
     }));
 
-    return { services, courses };
+    const discountTiers = discountTiersData.map(t => ({
+      ...t,
+      _id: t._id.toString(),
+      createdAt: t.createdAt ? t.createdAt.toISOString() : null,
+      updatedAt: t.updatedAt ? t.updatedAt.toISOString() : null,
+    }));
+
+    return { services, courses, discountTiers };
   } catch (error) {
     console.error('Failed to fetch home page data from database:', error);
-    return { services: [], courses: [] };
+    return { services: [], courses: [], discountTiers: [] };
   }
 }
 
 export default async function Home() {
-  const { services, courses } = await getHomeData();
+  const { services, courses, discountTiers } = await getHomeData();
 
   // LocalBusiness JSON-LD for Local SEO
   const localBusinessJsonLd = {
@@ -114,6 +127,7 @@ export default async function Home() {
       <StatsBar />
       <ScopeList services={services} />
       <CoursesPreview courses={courses} />
+      <DiscountPromo discountTiers={discountTiers} />
     </>
   );
 }

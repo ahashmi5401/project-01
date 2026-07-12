@@ -37,6 +37,14 @@ function AdminLayoutContent({ children }) {
                 Courses
               </Link>
               <Link
+                href="/admin/discounts"
+                className={`transition-colors hover:text-accent ${
+                  pathname.startsWith('/admin/discounts') ? 'text-accent border-b border-accent pb-0.5' : 'text-steelblue'
+                }`}
+              >
+                Discounts
+              </Link>
+              <Link
                 href="/admin/admins"
                 className={`transition-colors hover:text-accent ${
                   pathname.startsWith('/admin/admins') ? 'text-accent border-b border-accent pb-0.5' : 'text-steelblue'
@@ -60,10 +68,7 @@ function AdminLayoutContent({ children }) {
               User: <strong className="text-offwhite">{session?.user?.email}</strong>
             </span>
             <button
-              onClick={async () => {
-                await signOut({ redirect: false });
-                router.push('/');
-              }}
+              onClick={() => signOut({ callbackUrl: '/' })}
               className="border border-accent/20 px-4 py-2 hover:bg-accent/10 text-accent transition-colors uppercase tracking-wider"
             >
               Sign Out
@@ -73,12 +78,15 @@ function AdminLayoutContent({ children }) {
       </header>
 
       {/* Admin Mobile Sub-nav (only visible on small screens) */}
-      <div className="sm:hidden border-b border-hairline/60 bg-navy/40 px-6 py-3 flex gap-4 font-mono text-2xs uppercase tracking-wider">
+      <div className="sm:hidden border-b border-hairline/60 bg-navy/40 px-6 py-3 flex gap-4 font-mono text-2xs uppercase tracking-wider flex-wrap">
         <Link href="/admin/services" className={`hover:text-accent ${pathname.startsWith('/admin/services') ? 'text-accent' : 'text-steelblue'}`}>
           Services
         </Link>
         <Link href="/admin/courses" className={`hover:text-accent ${pathname.startsWith('/admin/courses') ? 'text-accent' : 'text-steelblue'}`}>
           Courses
+        </Link>
+        <Link href="/admin/discounts" className={`hover:text-accent ${pathname.startsWith('/admin/discounts') ? 'text-accent' : 'text-steelblue'}`}>
+          Discounts
         </Link>
         <Link href="/admin/admins" className={`hover:text-accent ${pathname.startsWith('/admin/admins') ? 'text-accent' : 'text-steelblue'}`}>
           Admins
