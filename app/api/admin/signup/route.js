@@ -1,0 +1,65 @@
+import { NextResponse } from 'next/server';
+import { connectToDatabase } from '@/lib/mongodb';
+import bcrypt from 'bcryptjs';
+
+export async function POST(req) {
+  try {
+    const { email, password, confirmPassword } = await req.json();
+
+    // 1. Basic Validation
+    if (!email || !password || !confirmPassword) {
+      return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
+    }
+
+    if (!email.trim() || !email.includes('@')) {
+      return NextResponse.json({ error: 'A valid email address is required.' }, { status: 400 });
+    }
+
+    if (password !== confirmPassword) {
+      return NextResponse.json({ error: 'Passwords do not match.' }, { status: 400 });
+    }
+
+    if (password.length < 6) {
+      return NextResponse.json({ error: 'Password must be at least 6 characters long.' }, { status: 400 });
+    }
+
+    const { db } = await connectToDatabase();
+
+    // 2. Security Check: Block if ANY admin already exists
+    const existingAdmin = await db.collection('users').findOne({ role: 'admin' });
+    if (existingAdmin) {
+      return NextResponse.json(
+        { error: 'Bootstrap registration is permanently disabled because an administrator already exists.' },
+        { status: 403 }
+      );
+    }
+
+    // 3. Email Duplicity Check
+    const cleanEmail = email.toLowerCase().trim();
+    const existingUser = await db.collection('users').findOne({ email: cleanEmail });
+    if (existingUser) {
+      return NextResponse.json({ error: 'A user with this email address already exists.' }, { status: 409 });
+    }
+
+    // 4. Hash password and insert admin
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newAdmin = {
+      email: cleanEmail,
+      password: hashedPassword,
+      role: 'admin',
+      isVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    await db.collection('users').insertOne(newAdmin);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Initial administrator account configured successfully.'
+    });
+  } catch (error) {
+    console.error('Bootstrap admin signup API error:', error);
+    return NextResponse.json({ error: 'An unexpected server error occurred.' }, { status: 500 });
+  }
+}
