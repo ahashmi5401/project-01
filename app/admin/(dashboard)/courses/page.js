@@ -7,20 +7,30 @@ export default function ManageCoursesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Search/Filter State
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 10;
 
-  const totalItems = courses.length;
+  // Filter courses based on search query
+  const filteredCourses = courses.filter(course => 
+    course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.id?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalItems = filteredCourses.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedCourses = courses.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const paginatedCourses = filteredCourses.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   useEffect(() => {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(totalPages);
     }
-  }, [courses.length, totalPages, currentPage]);
+  }, [filteredCourses.length, totalPages, currentPage]);
 
   // Form State
   const [isEditing, setIsEditing] = useState(false);
@@ -250,12 +260,14 @@ export default function ManageCoursesPage() {
       </div>
 
       {/* Form Section */}
-      <div className="border border-hairline bg-navy/40 p-8 relative">
-        <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
-        
-        <h3 className="font-sans font-bold text-lg text-offwhite mb-6 border-b border-hairline/60 pb-3">
-          {isEditing ? `Edit Course Details [REF: ${formFields.id || 'N/A'}]` : 'Create New Training Course'}
-        </h3>
+      <div className="relative">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg opacity-50 blur-sm" />
+        <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-8 shadow-2xl shadow-black/20">
+          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
+          
+          <h3 className="font-sans font-bold text-lg text-offwhite mb-6 border-b border-hairline/60 pb-3">
+            {isEditing ? `Edit Course Details [REF: ${formFields.id || 'N/A'}]` : 'Create New Training Course'}
+          </h3>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -419,7 +431,7 @@ export default function ManageCoursesPage() {
           <div className="flex gap-4 pt-2">
             <button
               type="submit"
-              className="bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-3 border border-transparent transition-colors"
+              className="bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-3 border border-transparent transition-colors shadow-lg hover:shadow-accent/25"
             >
               {isEditing ? 'Save Course Details' : 'Add Course'}
             </button>
@@ -434,99 +446,122 @@ export default function ManageCoursesPage() {
             )}
           </div>
         </form>
+        </div>
       </div>
 
       {/* Courses Table */}
       <div className="space-y-6">
-        <h3 className="font-sans font-bold text-lg text-offwhite border-b border-hairline/60 pb-3">
-          Live Courses Database
-        </h3>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 border-b border-hairline/60 pb-3">
+          <h3 className="font-sans font-bold text-lg text-offwhite">
+            Live Courses Database
+          </h3>
+          <div className="w-full sm:max-w-xs">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1); // Reset to page 1 when searching
+              }}
+              placeholder="Search courses..."
+              className="w-full bg-navy/80 border border-hairline px-4 py-2 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
+            />
+          </div>
+        </div>
 
         {loading ? (
           <div className="py-10 text-center font-mono text-xs text-steelblue animate-pulse">
             LOADING LIVE DATA SHEET...
           </div>
-        ) : courses.length === 0 ? (
+        ) : filteredCourses.length === 0 ? (
           <div className="border border-dashed border-white/10 p-12 text-center text-steelblue font-mono text-xs">
-            NO COURSES DEFINED IN DATABASE.
+            {searchQuery ? 'No courses match your search.' : 'NO COURSES DEFINED IN DATABASE.'}
           </div>
         ) : (
           <>
-            <div className="border border-hairline overflow-x-auto bg-navy/40">
-              <table className="w-full text-left font-sans text-sm border-collapse">
-                <thead>
-                  <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
-                    <th className="p-4 w-20">REF</th>
-                    <th className="p-4 w-48">Title</th>
-                    <th className="p-4 w-32">Price</th>
-                    <th className="p-4">Description</th>
-                    <th className="p-4 w-40">Thumbnail</th>
-                    <th className="p-4 w-40 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-hairline/60">
-                  {paginatedCourses.map((course) => (
-                    <tr key={course._id} className="hover:bg-white/[0.01] transition-all">
-                      <td className="p-4 font-mono font-bold text-accent">{course.id}</td>
-                      <td className="p-4 font-semibold text-offwhite">{course.title}</td>
-                      <td className="p-4 font-mono text-offwhite">PKR {course.price?.toLocaleString() || '0'}</td>
-                      <td className="p-4 text-steelblue leading-relaxed text-xs">{course.description}</td>
-                      <td className="p-4 font-mono text-3xs text-steelblue/50 truncate max-w-[140px]">
-                        {course.image}
-                      </td>
-                      <td className="p-4 text-right">
-                        <div className="inline-flex gap-3 items-center">
-                          <button
-                            onClick={() => handleCopyLink(course.slug)}
-                            className="font-mono text-2xs uppercase tracking-wider text-green-400 border-b border-green-400/20 hover:text-offwhite hover:border-offwhite transition-all pb-0.5"
-                            title="Copy course registration link"
-                          >
-                            Copy Link
-                          </button>
-                          <span className="text-steelblue/20">/</span>
-                          <button
-                            onClick={() => handleEditSelect(course)}
-                            className="font-mono text-2xs uppercase tracking-wider text-accent border-b border-accent/20 hover:text-offwhite hover:border-offwhite transition-all pb-0.5"
-                          >
-                            Edit
-                          </button>
-                          <span className="text-steelblue/20">/</span>
-                          <button
-                            onClick={() => handleDelete(course._id, course.title)}
-                            className="font-mono text-2xs uppercase tracking-wider text-steelblue/60 hover:text-accent transition-all pb-0.5"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/5 to-accent/5 rounded-lg opacity-30 blur-sm" />
+              <div className="relative border border-hairline overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-2xl shadow-black/20">
+                <table className="w-full text-left font-sans text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
+                      <th className="p-4 w-20">REF</th>
+                      <th className="p-4 w-48">Title</th>
+                      <th className="p-4 w-32">Price</th>
+                      <th className="p-4">Description</th>
+                      <th className="p-4 w-40">Thumbnail</th>
+                      <th className="p-4 w-40 text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            {totalPages > 1 && (
-              <div className="flex justify-between items-center pt-6 font-mono text-xs">
-                <button
-                  type="button"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  className="px-4 py-2 border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors"
-                >
-                  &lt; Previous
-                </button>
-                <span className="text-steelblue">
-                  Page <strong className="text-offwhite">{currentPage}</strong> of <strong className="text-offwhite">{totalPages}</strong>
-                </span>
-                <button
-                  type="button"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  className="px-4 py-2 border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors"
-                >
-                  Next &gt;
-                </button>
+                  </thead>
+                  <tbody className="divide-y divide-hairline/60">
+                    {paginatedCourses.map((course) => (
+                      <tr key={course._id} className="hover:bg-white/[0.02] hover:shadow-inner transition-all duration-200">
+                        <td className="p-4 font-mono font-bold text-accent">{course.id}</td>
+                        <td className="p-4 font-semibold text-offwhite">{course.title}</td>
+                        <td className="p-4 font-mono text-offwhite">PKR {course.price?.toLocaleString() || '0'}</td>
+                        <td className="p-4 text-steelblue leading-relaxed text-xs">{course.description}</td>
+                        <td className="p-4 font-mono text-3xs text-steelblue/50 truncate max-w-[140px]">
+                          {course.image}
+                        </td>
+                        <td className="p-4 text-right">
+                          <div className="inline-flex gap-3 items-center">
+                            <button
+                              onClick={() => handleCopyLink(course.slug)}
+                              className="font-mono text-2xs uppercase tracking-wider text-green-400 border-b border-green-400/20 hover:text-offwhite hover:border-offwhite hover:shadow-green-400/50 transition-all pb-0.5"
+                              title="Copy course registration link"
+                            >
+                              Copy Link
+                            </button>
+                            <span className="text-steelblue/20">/</span>
+                            <button
+                              onClick={() => handleEditSelect(course)}
+                              className="font-mono text-2xs uppercase tracking-wider text-accent border-b border-accent/20 hover:text-offwhite hover:border-offwhite hover:shadow-accent/50 transition-all pb-0.5"
+                            >
+                              Edit
+                            </button>
+                            <span className="text-steelblue/20">/</span>
+                            <button
+                              onClick={() => handleDelete(course._id, course.title)}
+                              className="font-mono text-2xs uppercase tracking-wider text-steelblue/60 hover:text-accent transition-all pb-0.5"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )}
+            </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center pt-6 gap-4 font-mono text-xs">
+              <span className="text-steelblue">
+                Showing <strong className="text-offwhite">{startIndex + 1}</strong> to <strong className="text-offwhite">{Math.min(startIndex + ITEMS_PER_PAGE, totalItems)}</strong> of <strong className="text-offwhite">{totalItems}</strong> courses
+              </span>
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    className="px-4 py-2 border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors shadow-sm"
+                  >
+                    &lt; Previous
+                  </button>
+                  <span className="text-steelblue">
+                    Page <strong className="text-offwhite">{currentPage}</strong> of <strong className="text-offwhite">{totalPages}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    className="px-4 py-2 border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors shadow-sm"
+                  >
+                    Next &gt;
+                  </button>
+                </div>
+              )}
+            </div>
           </>
         )}
       </div>

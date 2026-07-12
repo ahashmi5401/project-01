@@ -24,10 +24,11 @@ export default function ManageAdminsPage() {
 
   // Invite Form State
   const [inviteEmail, setInviteEmail] = useState('');
+  const [invitePassword, setInvitePassword] = useState('');
+  const [inviteConfirmPassword, setInviteConfirmPassword] = useState('');
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteError, setInviteError] = useState(null);
   const [inviteSuccess, setInviteSuccess] = useState(null);
-  const [devInviteLink, setDevInviteLink] = useState(null); // Local dev helper
 
   const fetchAdmins = async () => {
     try {
@@ -52,36 +53,47 @@ export default function ManageAdminsPage() {
 
   const handleInviteSubmit = async (e) => {
     e.preventDefault();
-    if (!inviteEmail) return;
+    if (!inviteEmail || !invitePassword) {
+      setInviteError('Email and password are required.');
+      return;
+    }
+    if (invitePassword.length < 6) {
+      setInviteError('Password must be at least 6 characters long.');
+      return;
+    }
+    if (invitePassword !== inviteConfirmPassword) {
+      setInviteError('Passwords do not match.');
+      return;
+    }
 
     setInviteLoading(true);
     setInviteError(null);
     setInviteSuccess(null);
-    setDevInviteLink(null);
 
     try {
       const res = await fetch('/api/admins', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: inviteEmail }),
+        body: JSON.stringify({ 
+          email: inviteEmail, 
+          password: invitePassword,
+          role: 'admin'
+        }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        setInviteSuccess('Invitation dispatched successfully!');
+        setInviteSuccess('Admin account created successfully!');
         setInviteEmail('');
+        setInvitePassword('');
+        setInviteConfirmPassword('');
         fetchAdmins();
-        
-        // If we're in dev mode and the invite link is returned (due to no Resend set up), capture it
-        if (data.inviteLink) {
-          setDevInviteLink(data.inviteLink);
-        }
       } else {
-        setInviteError(data.error || 'Failed to invite administrator.');
+        setInviteError(data.error || 'Failed to create administrator.');
       }
     } catch (err) {
-      setInviteError('Failed to invite admin. Connection error.');
+      setInviteError('Failed to create admin. Connection error.');
     } finally {
       setInviteLoading(false);
     }
@@ -100,64 +112,84 @@ export default function ManageAdminsPage() {
       </div>
 
       {/* Invite Form */}
-      <div className="border border-hairline bg-navy/40 p-8 relative">
-        <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
-        
-        <h3 className="font-sans font-bold text-lg text-offwhite mb-4 border-b border-hairline/60 pb-3">
-          Invite New Administrator
-        </h3>
-        <p className="font-sans text-xs text-steelblue leading-relaxed mb-6">
-          Input the email address of the team member. The system will register a pending record and transmit a secure activation link via email.
-        </p>
-
-        <form onSubmit={handleInviteSubmit} className="flex flex-col sm:flex-row gap-4 items-start">
-          <div className="w-full sm:max-w-md">
-            <input
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              className="w-full bg-navy/80 border border-hairline px-4 py-3.5 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm"
-              placeholder="e.g. colleague@simuflux.com"
-              required
-            />
-          </div>
+      <div className="relative">
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg opacity-50 blur-sm" />
+        <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-8 shadow-2xl shadow-black/20">
+          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
           
-          <button
-            type="submit"
-            disabled={inviteLoading}
-            className="w-full sm:w-auto bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-4 border border-transparent transition-colors disabled:opacity-50 select-none"
-          >
-            {inviteLoading ? 'Inviting...' : 'Transmit Invite'}
-          </button>
-        </form>
+          <h3 className="font-sans font-bold text-lg text-offwhite mb-4 border-b border-hairline/60 pb-3">
+            Create New Administrator
+          </h3>
+          <p className="font-sans text-xs text-steelblue leading-relaxed mb-6">
+            Enter the email address and password for the new administrator. The account will be created immediately and ready to use.
+          </p>
 
-        {inviteError && (
-          <div className="mt-4 p-3 border border-accent bg-accent/5 text-offwhite font-mono text-xs max-w-xl">
-            {inviteError}
-          </div>
-        )}
+          <form onSubmit={handleInviteSubmit} className="space-y-4">
+            <div className="w-full">
+              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={inviteEmail}
+                onChange={(e) => setInviteEmail(e.target.value)}
+                className="w-full bg-navy/80 border border-hairline px-4 py-3.5 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
+                placeholder="e.g. colleague@simuflux.com"
+                required
+              />
+            </div>
 
-        {inviteSuccess && (
-          <div className="mt-4 p-3 border border-white/10 bg-white/5 text-green-400 font-mono text-xs max-w-xl">
-            {inviteSuccess}
-          </div>
-        )}
+            <div className="w-full">
+              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                Password (min 6 characters)
+              </label>
+              <input
+                type="password"
+                value={invitePassword}
+                onChange={(e) => setInvitePassword(e.target.value)}
+                className="w-full bg-navy/80 border border-hairline px-4 py-3.5 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
+                placeholder="Enter password"
+                required
+                minLength={6}
+              />
+            </div>
 
-        {/* Development Helper link */}
-        {devInviteLink && (
-          <div className="mt-4 p-4 border border-dashed border-accent/40 bg-accent/5 font-mono text-xs space-y-2 max-w-xl">
-            <p className="text-accent font-bold">DEVELOPMENT NOTICE: Resend API Key is missing.</p>
-            <p className="text-steelblue">Use the link below to finalize this account manually:</p>
-            <a 
-              href={devInviteLink} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="text-offwhite underline break-all hover:text-accent"
+            <div className="w-full">
+              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={inviteConfirmPassword}
+                onChange={(e) => setInviteConfirmPassword(e.target.value)}
+                className="w-full bg-navy/80 border border-hairline px-4 py-3.5 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
+                placeholder="Confirm password"
+                required
+                minLength={6}
+              />
+            </div>
+            
+            <button
+              type="submit"
+              disabled={inviteLoading}
+              className="w-full sm:w-auto bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-4 border border-transparent transition-colors disabled:opacity-50 select-none shadow-lg hover:shadow-accent/25"
             >
-              {devInviteLink}
-            </a>
-          </div>
-        )}
+              {inviteLoading ? 'Creating...' : 'Create Admin Account'}
+            </button>
+          </form>
+
+          {inviteError && (
+            <div className="mt-4 p-3 border border-accent bg-accent/5 text-offwhite font-mono text-xs max-w-xl">
+              {inviteError}
+            </div>
+          )}
+
+          {inviteSuccess && (
+            <div className="mt-4 p-3 border border-white/10 bg-white/5 text-green-400 font-mono text-xs max-w-xl">
+              {inviteSuccess}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Admins Directory */}
@@ -176,37 +208,40 @@ export default function ManageAdminsPage() {
           </div>
         ) : (
           <>
-            <div className="border border-hairline overflow-x-auto bg-navy/40">
-              <table className="w-full text-left font-sans text-sm border-collapse">
-                <thead>
-                  <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
-                    <th className="p-4">Administrator Email</th>
-                    <th className="p-4 w-40">Status</th>
-                    <th className="p-4 w-52">Creation Date</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-hairline/60">
-                  {paginatedAdmins.map((admin) => (
-                    <tr key={admin._id} className="hover:bg-white/[0.01] transition-all">
-                      <td className="p-4 font-semibold text-offwhite">{admin.email}</td>
-                      <td className="p-4">
-                        {admin.isVerified ? (
-                          <span className="font-mono text-2xs uppercase px-2.5 py-1 bg-green-500/10 text-green-400 border border-green-500/20">
-                            Active
-                          </span>
-                        ) : (
-                          <span className="font-mono text-2xs uppercase px-2.5 py-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
-                            Invited
-                          </span>
-                        )}
-                      </td>
-                      <td className="p-4 font-mono text-xs text-steelblue">
-                        {new Date(admin.createdAt).toLocaleDateString()}
-                      </td>
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/5 to-accent/5 rounded-lg opacity-30 blur-sm" />
+              <div className="relative border border-hairline overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-2xl shadow-black/20">
+                <table className="w-full text-left font-sans text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
+                      <th className="p-4">Administrator Email</th>
+                      <th className="p-4 w-40">Status</th>
+                      <th className="p-4 w-52">Creation Date</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-hairline/60">
+                    {paginatedAdmins.map((admin) => (
+                      <tr key={admin._id} className="hover:bg-white/[0.02] hover:shadow-inner transition-all duration-200">
+                        <td className="p-4 font-semibold text-offwhite">{admin.email}</td>
+                        <td className="p-4">
+                          {admin.isVerified ? (
+                            <span className="font-mono text-2xs uppercase px-2.5 py-1 bg-green-500/10 text-green-400 border border-green-500/20 shadow-lg shadow-green-500/10">
+                              Active
+                            </span>
+                          ) : (
+                            <span className="font-mono text-2xs uppercase px-2.5 py-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 shadow-lg shadow-yellow-500/10">
+                              Invited
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-4 font-mono text-xs text-steelblue">
+                          {new Date(admin.createdAt).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
             {totalPages > 1 && (
               <div className="flex justify-between items-center pt-6 font-mono text-xs">
