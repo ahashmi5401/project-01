@@ -8,8 +8,8 @@ import { ObjectId } from 'mongodb';
 export async function PUT(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
     const { id } = params;
@@ -68,8 +68,8 @@ export async function PUT(req, { params }) {
 export async function DELETE(req, { params }) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
     const { id } = params;

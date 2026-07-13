@@ -23,8 +23,8 @@ export async function GET() {
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
     const body = await req.json();

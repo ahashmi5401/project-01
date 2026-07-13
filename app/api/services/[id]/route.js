@@ -20,9 +20,9 @@ export async function PUT(req, { params }) {
     console.log('[SERVICES PUT] Starting update request');
     const session = await getServerSession(authOptions);
     console.log('[SERVICES PUT] Session:', session ? 'Found' : 'Not found', session);
-    if (!session) {
-      console.log('[SERVICES PUT] Unauthorized - no session');
-      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      console.log('[SERVICES PUT] Unauthorized - no session or not admin');
+      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
     const { id } = params;
@@ -90,9 +90,9 @@ export async function DELETE(req, { params }) {
     console.log('[SERVICES DELETE] Starting delete request');
     const session = await getServerSession(authOptions);
     console.log('[SERVICES DELETE] Session:', session ? 'Found' : 'Not found', session);
-    if (!session) {
-      console.log('[SERVICES DELETE] Unauthorized - no session');
-      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 401 });
+    if (!session || session.user.role !== 'admin') {
+      console.log('[SERVICES DELETE] Unauthorized - no session or not admin');
+      return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
     const { id } = params;
