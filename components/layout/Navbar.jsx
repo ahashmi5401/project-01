@@ -36,29 +36,29 @@ export default function Navbar() {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-navy border-b border-hairline py-4'
+          ? 'bg-navy/95 backdrop-blur-sm border-b border-hairline shadow-elevation-sm py-4'
           : 'bg-transparent py-6'
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="group flex items-center gap-1.5 select-none">
-          <span className="font-sans font-bold text-xl uppercase tracking-wider text-offwhite transition-colors group-hover:text-steelblue">
+        <Link href="/" className="group flex items-center gap-2 select-none">
+          <span className="font-sans font-bold text-h1 uppercase tracking-wider text-offwhite transition-colors group-hover:text-steelblue">
             SimuFlux
           </span>
-          <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+          <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse shadow-elevation-sm" />
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-wider">
+        <div className="hidden md:flex items-center gap-lg font-mono text-label uppercase tracking-wider">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
                 key={link.name}
                 href={link.href}
-                className={`relative py-1 transition-colors hover:text-offwhite ${
-                  isActive ? 'text-accent' : 'text-steelblue'
+                className={`relative py-2 px-sm transition-colors hover:text-offwhite rounded ${
+                  isActive ? 'text-accent bg-accent/5' : 'text-steelblue'
                 }`}
               >
                 {link.name}

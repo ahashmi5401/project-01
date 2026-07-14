@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 export default function InquiryModal({ isOpen, onClose, targetName, targetType }) {
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [mounted, setMounted] = useState(false);
 
   const [status, setStatus] = useState({
@@ -27,6 +28,8 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
     const tempErrors = {};
     if (!name.trim()) tempErrors.name = 'Name is required.';
     if (!phone.trim()) tempErrors.phone = 'Phone number is required.';
+    if (!email.trim()) tempErrors.email = 'Email is required.';
+    if (email.trim() && !/\S+@\S+\.\S+/.test(email)) tempErrors.email = 'Invalid email address.';
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -41,7 +44,7 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
       const res = await fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, targetName, targetType }),
+        body: JSON.stringify({ name, phone, email, targetName, targetType }),
       });
 
       const data = await res.json();
@@ -167,6 +170,22 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
                 required
               />
               {errors.phone && <span className="font-mono text-[9px] text-accent mt-1 block">{errors.phone}</span>}
+            </div>
+
+            <div>
+              <label htmlFor="email" className="block font-mono text-[10px] uppercase tracking-wider text-steelblue mb-2">
+                Email Address *
+              </label>
+              <input
+                id="email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={`w-full bg-navy/60 border ${errors.email ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent text-sm`}
+                placeholder="e.g. john@example.com"
+                required
+              />
+              {errors.email && <span className="font-mono text-[9px] text-accent mt-1 block">{errors.email}</span>}
             </div>
 
 

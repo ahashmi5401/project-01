@@ -4,6 +4,7 @@ import { uploadImage } from '@/lib/upload';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { Resend } from 'resend';
 import { google } from 'googleapis';
+import { calculatePricing, getDiscountSourceLabel } from '@/lib/pricingEngine';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -111,23 +112,23 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Selected courses could not be found in the database.' }, { status: 400 });
     }
 
-    const actualSubtotal = dbCourses.reduce((sum, c) => sum + (c.price || 0), 0);
-    const courseCount = dbCourses.length;
+    // Fetch combo deals and discount tiers from MongoDB
+    const [dbComboDeals, dbTiers] = await Promise.all([
+      db.collection('comboDeals').find({}).toArray(),
+      db.collection('discountTiers').find({}).toArray()
+    ]);
 
-    // Fetch discount tiers from MongoDB to recalculate actual savings
-    const dbTiers = await db.collection('discountTiers')
-      .find({})
-      .toArray();
-
-    let discountPercent = 0;
-    for (const tier of dbTiers) {
-      if (courseCount >= tier.minCourses && tier.discountPercent > discountPercent) {
-        discountPercent = tier.discountPercent;
-      }
-    }
-
-    const discountAmount = (actualSubtotal * discountPercent) / 100;
-    const totalPrice = actualSubtotal - discountAmount;
+    // Use shared pricing engine for calculation
+    // Note: calculatePricing normalizes IDs to strings internally, so no pre-conversion needed
+    const pricing = calculatePricing(dbCourses, dbComboDeals, dbTiers);
+    const {
+      subtotal: actualSubtotal,
+      discountPercent,
+      discountAmount,
+      totalPrice,
+      discountSource,
+      discountReason,
+    } = pricing;
 
     // --- 5. Save full record to MongoDB ---
     const registrationRecord = {

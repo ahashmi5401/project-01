@@ -101,9 +101,23 @@ export default async function CourseDetailPage({ params }) {
                   ● Delivered Online
                 </span>
                 {displayCourse.price && (
-                  <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-offwhite border border-white/20 bg-white/5 px-3 py-1">
-                    PKR {displayCourse.price.toLocaleString()}
-                  </span>
+                  <>
+                    {displayCourse.discountPercent && displayCourse.discountPercent > 0 ? (
+                      <>
+                        <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-steelblue/60 line-through border border-white/10 bg-white/5 px-3 py-1">
+                          PKR {displayCourse.price.toLocaleString()}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-accent border border-accent/25 bg-accent/5 px-3 py-1">
+                          PKR {Math.round(displayCourse.price * (1 - displayCourse.discountPercent / 100)).toLocaleString()}
+                          <span className="text-accent/70">({displayCourse.discountPercent}% OFF)</span>
+                        </span>
+                      </>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 font-mono text-xs uppercase tracking-wider text-offwhite border border-white/20 bg-white/5 px-3 py-1">
+                        PKR {displayCourse.price.toLocaleString()}
+                      </span>
+                    )}
+                  </>
                 )}
               </div>
             </div>
@@ -180,6 +194,143 @@ export default async function CourseDetailPage({ params }) {
               </div>
             </AnimatedReveal>
           </div>
+        </div>
+
+        {/* Additional Course Details Sections */}
+        <div className="space-y-16">
+          
+          {/* Duration Section */}
+          {displayCourse.duration && (displayCourse.duration.totalDuration || displayCourse.duration.classesPerWeek || displayCourse.duration.classDurationHours) && (
+            <AnimatedReveal delay={0.25}>
+              <div className="border-t border-hairline pt-12">
+                <h2 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-6">
+                  [ COURSE DURATION ]
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {displayCourse.duration.totalDuration && (
+                    <div className="bg-navy/50 border border-hairline rounded-lg p-6">
+                      <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Total Duration</p>
+                      <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.duration.totalDuration}</p>
+                    </div>
+                  )}
+                  {displayCourse.duration.classesPerWeek && (
+                    <div className="bg-navy/50 border border-hairline rounded-lg p-6">
+                      <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Classes Per Week</p>
+                      <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.duration.classesPerWeek}</p>
+                    </div>
+                  )}
+                  {displayCourse.duration.classDurationHours && (
+                    <div className="bg-navy/50 border border-hairline rounded-lg p-6">
+                      <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Class Duration</p>
+                      <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.duration.classDurationHours} Hours</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </AnimatedReveal>
+          )}
+
+          {/* Curriculum Section */}
+          {displayCourse.curriculum && displayCourse.curriculum.length > 0 && (
+            <AnimatedReveal delay={0.3}>
+              <div className="border-t border-hairline pt-12">
+                <h2 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-6">
+                  [ COURSE CURRICULUM ]
+                </h2>
+                <div className="bg-navy/30 border border-hairline rounded-lg p-8">
+                  <ul className="space-y-3">
+                    {displayCourse.curriculum.map((item, idx) => (
+                      <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-steelblue leading-relaxed">
+                        <span className="text-accent mt-1 select-none font-bold">{idx + 1}.</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </AnimatedReveal>
+          )}
+
+          {/* Features Section */}
+          {displayCourse.features && displayCourse.features.length > 0 && (
+            <AnimatedReveal delay={0.35}>
+              <div className="border-t border-hairline pt-12">
+                <h2 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-6">
+                  [ COURSE FEATURES ]
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {displayCourse.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-3 bg-navy/30 border border-hairline rounded-lg px-5 py-4">
+                      <span className="text-accent text-lg">✓</span>
+                      <span className="font-sans text-sm text-offwhite">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </AnimatedReveal>
+          )}
+
+          {/* Target Audience Section */}
+          {displayCourse.targetAudience && (
+            <AnimatedReveal delay={0.4}>
+              <div className="border-t border-hairline pt-12">
+                <h2 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-6">
+                  [ TARGET AUDIENCE ]
+                </h2>
+                <div className="bg-navy/30 border border-hairline rounded-lg p-8">
+                  <p className="font-sans text-base sm:text-lg text-steelblue leading-relaxed whitespace-pre-wrap">
+                    {displayCourse.targetAudience}
+                  </p>
+                </div>
+              </div>
+            </AnimatedReveal>
+          )}
+
+          {/* Instructor Section */}
+          {displayCourse.instructor && (displayCourse.instructor.name || displayCourse.instructor.qualification) && (
+            <AnimatedReveal delay={0.45}>
+              <div className="border-t border-hairline pt-12">
+                <h2 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-6">
+                  [ INSTRUCTOR DETAILS ]
+                </h2>
+                <div className="bg-navy/30 border border-hairline rounded-lg p-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {displayCourse.instructor.name && (
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Instructor Name</p>
+                        <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.instructor.name}</p>
+                      </div>
+                    )}
+                    {displayCourse.instructor.qualification && (
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Qualification</p>
+                        <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.instructor.qualification}</p>
+                      </div>
+                    )}
+                    {displayCourse.instructor.experienceYears && (
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Experience</p>
+                        <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.instructor.experienceYears} Years</p>
+                      </div>
+                    )}
+                    {displayCourse.instructor.trainerSince && (
+                      <div>
+                        <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Training Since</p>
+                        <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.instructor.trainerSince}</p>
+                      </div>
+                    )}
+                    {displayCourse.instructor.contact && (
+                      <div className="md:col-span-2">
+                        <p className="font-mono text-xs uppercase tracking-wider text-steelblue mb-2">Contact</p>
+                        <p className="font-sans text-lg text-offwhite font-semibold">{displayCourse.instructor.contact}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </AnimatedReveal>
+          )}
+
         </div>
 
       </div>

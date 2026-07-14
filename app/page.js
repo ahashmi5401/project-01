@@ -33,6 +33,20 @@ async function getHomeData() {
       .sort({ minCourses: 1 })
       .toArray();
 
+    const comboDealsData = await db.collection('comboDeals')
+      .find({})
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    // Filter out expired discounts and combo deals
+    const now = new Date();
+    const activeDiscountTiers = discountTiersData.filter(tier => 
+      !tier.expiryDate || new Date(tier.expiryDate) > now
+    );
+    const activeComboDeals = comboDealsData.filter(deal =>
+      !deal.expiryDate || new Date(deal.expiryDate) > now
+    );
+
     // Serialize ObjectIds for Client Components
     const services = servicesData.map(s => ({
       ...s,
@@ -48,22 +62,30 @@ async function getHomeData() {
       updatedAt: c.updatedAt ? c.updatedAt.toISOString() : null,
     }));
 
-    const discountTiers = discountTiersData.map(t => ({
+    const discountTiers = activeDiscountTiers.map(t => ({
       ...t,
       _id: t._id.toString(),
       createdAt: t.createdAt ? t.createdAt.toISOString() : null,
       updatedAt: t.updatedAt ? t.updatedAt.toISOString() : null,
     }));
 
-    return { services, courses, discountTiers };
+    const comboDeals = activeComboDeals.map(d => ({
+      ...d,
+      _id: d._id.toString(),
+      courseIds: (d.courseIds || []).map(String),
+      createdAt: d.createdAt ? d.createdAt.toISOString() : null,
+      updatedAt: d.updatedAt ? d.updatedAt.toISOString() : null,
+    }));
+
+    return { services, courses, discountTiers, comboDeals };
   } catch (error) {
     console.error('Failed to fetch home page data from database:', error);
-    return { services: [], courses: [], discountTiers: [] };
+    return { services: [], courses: [], discountTiers: [], comboDeals: [] };
   }
 }
 
 export default async function Home() {
-  const { services, courses, discountTiers } = await getHomeData();
+  const { services, courses, discountTiers, comboDeals } = await getHomeData();
 
   // LocalBusiness JSON-LD for Local SEO
   const localBusinessJsonLd = {
@@ -127,7 +149,7 @@ export default async function Home() {
       <StatsBar />
       <ScopeList services={services} />
       <CoursesPreview courses={courses} />
-      <DiscountPromo discountTiers={discountTiers} />
+      <DiscountPromo discountTiers={discountTiers} comboDeals={comboDeals} />
     </>
   );
 }

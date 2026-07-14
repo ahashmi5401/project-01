@@ -39,11 +39,14 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { title, description, image, id, price, points } = body;
+    const { title, description, image, id, price, discountPercent, points, curriculum, duration, features, targetAudience, instructor } = body;
 
     // Validation
     if (!title?.trim() || !description?.trim()) {
       return NextResponse.json({ error: 'Title and description are required.' }, { status: 400 });
+    }
+    if (discountPercent !== undefined && (isNaN(discountPercent) || discountPercent < 0 || discountPercent > 100)) {
+      return NextResponse.json({ error: 'Discount percent must be between 0 and 100.' }, { status: 400 });
     }
 
     const { db } = await connectToDatabase();
@@ -58,6 +61,14 @@ export async function POST(req) {
 
     const slug = generateSlug(title);
 
+    // Verify ID uniqueness (if custom ID provided)
+    if (courseId) {
+      const existingById = await db.collection('courses').findOne({ id: courseId });
+      if (existingById) {
+        return NextResponse.json({ error: `A course with ID "${courseId}" already exists.` }, { status: 400 });
+      }
+    }
+
     // Verify slug uniqueness
     const existing = await db.collection('courses').findOne({ slug });
     if (existing) {
@@ -70,8 +81,14 @@ export async function POST(req) {
       title: title.trim(),
       description: description.trim(),
       price: price ? Number(price) : 0,
+      discountPercent: discountPercent !== undefined ? Number(discountPercent) : 0,
       points: Array.isArray(points) ? points.map(p => p.trim()).filter(Boolean) : [],
       image: image || '/images/courses/placeholder.jpg',
+      curriculum: Array.isArray(curriculum) ? curriculum.map(c => c.trim()).filter(Boolean) : [],
+      duration: duration || { totalDuration: '', classesPerWeek: 0, classDurationHours: 0 },
+      features: Array.isArray(features) ? features : [],
+      targetAudience: targetAudience || '',
+      instructor: instructor || { name: '', experienceYears: '', qualification: '', trainerSince: '', contact: '' },
       createdAt: new Date(),
       updatedAt: new Date()
     };

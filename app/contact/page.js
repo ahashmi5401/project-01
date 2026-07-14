@@ -18,41 +18,41 @@ export default function ContactPage() {
         
         {/* Header Block */}
         <AnimatedReveal>
-          <div className="border-b border-hairline pb-8 mb-16">
+          <div className="border-b border-hairline pb-xl mb-4xl">
             <SectionEyebrow text="Get In Touch" />
-            <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-offwhite uppercase tracking-tight">
+            <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
               Contact SimuFlux
             </h1>
           </div>
         </AnimatedReveal>
 
         {/* Form and info grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
           
           {/* Info Column */}
-          <div className="lg:col-span-5 space-y-8 font-sans">
+          <div className="lg:col-span-5 space-y-3xl sm:space-y-4xl font-sans">
             <AnimatedReveal delay={0.1}>
-              <div className="space-y-4">
-                <h2 className="font-sans font-bold text-xl sm:text-2xl text-offwhite">
+              <div className="space-y-xl">
+                <h2 className="font-sans font-bold text-h2 sm:text-h3 text-offwhite">
                   Project Inquiries & Enrollment
                 </h2>
-                <p className="text-base text-steelblue leading-relaxed">
+                <p className="text-body text-steelblue leading-relaxed">
                   Have a project in mind, or want to ask about a course? Send a message below or reach us directly on WhatsApp.
                 </p>
               </div>
             </AnimatedReveal>
 
             <AnimatedReveal delay={0.2}>
-              <div className="border border-hairline bg-white/5 p-6 space-y-6 font-mono text-xs">
-                <div className="space-y-1">
+              <div className="border border-hairline bg-white/5 p-xl space-y-xl font-mono text-label shadow-elevation-sm rounded">
+                <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ INQUIRY TIMELINE ]</span>
                   <span className="text-steelblue">Average response latency: &lt; 24 Hours</span>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ ENVELOPE PARAMETERS ]</span>
                   <span className="text-steelblue">Email: info@simuflux.com</span>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ PHYSICAL STATION ]</span>
                   <span className="text-steelblue">Karachi, Pakistan</span>
                 </div>
@@ -60,8 +60,8 @@ export default function ContactPage() {
             </AnimatedReveal>
 
             <AnimatedReveal delay={0.3}>
-              <div className="space-y-4">
-                <p className="text-xs font-mono uppercase tracking-wider text-steelblue">
+              <div className="space-y-xl">
+                <p className="text-label font-mono uppercase tracking-wider text-steelblue">
                   Direct connection line:
                 </p>
                 <WhatsAppButton 

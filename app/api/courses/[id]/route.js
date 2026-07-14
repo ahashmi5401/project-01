@@ -32,11 +32,14 @@ export async function PUT(req, { params }) {
 
     const body = await req.json();
     console.log('[COURSES PUT] Request body:', body);
-    const { title, description, image, id: courseNum, price, points } = body;
+    const { title, description, image, id: courseNum, price, discountPercent, points, curriculum, duration, features, targetAudience, instructor } = body;
 
     // Validation
     if (!title?.trim() || !description?.trim()) {
       return NextResponse.json({ error: 'Title and description are required.' }, { status: 400 });
+    }
+    if (discountPercent !== undefined && (isNaN(discountPercent) || discountPercent < 0 || discountPercent > 100)) {
+      return NextResponse.json({ error: 'Discount percent must be between 0 and 100.' }, { status: 400 });
     }
 
     const { db } = await connectToDatabase();
@@ -65,9 +68,15 @@ export async function PUT(req, { params }) {
       slug,
       description: description.trim(),
       price: price ? Number(price) : 0,
+      discountPercent: discountPercent !== undefined ? Number(discountPercent) : (course.discountPercent || 0),
       points: Array.isArray(points) ? points.map(p => p.trim()).filter(Boolean) : [],
       image: image || course.image,
       id: courseNum || course.id,
+      curriculum: Array.isArray(curriculum) ? curriculum.map(c => c.trim()).filter(Boolean) : [],
+      duration: duration || course.duration || { totalDuration: '', classesPerWeek: 0, classDurationHours: 0 },
+      features: Array.isArray(features) ? features : [],
+      targetAudience: targetAudience !== undefined ? targetAudience : (course.targetAudience || ''),
+      instructor: instructor || course.instructor || { name: '', experienceYears: '', qualification: '', trainerSince: '', contact: '' },
       updatedAt: new Date()
     };
 

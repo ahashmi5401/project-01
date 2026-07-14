@@ -22,23 +22,23 @@ function AdminLayoutContent({ children }) {
   return (
     <div className="min-h-screen bg-navy text-offwhite flex flex-col">
       {/* Admin Nav Header */}
-      <header className="border-b border-hairline bg-navy/80 backdrop-blur-md sticky top-0 z-30 px-6 py-4">
+      <header className="border-b border-hairline bg-navy/95 backdrop-blur-sm shadow-elevation-sm sticky top-0 z-30 px-6 py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-6">
-            <Link href="/admin" className="font-sans font-bold text-lg text-offwhite uppercase tracking-wider hover:text-accent transition-colors">
+          <div className="flex items-center gap-lg">
+            <Link href="/admin" className="font-sans font-bold text-h1 text-offwhite uppercase tracking-wider hover:text-accent transition-colors">
               SimuFlux Admin
             </Link>
             
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6 font-mono text-xs uppercase tracking-wider">
+            <nav className="hidden md:flex items-center gap-lg font-mono text-label uppercase tracking-wider">
               {navLinks.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`relative py-1 transition-colors hover:text-accent ${
-                      isActive ? 'text-accent' : 'text-steelblue'
+                    className={`relative py-2 px-sm transition-colors hover:text-accent rounded ${
+                      isActive ? 'text-accent bg-accent/5' : 'text-steelblue'
                     }`}
                   >
                     {link.name}
@@ -55,13 +55,13 @@ function AdminLayoutContent({ children }) {
             </nav>
           </div>
 
-          <div className="flex items-center gap-4 font-mono text-xs">
+          <div className="flex items-center gap-md font-mono text-label">
             <span className="text-steelblue/60 hidden lg:inline">
               User: <strong className="text-offwhite">{session?.user?.email}</strong>
             </span>
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
-              className="border border-accent/20 px-4 py-2 hover:bg-accent/10 text-accent transition-colors uppercase tracking-wider"
+              className="border border-accent/20 px-lg py-sm hover:bg-accent/10 text-accent transition-colors uppercase tracking-wider rounded shadow-elevation-sm hover:shadow-elevation-md"
             >
               Sign Out
             </button>
@@ -94,7 +94,7 @@ function AdminLayoutContent({ children }) {
             transition={{ duration: 0.2 }}
             className="md:hidden bg-navy border-b border-hairline overflow-hidden"
           >
-            <div className="flex flex-col px-6 pt-2 pb-6 gap-4 font-mono text-xs uppercase tracking-wider border-t border-hairline mt-4">
+            <div className="flex flex-col px-6 pt-2 pb-6 gap-md font-mono text-label uppercase tracking-wider border-t border-hairline mt-4">
               {navLinks.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 return (
@@ -111,7 +111,7 @@ function AdminLayoutContent({ children }) {
                 );
               })}
               <div className="pt-2 border-t border-hairline/40">
-                <span className="text-steelblue/60 text-xs">
+                <span className="text-steelblue/60 text-label">
                   User: <strong className="text-offwhite">{session?.user?.email}</strong>
                 </span>
               </div>
@@ -121,7 +121,7 @@ function AdminLayoutContent({ children }) {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-grow max-w-7xl w-full mx-auto px-6 py-10 relative z-10">
+      <main className="flex-grow max-w-7xl w-full mx-auto px-6 py-4xl relative z-10">
         {children}
       </main>
     </div>

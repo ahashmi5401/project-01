@@ -50,7 +50,7 @@ export default function AdminDashboardHome() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 font-mono text-xs text-steelblue animate-pulse">
+      <div className="flex flex-col items-center justify-center py-4xl font-mono text-label text-steelblue animate-pulse">
         <span>INITIALIZING DASHBOARD SYSTEM...</span>
       </div>
     );
@@ -58,57 +58,57 @@ export default function AdminDashboardHome() {
 
   if (error) {
     return (
-      <div className="border border-accent bg-accent/5 p-6 font-mono text-xs text-offwhite">
+      <div className="border border-accent bg-accent/5 p-xl font-mono text-label text-offwhite shadow-elevation-sm rounded">
         ERROR: {error}
       </div>
     );
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-4xl">
       {/* Welcome Banner */}
-      <div className="relative border-b border-hairline pb-8">
+      <div className="relative border-b border-hairline pb-xl">
         <div className="absolute inset-0 bg-gradient-to-r from-accent/5 via-transparent to-transparent pointer-events-none" />
         <div className="relative">
-          <span className="font-mono text-xs uppercase tracking-widest text-accent block mb-2">
+          <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
             [ DASHBOARD MODULE OVERVIEW ]
           </span>
-          <h1 className="font-sans font-bold text-3xl sm:text-4xl text-offwhite uppercase tracking-tight">
+          <h1 className="font-sans font-bold text-h2 sm:text-h1 text-offwhite uppercase tracking-tight">
             Control Panel
           </h1>
-          <p className="font-sans text-sm sm:text-base text-steelblue leading-relaxed mt-2 max-w-2xl">
+          <p className="font-sans text-body sm:text-h3 text-steelblue leading-relaxed mt-md max-w-2xl">
             Welcome to the SimuFlux control panel. Use the modules below to modify live services, schedule/manage training courses, or invite administrative accounts.
           </p>
         </div>
       </div>
 
       {/* Grid Modules */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-xl">
         {/* Services Module */}
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/20 to-accent/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-          <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-8 flex flex-col justify-between h-full shadow-2xl shadow-black/20 hover:shadow-accent/10 transition-all duration-300">
-            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
+          <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-xl flex flex-col justify-between h-full shadow-elevation-sm hover:shadow-elevation-md transition-all duration-300 rounded-lg">
+            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none rounded-tr-lg" />
             
             <div>
-              <div className="flex justify-between items-center mb-6">
-                <span className="font-mono text-xs uppercase tracking-wider text-steelblue">Module 01</span>
+              <div className="flex justify-between items-center mb-lg">
+                <span className="font-mono text-label uppercase tracking-wider text-steelblue">Module 01</span>
                 <div className="relative">
                   <div className="absolute -inset-1 bg-accent/20 blur-md rounded-full opacity-50" />
-                  <span className="relative font-mono text-3xl font-bold text-accent">{stats.servicesCount}</span>
+                  <span className="relative font-mono text-h1 font-bold text-accent">{stats.servicesCount}</span>
                 </div>
               </div>
-              <h3 className="font-sans font-bold text-xl text-offwhite mb-3 group-hover:text-accent transition-colors duration-300">
+              <h3 className="font-sans font-bold text-h3 text-offwhite mb-sm group-hover:text-accent transition-colors duration-300">
                 Consultancy Services
               </h3>
-              <p className="font-sans text-xs sm:text-sm text-steelblue leading-relaxed mb-8">
+              <p className="font-sans text-caption text-steelblue leading-relaxed mb-lg">
                 Manage engineering disciplines, short summaries, specifications details, and technical thumbnail imagery rendered on the public website.
               </p>
             </div>
 
             <Link
               href="/admin/services"
-              className="w-full text-center bg-gradient-to-r from-accent/10 to-accent/5 hover:from-accent hover:to-accent/90 border border-accent/30 hover:border-accent font-mono uppercase tracking-wider text-xs py-3.5 transition-all duration-300 block text-accent hover:text-offwhite shadow-lg hover:shadow-accent/25"
+              className="w-full text-center bg-gradient-to-r from-accent/10 to-accent/5 hover:from-accent hover:to-accent/90 border border-accent/30 hover:border-accent font-mono uppercase tracking-wider text-label py-sm transition-all duration-300 block text-accent hover:text-offwhite shadow-elevation-sm hover:shadow-elevation-md rounded"
             >
               Manage Services
             </Link>
@@ -118,28 +118,28 @@ export default function AdminDashboardHome() {
         {/* Courses Module */}
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/20 to-accent/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-          <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-8 flex flex-col justify-between h-full shadow-2xl shadow-black/20 hover:shadow-accent/10 transition-all duration-300">
-            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
+          <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-xl flex flex-col justify-between h-full shadow-elevation-sm hover:shadow-elevation-md transition-all duration-300 rounded-lg">
+            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none rounded-tr-lg" />
             
             <div>
-              <div className="flex justify-between items-center mb-6">
-                <span className="font-mono text-xs uppercase tracking-wider text-steelblue">Module 02</span>
+              <div className="flex justify-between items-center mb-lg">
+                <span className="font-mono text-label uppercase tracking-wider text-steelblue">Module 02</span>
                 <div className="relative">
                   <div className="absolute -inset-1 bg-accent/20 blur-md rounded-full opacity-50" />
-                  <span className="relative font-mono text-3xl font-bold text-accent">{stats.coursesCount}</span>
+                  <span className="relative font-mono text-h1 font-bold text-accent">{stats.coursesCount}</span>
                 </div>
               </div>
-              <h3 className="font-sans font-bold text-xl text-offwhite mb-3 group-hover:text-accent transition-colors duration-300">
+              <h3 className="font-sans font-bold text-h3 text-offwhite mb-sm group-hover:text-accent transition-colors duration-300">
                 Training Courses
               </h3>
-              <p className="font-sans text-xs sm:text-sm text-steelblue leading-relaxed mb-8">
+              <p className="font-sans text-caption text-steelblue leading-relaxed mb-lg">
                 Manage curriculum listings, descriptions, and thumbnails for software courses. Active courses populate the public registration dropdown.
               </p>
             </div>
 
             <Link
               href="/admin/courses"
-              className="w-full text-center bg-gradient-to-r from-accent/10 to-accent/5 hover:from-accent hover:to-accent/90 border border-accent/30 hover:border-accent font-mono uppercase tracking-wider text-xs py-3.5 transition-all duration-300 block text-accent hover:text-offwhite shadow-lg hover:shadow-accent/25"
+              className="w-full text-center bg-gradient-to-r from-accent/10 to-accent/5 hover:from-accent hover:to-accent/90 border border-accent/30 hover:border-accent font-mono uppercase tracking-wider text-label py-sm transition-all duration-300 block text-accent hover:text-offwhite shadow-elevation-sm hover:shadow-elevation-md rounded"
             >
               Manage Courses
             </Link>
@@ -149,28 +149,28 @@ export default function AdminDashboardHome() {
         {/* Admins Module */}
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/20 to-accent/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />
-          <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-8 flex flex-col justify-between h-full shadow-2xl shadow-black/20 hover:shadow-accent/10 transition-all duration-300">
-            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
+          <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-xl flex flex-col justify-between h-full shadow-elevation-sm hover:shadow-elevation-md transition-all duration-300 rounded-lg">
+            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none rounded-tr-lg" />
             
             <div>
-              <div className="flex justify-between items-center mb-6">
-                <span className="font-mono text-xs uppercase tracking-wider text-steelblue">Module 03</span>
+              <div className="flex justify-between items-center mb-lg">
+                <span className="font-mono text-label uppercase tracking-wider text-steelblue">Module 03</span>
                 <div className="relative">
                   <div className="absolute -inset-1 bg-accent/20 blur-md rounded-full opacity-50" />
-                  <span className="relative font-mono text-3xl font-bold text-accent">{stats.adminsCount}</span>
+                  <span className="relative font-mono text-h1 font-bold text-accent">{stats.adminsCount}</span>
                 </div>
               </div>
-              <h3 className="font-sans font-bold text-xl text-offwhite mb-3 group-hover:text-accent transition-colors duration-300">
+              <h3 className="font-sans font-bold text-h3 text-offwhite mb-sm group-hover:text-accent transition-colors duration-300">
                 Administrator Accounts
               </h3>
-              <p className="font-sans text-xs sm:text-sm text-steelblue leading-relaxed mb-8">
+              <p className="font-sans text-caption text-steelblue leading-relaxed mb-lg">
                 Review current users with control console access, track account statuses, or invite new team members via verification mailer.
               </p>
             </div>
 
             <Link
               href="/admin/admins"
-              className="w-full text-center bg-gradient-to-r from-accent/10 to-accent/5 hover:from-accent hover:to-accent/90 border border-accent/30 hover:border-accent font-mono uppercase tracking-wider text-xs py-3.5 transition-all duration-300 block text-accent hover:text-offwhite shadow-lg hover:shadow-accent/25"
+              className="w-full text-center bg-gradient-to-r from-accent/10 to-accent/5 hover:from-accent hover:to-accent/90 border border-accent/30 hover:border-accent font-mono uppercase tracking-wider text-label py-sm transition-all duration-300 block text-accent hover:text-offwhite shadow-elevation-sm hover:shadow-elevation-md rounded"
             >
               Manage Admins
             </Link>

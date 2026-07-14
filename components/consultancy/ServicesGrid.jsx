@@ -23,35 +23,63 @@ export default function ServicesGrid({ services = [] }) {
   return (
     <>
       {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl mb-4xl">
         {visibleServices.map((service, index) => (
           <AnimatedReveal key={service._id || service.id} delay={index * 0.1}>
             <Link
               href={`/consultancy/${service.slug}`}
-              className="border border-hairline bg-navy/40 p-8 flex flex-col justify-between h-full transition-all duration-300 relative group cursor-pointer hover:border-accent hover:bg-white/[0.01]"
+              className="border border-hairline bg-navy/40 shadow-elevation-sm hover:shadow-elevation-md hover:border-accent/50 flex flex-col h-full transition-all duration-300 relative group cursor-pointer overflow-hidden rounded-lg"
             >
-              {/* Structural Motif: Number in Accent color */}
-              <div className="flex justify-between items-start mb-6 border-b border-hairline/60 pb-4">
-                <span className="font-mono text-xs uppercase tracking-widest text-steelblue">
-                  SERVICE REF
-                </span>
-                <span className="font-mono text-xl font-bold text-accent">
-                  {service.id}
-                </span>
-              </div>
+              {/* Image Thumbnail at Top */}
+              {service.image ? (
+                <div className="relative w-full h-48 bg-navy/50 overflow-hidden border-b border-hairline">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
+                      e.target.parentElement.innerHTML = '<div class="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40"><svg class="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5" /></svg></div>';
+                    }}
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-48 bg-navy/50 border-b border-hairline flex items-center justify-center">
+                  <div className="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
+                    <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5M12 13l8 5m-8-5l-8 5" />
+                    </svg>
+                  </div>
+                </div>
+              )}
 
-              <div className="flex-grow mb-6">
-                <h3 className="font-sans font-bold text-lg text-offwhite mb-3 group-hover:text-accent transition-colors">
-                  {service.title}
-                </h3>
-                <p className="font-sans text-sm sm:text-base text-steelblue leading-relaxed">
-                  {service.shortDescription}
-                </p>
-              </div>
+              {/* Card Content */}
+              <div className="p-xl flex flex-col flex-grow">
+                {/* Structural Motif: Number in Accent color */}
+                <div className="flex justify-between items-start mb-md border-b border-hairline/60 pb-md">
+                  <span className="font-mono text-label text-steelblue">
+                    SERVICE REF
+                  </span>
+                  <span className="font-mono text-h3 font-bold text-accent">
+                    {service.id}
+                  </span>
+                </div>
 
-              <div className="border-t border-hairline/60 pt-4 flex justify-between items-center text-xs font-mono text-steelblue/50">
-                <span>DISCIPLINE SPEC: {service.id}</span>
-                <span className="text-accent group-hover:animate-pulse">● VIEW SPEC</span>
+                <div className="flex-grow mb-lg">
+                  <h3 className="font-sans font-semibold text-h3 text-offwhite mb-sm group-hover:text-accent transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="font-sans text-body text-steelblue leading-relaxed">
+                    {service.shortDescription}
+                  </p>
+                </div>
+
+                <div className="border-t border-hairline/60 pt-lg flex justify-between items-center text-xs font-mono text-steelblue/50">
+                  <span>DISCIPLINE SPEC: {service.id}</span>
+                  <span className="text-accent group-hover:animate-pulse">● VIEW SPEC</span>
+                </div>
               </div>
             </Link>
           </AnimatedReveal>

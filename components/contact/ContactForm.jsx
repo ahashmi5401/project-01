@@ -91,28 +91,28 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="border border-hairline bg-navy/40 p-8 w-full">
+    <div className="border border-hairline bg-navy/40 shadow-elevation-sm p-xl w-full rounded-lg">
       {status.submitted ? (
-        <div className="text-center py-12">
-          <div className="w-12 h-12 border border-accent flex items-center justify-center mx-auto mb-6">
-            <svg className="w-6 h-6 text-accent fill-none stroke-current" viewBox="0 0 24 24" role="img" aria-label="Success checkmark icon">
+        <div className="text-center py-3xl">
+          <div className="w-16 h-16 border border-accent flex items-center justify-center mx-auto mb-xl shadow-elevation-sm">
+            <svg className="w-8 h-8 text-accent fill-none stroke-current" viewBox="0 0 24 24" role="img" aria-label="Success checkmark icon">
               <title>Success</title>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 className="font-sans font-bold text-xl text-offwhite mb-3">Transmission Successful</h3>
-          <p className="font-sans text-sm text-steelblue leading-relaxed max-w-sm mx-auto">
+          <h3 className="font-sans font-bold text-h2 text-offwhite mb-lg">Transmission Successful</h3>
+          <p className="font-sans text-body text-steelblue leading-relaxed max-w-sm mx-auto">
             Your message has been logged. Our engineering team will review the parameters and get back to you shortly.
           </p>
           <button
             onClick={() => setStatus((prev) => ({ ...prev, submitted: false }))}
-            className="mt-8 font-mono text-xs uppercase tracking-wider text-accent border border-accent/20 px-6 py-2.5 hover:bg-accent/5 active:bg-accent/10 transition-colors"
+            className="mt-xl font-mono text-label uppercase tracking-wider text-accent border border-accent/20 px-lg py-sm hover:bg-accent/5 active:bg-accent/10 transition-colors rounded"
           >
             Send Another Message
           </button>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-lg">
           {/* Honeypot field (hidden from real users, filled by bots) */}
           <div className="hidden" aria-hidden="true">
             <label htmlFor="website">Website</label>
@@ -128,7 +128,7 @@ export default function ContactForm() {
           </div>
 
           <div>
-            <label htmlFor="name" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+            <label htmlFor="name" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
               Name *
             </label>
             <input
@@ -138,15 +138,15 @@ export default function ContactForm() {
               value={formData.name}
               onChange={handleChange}
               className={`w-full bg-navy/60 border ${
-                errors.name ? 'border-accent' : 'border-hairline'
-              } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent transition-colors`}
+                errors.name ? 'border-accent shadow-elevation-sm' : 'border-hairline'
+              } px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded`} 
               placeholder="e.g. John Doe"
             />
-            {errors.name && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.name}</span>}
+            {errors.name && <span className="font-mono text-label text-accent mt-sm block">{errors.name}</span>}
           </div>
 
           <div>
-            <label htmlFor="email" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+            <label htmlFor="email" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
               Email Address *
             </label>
             <input
@@ -156,15 +156,15 @@ export default function ContactForm() {
               value={formData.email}
               onChange={handleChange}
               className={`w-full bg-navy/60 border ${
-                errors.email ? 'border-accent' : 'border-hairline'
-              } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent transition-colors`}
+                errors.email ? 'border-accent shadow-elevation-sm' : 'border-hairline'
+              } px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded`} 
               placeholder="e.g. john@example.com"
             />
-            {errors.email && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.email}</span>}
+            {errors.email && <span className="font-mono text-label text-accent mt-sm block">{errors.email}</span>}
           </div>
 
           <div>
-            <label htmlFor="phone" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+            <label htmlFor="phone" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
               Phone Number (Optional)
             </label>
             <input
@@ -173,13 +173,13 @@ export default function ContactForm() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full bg-navy/60 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent transition-colors"
+              className="w-full bg-navy/60 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded"
               placeholder="e.g. +92 300 1234567"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+            <label htmlFor="message" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
               Message *
             </label>
             <textarea
@@ -189,15 +189,15 @@ export default function ContactForm() {
               onChange={handleChange}
               rows="5"
               className={`w-full bg-navy/60 border ${
-                errors.message ? 'border-accent' : 'border-hairline'
-              } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent transition-colors resize-none`}
+                errors.message ? 'border-accent shadow-elevation-sm' : 'border-hairline'
+              } px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none rounded`} 
               placeholder="Outline your project scope or training inquiry..."
             />
-            {errors.message && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.message}</span>}
+            {errors.message && <span className="font-mono text-label text-accent mt-sm block">{errors.message}</span>}
           </div>
 
           {status.error && (
-            <div className="p-4 border border-accent bg-accent/5 text-offwhite font-mono text-xs">
+            <div className="p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">
               {status.error}
             </div>
           )}
@@ -205,7 +205,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={status.submitting}
-            className="w-full bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-mono uppercase tracking-wider text-sm py-4 border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none"
+            className="w-full bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-mono uppercase tracking-wider text-label py-lg border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none shadow-elevation-sm hover:shadow-elevation-md rounded"
           >
             {status.submitting ? 'Transmitting...' : 'Submit Inquiry'}
           </button>

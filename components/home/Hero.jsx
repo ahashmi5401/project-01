@@ -15,32 +15,32 @@ export default function Hero() {
   const toothHeight = 16;
 
   return (
-    <section className="relative min-h-screen pt-28 pb-16 flex items-center overflow-hidden border-b border-hairline">
+    <section className="relative min-h-screen pt-32 pb-4xl flex items-center overflow-hidden border-b border-hairline">
       {/* Grid Pattern Accent Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy/30 to-navy pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10 w-full">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-3xl items-center relative z-10 w-full">
         {/* Left Copy Column */}
         <div className="lg:col-span-7 flex flex-col justify-center">
           <SectionEyebrow text="Engineering Design & Simulation Lab" />
           
-          <h1 className="font-sans font-bold text-4xl sm:text-5xl lg:text-6xl tracking-tight text-offwhite mb-6 leading-[1.1]">
+          <h1 className="font-sans font-bold text-display sm:text-h1 lg:text-display tracking-tight text-offwhite mb-xl leading-[1.1]">
             Design.<br className="hidden sm:inline" />
             Simulate. <span className="text-accent">Innovate.</span>
           </h1>
 
-          <p className="font-sans text-base sm:text-lg text-steelblue mb-8 max-w-xl leading-relaxed">
+          <p className="font-sans text-body sm:text-h3 text-steelblue mb-xl max-w-2xl leading-relaxed">
             At Simuflux Lab, we are committed to empowering engineers, students, researchers, and industries through professional engineering training and advanced simulation solutions, bridging the gap between theory and practical industrial application.
           </p>
 
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-wrap gap-lg items-center">
             {/* Primary WhatsApp CTA Button */}
             <WhatsAppButton message="Hello SimuFlux, I would like to inquire about your engineering training and consultancy services." />
             
             {/* Secondary Outline Link */}
             <Link
               href="/consultancy"
-              className="inline-flex items-center justify-center px-6 py-3 font-mono text-xs uppercase tracking-wider text-offwhite border border-hairline hover:bg-white/5 active:bg-white/10 transition-colors"
+              className="inline-flex items-center justify-center px-xl py-sm font-mono text-label uppercase tracking-wider text-offwhite border border-hairline hover:bg-white/5 active:bg-white/10 transition-colors rounded shadow-elevation-sm hover:shadow-elevation-md"
             >
               Explore Services
             </Link>
@@ -49,12 +49,12 @@ export default function Hero() {
 
         {/* Right Programmatic Blueprint SVG Gear Column */}
         <div className="lg:col-span-5 flex justify-center items-center relative">
-          <div className="relative w-full max-w-[400px] aspect-square border border-hairline/80 bg-navy/40 p-4 select-none">
+          <div className="relative w-full max-w-[450px] aspect-square border border-hairline/80 bg-navy/40 p-lg shadow-elevation-sm hover:shadow-elevation-md transition-all duration-500 select-none">
             
             {/* Blueprint Grid Calibration Markers */}
-            <div className="absolute top-2 left-2 font-mono text-[9px] text-steelblue/50">GRID: 18mm</div>
-            <div className="absolute bottom-2 right-2 font-mono text-[9px] text-steelblue/50">DWG NO: SF-001-A</div>
-            <div className="absolute top-2 right-2 font-mono text-[9px] text-accent font-bold">SCALE: 1:1</div>
+            <div className="absolute top-4 left-4 font-mono text-label text-steelblue/50">GRID: 18mm</div>
+            <div className="absolute bottom-4 right-4 font-mono text-label text-steelblue/50">DWG NO: SF-001-A</div>
+            <div className="absolute top-4 right-4 font-mono text-label text-accent font-bold">SCALE: 1:1</div>
 
             <svg
               viewBox="0 0 400 400"
@@ -139,7 +139,7 @@ export default function Hero() {
               />
 
               {/* Rotating Gear Group */}
-              <g className="animate-spin-slow origin-center">
+              <g className="animate-spin-slow origin-center" style={{ animationDuration: '20s' }}>
                 {/* Programmatic Gear Teeth */}
                 {Array.from({ length: teethCount }).map((_, i) => {
                   const angle = (i * 360) / teethCount;

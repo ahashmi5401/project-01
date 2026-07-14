@@ -2,6 +2,7 @@ import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import PublicShell from "@/components/layout/PublicShell";
 import AuthProvider from "@/components/providers/AuthProvider";
+import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import Script from "next/script";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -46,9 +47,11 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>
       <body className="antialiased bg-navy text-offwhite min-h-screen flex flex-col justify-between">
-        <AuthProvider>
-          <PublicShell>{children}</PublicShell>
-        </AuthProvider>
+        <ErrorBoundary>
+          <AuthProvider>
+            <PublicShell>{children}</PublicShell>
+          </AuthProvider>
+        </ErrorBoundary>
         <Script 
           src="https://challenges.cloudflare.com/turnstile/v0/api.js" 
           strategy="afterInteractive"

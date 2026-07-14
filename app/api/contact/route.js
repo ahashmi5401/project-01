@@ -35,6 +35,40 @@ export async function POST(req) {
     // Send email via Resend if available
     let emailSent = false;
     if (resend) {
+      const cleanEmail = email.toLowerCase().trim();
+
+      // A. Client confirmation email
+      try {
+        await resend.emails.send({
+          from: 'SimuFlux Academy <academy@simuflux.com>',
+          to: cleanEmail,
+          subject: 'Contact Inquiry Received',
+          text: `Hello ${name.trim()},
+
+Thank you for contacting SimuFlux Design Lab.
+
+We have received your message and our team will review it. You can expect a response within 24-48 hours.
+
+In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.
+
+Best Regards,
+SimuFlux Design Lab Team`,
+          html: `
+            <h3>Contact Inquiry Received</h3>
+            <p>Hello <strong>${safeName}</strong>,</p>
+            <p>Thank you for contacting SimuFlux Design Lab.</p>
+            <p>We have received your message and our team will review it. You can expect a response within <strong>24-48 hours</strong>.</p>
+            <p>In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.</p>
+            <br/>
+            <p>Best Regards,</p>
+            <p><strong>SimuFlux Design Lab</strong> — Karachi, Pakistan</p>
+          `
+        });
+      } catch (err) {
+        console.error('Failed to send client confirmation email:', err);
+      }
+
+      // B. Admin notification email
       try {
         await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL || 'system@simuflux.com',
@@ -58,7 +92,7 @@ ${message.trim()}
         });
         emailSent = true;
       } catch (err) {
-        console.error('Failed to send contact email via Resend:', err);
+        console.error('Failed to send admin notification email:', err);
       }
     }
 

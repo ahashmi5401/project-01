@@ -100,13 +100,13 @@ export default function ManageAdminsPage() {
   };
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-4xl">
       {/* Header */}
-      <div className="border-b border-hairline pb-8">
-        <span className="font-mono text-xs uppercase tracking-widest text-accent block mb-2">
+      <div className="border-b border-hairline pb-xl">
+        <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
           [ ACCESS LEVEL CONTROLLER ]
         </span>
-        <h1 className="font-sans font-bold text-3xl text-offwhite uppercase tracking-tight">
+        <h1 className="font-sans font-bold text-h2 text-offwhite uppercase tracking-tight">
           Admin Accounts
         </h1>
       </div>
@@ -114,40 +114,40 @@ export default function ManageAdminsPage() {
       {/* Invite Form */}
       <div className="relative">
         <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg opacity-50 blur-sm" />
-        <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-8 shadow-2xl shadow-black/20">
-          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
+        <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-xl shadow-elevation-sm rounded-lg">
+          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none rounded-tr-lg" />
           
-          <h3 className="font-sans font-bold text-lg text-offwhite mb-4 border-b border-hairline/60 pb-3">
+          <h3 className="font-sans font-bold text-h3 text-offwhite mb-md border-b border-hairline/60 pb-md">
             Create New Administrator
           </h3>
-          <p className="font-sans text-xs text-steelblue leading-relaxed mb-6">
+          <p className="font-sans text-caption text-steelblue leading-relaxed mb-lg">
             Enter the email address and password for the new administrator. The account will be created immediately and ready to use.
           </p>
 
-          <form onSubmit={handleInviteSubmit} className="space-y-4">
+          <form onSubmit={handleInviteSubmit} className="space-y-lg">
             <div className="w-full">
-              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+              <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Email Address
               </label>
               <input
                 type="email"
                 value={inviteEmail}
                 onChange={(e) => setInviteEmail(e.target.value)}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3.5 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
+                className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
                 placeholder="e.g. colleague@simuflux.com"
                 required
               />
             </div>
 
             <div className="w-full">
-              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+              <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Password (min 6 characters)
               </label>
               <input
                 type="password"
                 value={invitePassword}
                 onChange={(e) => setInvitePassword(e.target.value)}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3.5 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
+                className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
                 placeholder="Enter password"
                 required
                 minLength={6}
@@ -155,14 +155,14 @@ export default function ManageAdminsPage() {
             </div>
 
             <div className="w-full">
-              <label className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+              <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Confirm Password
               </label>
               <input
                 type="password"
                 value={inviteConfirmPassword}
                 onChange={(e) => setInviteConfirmPassword(e.target.value)}
-                className="w-full bg-navy/80 border border-hairline px-4 py-3.5 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm transition-colors shadow-inner"
+                className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
                 placeholder="Confirm password"
                 required
                 minLength={6}
@@ -172,20 +172,20 @@ export default function ManageAdminsPage() {
             <button
               type="submit"
               disabled={inviteLoading}
-              className="w-full sm:w-auto bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs px-6 py-4 border border-transparent transition-colors disabled:opacity-50 select-none shadow-lg hover:shadow-accent/25"
+              className="w-full sm:w-auto bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-label px-xl py-sm border border-transparent transition-colors disabled:opacity-50 select-none shadow-elevation-sm hover:shadow-elevation-md rounded"
             >
               {inviteLoading ? 'Creating...' : 'Create Admin Account'}
             </button>
           </form>
 
           {inviteError && (
-            <div className="mt-4 p-3 border border-accent bg-accent/5 text-offwhite font-mono text-xs max-w-xl">
+            <div className="mt-lg p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">
               {inviteError}
             </div>
           )}
 
           {inviteSuccess && (
-            <div className="mt-4 p-3 border border-white/10 bg-white/5 text-green-400 font-mono text-xs max-w-xl">
+            <div className="mt-lg p-lg border border-white/10 bg-white/5 text-green-400 font-mono text-label shadow-elevation-sm rounded">
               {inviteSuccess}
             </div>
           )}
@@ -193,48 +193,48 @@ export default function ManageAdminsPage() {
       </div>
 
       {/* Admins Directory */}
-      <div className="space-y-6">
-        <h3 className="font-sans font-bold text-lg text-offwhite border-b border-hairline/60 pb-3">
+      <div className="space-y-xl">
+        <h3 className="font-sans font-bold text-h3 text-offwhite border-b border-hairline/60 pb-md">
           Console Access Directory
         </h3>
 
         {loading ? (
-          <div className="py-10 text-center font-mono text-xs text-steelblue animate-pulse">
+          <div className="py-4xl text-center font-mono text-label text-steelblue animate-pulse">
             LOADING ACCREDITATION LIST...
           </div>
         ) : admins.length === 0 ? (
-          <div className="border border-dashed border-white/10 p-12 text-center text-steelblue font-mono text-xs">
+          <div className="border border-dashed border-white/10 p-4xl text-center text-steelblue font-mono text-label rounded">
             NO ADMINISTRATORS FOUND.
           </div>
         ) : (
           <>
             <div className="relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/5 to-accent/5 rounded-lg opacity-30 blur-sm" />
-              <div className="relative border border-hairline overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-2xl shadow-black/20">
-                <table className="w-full text-left font-sans text-sm border-collapse">
+              <div className="relative border border-hairline overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-elevation-sm rounded-lg">
+                <table className="w-full text-left font-sans text-body border-collapse min-w-[600px]">
                   <thead>
-                    <tr className="border-b border-hairline bg-white/5 font-mono text-xs uppercase tracking-wider text-steelblue">
-                      <th className="p-4">Administrator Email</th>
-                      <th className="p-4 w-40">Status</th>
-                      <th className="p-4 w-52">Creation Date</th>
+                    <tr className="border-b border-hairline bg-white/5 font-mono text-label uppercase tracking-wider text-steelblue">
+                      <th className="p-lg">Administrator Email</th>
+                      <th className="p-lg w-40">Status</th>
+                      <th className="p-lg w-52">Creation Date</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-hairline/60">
                     {paginatedAdmins.map((admin) => (
-                      <tr key={admin._id} className="hover:bg-white/[0.02] hover:shadow-inner transition-all duration-200">
-                        <td className="p-4 font-semibold text-offwhite">{admin.email}</td>
-                        <td className="p-4">
+                      <tr key={admin._id} className="hover:bg-white/[0.02] transition-all duration-200">
+                        <td className="p-lg font-semibold text-offwhite">{admin.email}</td>
+                        <td className="p-lg">
                           {admin.isVerified ? (
-                            <span className="font-mono text-2xs uppercase px-2.5 py-1 bg-green-500/10 text-green-400 border border-green-500/20 shadow-lg shadow-green-500/10">
+                            <span className="font-mono text-label uppercase px-sm py-xs bg-green-500/10 text-green-400 border border-green-500/20 shadow-elevation-sm rounded">
                               Active
                             </span>
                           ) : (
-                            <span className="font-mono text-2xs uppercase px-2.5 py-1 bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 shadow-lg shadow-yellow-500/10">
+                            <span className="font-mono text-label uppercase px-sm py-xs bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 shadow-elevation-sm rounded">
                               Invited
                             </span>
                           )}
                         </td>
-                        <td className="p-4 font-mono text-xs text-steelblue">
+                        <td className="p-lg font-mono text-caption text-steelblue">
                           {new Date(admin.createdAt).toLocaleDateString()}
                         </td>
                       </tr>
@@ -244,12 +244,12 @@ export default function ManageAdminsPage() {
               </div>
             </div>
             {totalPages > 1 && (
-              <div className="flex justify-between items-center pt-6 font-mono text-xs">
+              <div className="flex justify-between items-center pt-xl font-mono text-label">
                 <button
                   type="button"
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  className="px-4 py-2 border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors"
+                  className="px-lg py-sm border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors rounded shadow-elevation-sm hover:shadow-elevation-md disabled:shadow-none"
                 >
                   &lt; Previous
                 </button>
@@ -260,7 +260,7 @@ export default function ManageAdminsPage() {
                   type="button"
                   disabled={currentPage === totalPages}
                   onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  className="px-4 py-2 border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors"
+                  className="px-lg py-sm border border-hairline hover:border-accent disabled:opacity-30 disabled:hover:border-hairline text-steelblue hover:text-offwhite transition-colors rounded shadow-elevation-sm hover:shadow-elevation-md disabled:shadow-none"
                 >
                   Next &gt;
                 </button>

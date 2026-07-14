@@ -30,6 +30,7 @@ export async function POST(req) {
     const body = await req.json();
     const minCourses = parseInt(body.minCourses, 10);
     const discountPercent = parseFloat(body.discountPercent);
+    const expiryDate = body.expiryDate ? new Date(body.expiryDate) : null;
 
     // Validation
     if (isNaN(minCourses) || minCourses < 2) {
@@ -37,6 +38,9 @@ export async function POST(req) {
     }
     if (isNaN(discountPercent) || discountPercent < 1 || discountPercent > 100) {
       return NextResponse.json({ error: 'Discount percent must be between 1 and 100.' }, { status: 400 });
+    }
+    if (expiryDate && isNaN(expiryDate.getTime())) {
+      return NextResponse.json({ error: 'Invalid expiry date.' }, { status: 400 });
     }
 
     const { db } = await connectToDatabase();
@@ -50,6 +54,7 @@ export async function POST(req) {
     const newTier = {
       minCourses,
       discountPercent,
+      expiryDate,
       createdAt: new Date(),
       updatedAt: new Date()
     };
