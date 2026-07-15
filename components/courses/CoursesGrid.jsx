@@ -30,9 +30,9 @@ export default function CoursesGrid({ courses = [] }) {
               href={`/courses/${course.slug}`}
               className="border border-hairline bg-navy/40 shadow-elevation-sm hover:shadow-elevation-md hover:border-accent/50 flex flex-col h-full transition-all duration-300 relative group cursor-pointer overflow-hidden rounded-lg min-h-[400px]"
             >
-              {/* Image Thumbnail at Top */}
+              {/* Image Thumbnail at Top - 16:9 aspect ratio */}
               {course.image ? (
-                <div className="relative w-full h-48 bg-navy/50 overflow-hidden border-b border-hairline">
+                <div className="relative w-full aspect-video bg-navy/50 overflow-hidden border-b border-hairline">
                   <img
                     src={course.image}
                     alt={course.title}
@@ -45,7 +45,7 @@ export default function CoursesGrid({ courses = [] }) {
                   />
                 </div>
               ) : (
-                <div className="w-full h-48 bg-navy/50 border-b border-hairline flex items-center justify-center">
+                <div className="w-full aspect-video bg-navy/50 border-b border-hairline flex items-center justify-center">
                   <div className="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
                     {course.id === '01' ? (
                       <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">

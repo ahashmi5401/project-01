@@ -30,9 +30,9 @@ export default function ServicesGrid({ services = [] }) {
               href={`/consultancy/${service.slug}`}
               className="border border-hairline bg-navy/40 shadow-elevation-sm hover:shadow-elevation-md hover:border-accent/50 flex flex-col h-full transition-all duration-300 relative group cursor-pointer overflow-hidden rounded-lg"
             >
-              {/* Image Thumbnail at Top */}
+              {/* Image Thumbnail at Top - 16:9 aspect ratio */}
               {service.image ? (
-                <div className="relative w-full h-48 bg-navy/50 overflow-hidden border-b border-hairline">
+                <div className="relative w-full aspect-video bg-navy/50 overflow-hidden border-b border-hairline">
                   <img
                     src={service.image}
                     alt={service.title}
@@ -45,7 +45,7 @@ export default function ServicesGrid({ services = [] }) {
                   />
                 </div>
               ) : (
-                <div className="w-full h-48 bg-navy/50 border-b border-hairline flex items-center justify-center">
+                <div className="w-full aspect-video bg-navy/50 border-b border-hairline flex items-center justify-center">
                   <div className="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
                     <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />

@@ -201,12 +201,6 @@ export default function RegistrationForm({ courses }) {
             <p className="font-sans text-sm text-steelblue leading-relaxed max-w-md mx-auto">
               {status.message}
             </p>
-            <button
-              onClick={() => setStatus((prev) => ({ ...prev, submitted: false }))}
-              className="mt-6 font-mono text-xs uppercase tracking-wider text-accent border border-accent/20 px-8 py-3 hover:bg-accent/5 active:bg-accent/10 transition-colors"
-            >
-              Enroll In Another Course
-            </button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">

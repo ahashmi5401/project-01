@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculatePricing, getCourseBadge, getDiscountSourceLabel } from '@/lib/pricingEngine';
 
-export default function RegistrationForm({ courses, discountTiers = [], comboDeals = [], initialCourse = '', isLocked = false }) {
+export default function RegistrationForm({ courses, discountTiers = [], comboDeals = [], initialCourse = '', isLocked = false, token = null }) {
   const [selectedCourses, setSelectedCourses] = useState(initialCourse ? [initialCourse] : []);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
@@ -154,6 +154,9 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
     submissionData.append('clientDiscountPercent', discountPercent);
     submissionData.append('clientTotalPrice', totalPrice);
     submissionData.append('screenshot', screenshot);
+    if (token) {
+      submissionData.append('token', token);
+    }
 
     try {
       const response = await fetch('/api/register', {
@@ -560,17 +563,6 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
           <p className="font-sans text-body text-steelblue leading-relaxed max-w-md mx-auto">
             {status.message}
           </p>
-          {!isLocked && (
-            <button
-              onClick={() => {
-                setStatus((prev) => ({ ...prev, submitted: false }));
-                setCurrentStep(1);
-              }}
-              className="mt-lg font-mono text-label uppercase tracking-wider text-accent border border-accent/20 px-xl py-sm hover:bg-accent/5 transition-colors rounded shadow-elevation-sm hover:shadow-elevation-md"
-            >
-              Register for Another Course
-            </button>
-          )}
         </div>
       ) : (
         <>

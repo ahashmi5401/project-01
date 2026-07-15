@@ -67,6 +67,8 @@ export default function ManageCoursesPage() {
   
   // Toast notifications for link copying
   const [toast, setToast] = useState(null);
+  const [registrationLinks, setRegistrationLinks] = useState({});
+  const [generatingLink, setGeneratingLink] = useState(null);
 
   useEffect(() => {
     if (toast) {
@@ -74,6 +76,44 @@ export default function ManageCoursesPage() {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  const handleGenerateLink = async (slug) => {
+    setGeneratingLink(slug);
+    try {
+      const res = await fetch('/api/registration-links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ courseSlug: slug }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+        const fullUrl = `${siteUrl}${data.registrationUrl}`;
+        await navigator.clipboard.writeText(fullUrl);
+        setToast('Registration link copied!');
+        // Refresh links for this course
+        fetchRegistrationLinks(slug);
+      } else {
+        setToast(data.error || 'Failed to generate link.');
+      }
+    } catch (err) {
+      setToast('Failed to generate link.');
+    } finally {
+      setGeneratingLink(null);
+    }
+  };
+
+  const fetchRegistrationLinks = async (slug) => {
+    try {
+      const res = await fetch(`/api/registration-links?courseSlug=${slug}`);
+      const data = await res.json();
+      if (res.ok) {
+        setRegistrationLinks(prev => ({ ...prev, [slug]: data.links }));
+      }
+    } catch (err) {
+      console.error('Failed to fetch registration links:', err);
+    }
+  };
 
   const handleCopyLink = (slug) => {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
@@ -109,6 +149,15 @@ export default function ManageCoursesPage() {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  // Fetch registration links when courses are loaded
+  useEffect(() => {
+    if (courses.length > 0) {
+      courses.forEach(course => {
+        fetchRegistrationLinks(course.slug);
+      });
+    }
+  }, [courses]);
 
   // Form Field Change
   const handleChange = (e) => {
@@ -1045,11 +1094,12 @@ export default function ManageCoursesPage() {
                           
                           <div className="flex gap-sm pt-sm border-t border-hairline/40 mt-auto">
                             <button
-                              onClick={() => handleCopyLink(course.slug)}
-                              className="flex-1 font-mono text-label uppercase tracking-wider text-green-400 border border-green-400/30 hover:bg-green-400/10 px-sm py-xs rounded transition-colors"
-                              title="Copy course registration link"
+                              onClick={() => handleGenerateLink(course.slug)}
+                              disabled={generatingLink === course.slug}
+                              className="flex-1 font-mono text-label uppercase tracking-wider text-green-400 border border-green-400/30 hover:bg-green-400/10 px-sm py-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              title="Generate single-use registration link"
                             >
-                              Copy Link
+                              {generatingLink === course.slug ? 'Generating...' : 'Generate Link'}
                             </button>
                             <button
                               onClick={() => handleEditSelect(course)}
@@ -1064,6 +1114,32 @@ export default function ManageCoursesPage() {
                               Delete
                             </button>
                           </div>
+
+                          {/* Registration Links Status */}
+                          {registrationLinks[course.slug] && registrationLinks[course.slug].length > 0 && (
+                            <div className="mt-sm pt-sm border-t border-hairline/40">
+                              <div className="font-mono text-caption uppercase tracking-wider text-steelblue mb-xs">
+                                Generated Links ({registrationLinks[course.slug].length})
+                              </div>
+                              <div className="space-y-xs max-h-24 overflow-y-auto custom-scrollbar">
+                                {registrationLinks[course.slug].slice(0, 3).map((link, idx) => (
+                                  <div key={idx} className="flex items-center justify-between text-xs">
+                                    <span className={`font-mono ${link.status === 'pending' ? 'text-green-400' : 'text-steelblue/60'}`}>
+                                      {link.status === 'pending' ? '● Pending' : '○ Used'}
+                                    </span>
+                                    <span className="font-mono text-steelblue/50">
+                                      {new Date(link.createdAt).toLocaleDateString()}
+                                    </span>
+                                  </div>
+                                ))}
+                                {registrationLinks[course.slug].length > 3 && (
+                                  <div className="font-mono text-steelblue/50 text-xs">
+                                    +{registrationLinks[course.slug].length - 3} more
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>

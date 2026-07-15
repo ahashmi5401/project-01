@@ -25,6 +25,7 @@ function formatCnic(digits) {
 }
 
 export async function POST(req) {
+  let token = null;
   try {
     const formData = await req.formData();
 
@@ -39,6 +40,7 @@ export async function POST(req) {
     const currentlyPursuing = formData.get('currentlyPursuing');
     const courses           = formData.getAll('courses');
     const screenshot        = formData.get('screenshot');
+    token                   = formData.get('token');
 
     // --- 1. Server-side validation ---
     if (
@@ -80,6 +82,31 @@ export async function POST(req) {
     const cleanEmail = email.toLowerCase().trim();
     const cleanCourses = courses.map(c => c.trim());
 
+    // --- Token validation and atomic claim (if token provided) ---
+    let tokenLink = null;
+    if (token) {
+      // Atomically check and claim the token using findOneAndUpdate
+      // This prevents race conditions - only one request can successfully claim a pending token
+      tokenLink = await db.collection('registrationLinks').findOneAndUpdate(
+        { token, status: 'pending' },
+        { 
+          $set: { 
+            status: 'used',
+            usedAt: new Date()
+          }
+        },
+        { returnDocument: 'after' }
+      );
+
+      if (!tokenLink) {
+        // Token doesn't exist or was already used
+        return NextResponse.json(
+          { error: 'This registration link has already been used or is invalid.' },
+          { status: 409 }
+        );
+      }
+    }
+
     // --- 2. Duplicate detection (same email + any of the selected courses within 24 hours) ---
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const existing = await db.collection('registrations').findOne({
@@ -89,6 +116,13 @@ export async function POST(req) {
     });
 
     if (existing) {
+      // Rollback token status if duplicate detected
+      if (token) {
+        await db.collection('registrationLinks').updateOne(
+          { token },
+          { $set: { status: 'pending', usedAt: null } }
+        );
+      }
       return NextResponse.json(
         { error: "You've already registered for one of these courses within the last 24 hours — we'll be in touch!" },
         { status: 409 }
@@ -100,6 +134,13 @@ export async function POST(req) {
     try {
       screenshotUrl = await uploadImage(screenshot, 'screenshots');
     } catch (uploadError) {
+      // Rollback token status if upload fails
+      if (token) {
+        await db.collection('registrationLinks').updateOne(
+          { token },
+          { $set: { status: 'pending', usedAt: null } }
+        );
+      }
       return NextResponse.json({ error: uploadError.message || 'Failed to upload screenshot.' }, { status: 400 });
     }
 
@@ -109,6 +150,13 @@ export async function POST(req) {
       .toArray();
 
     if (dbCourses.length === 0) {
+      // Rollback token status if courses not found
+      if (token) {
+        await db.collection('registrationLinks').updateOne(
+          { token },
+          { $set: { status: 'pending', usedAt: null } }
+        );
+      }
       return NextResponse.json({ error: 'Selected courses could not be found in the database.' }, { status: 400 });
     }
 
@@ -308,6 +356,18 @@ Google Sheets Synced:  ${sheetsSyncSuccess ? 'Yes' : 'NO — check server logs'}
 
   } catch (error) {
     console.error('Course registration endpoint error:', error);
+    // Rollback token status if unexpected error occurs
+    if (token) {
+      try {
+        const { db } = await connectToDatabase();
+        await db.collection('registrationLinks').updateOne(
+          { token },
+          { $set: { status: 'pending', usedAt: null } }
+        );
+      } catch (rollbackError) {
+        console.error('Failed to rollback token status:', rollbackError);
+      }
+    }
     return NextResponse.json({ error: 'An unexpected server error occurred. Please try again later.' }, { status: 500 });
   }
 }

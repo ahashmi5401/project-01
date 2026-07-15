@@ -1,11 +1,22 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 export default function ManageAdminsPage() {
+  const { data: session } = useSession();
   const [admins, setAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const isSuperAdmin = session?.user?.isSuperAdmin || false;
+
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    adminId: null,
+    adminEmail: ''
+  });
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,6 +40,9 @@ export default function ManageAdminsPage() {
   const [inviteLoading, setInviteLoading] = useState(false);
   const [inviteError, setInviteError] = useState(null);
   const [inviteSuccess, setInviteSuccess] = useState(null);
+
+  // Delete error state
+  const [deleteError, setDeleteError] = useState(null);
 
   const fetchAdmins = async () => {
     try {
@@ -99,6 +113,38 @@ export default function ManageAdminsPage() {
     }
   };
 
+  const handleDeleteAdmin = async (adminId, adminEmail) => {
+    setDeleteModal({
+      isOpen: true,
+      adminId,
+      adminEmail
+    });
+  };
+
+  const confirmDeleteAdmin = async () => {
+    const { adminId, adminEmail } = deleteModal;
+    setDeleteModal({ isOpen: false, adminId: null, adminEmail: '' });
+    setDeleteError(null);
+
+    try {
+      const res = await fetch('/api/admins', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminId }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        fetchAdmins();
+      } else {
+        setDeleteError(data.error || 'Failed to delete administrator.');
+      }
+    } catch (err) {
+      setDeleteError('Failed to delete admin. Connection error.');
+    }
+  };
+
   return (
     <div className="space-y-4xl">
       {/* Header */}
@@ -111,86 +157,88 @@ export default function ManageAdminsPage() {
         </h1>
       </div>
 
-      {/* Invite Form */}
-      <div className="relative">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg opacity-50 blur-sm" />
-        <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-xl shadow-elevation-sm rounded-lg">
-          <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none rounded-tr-lg" />
-          
-          <h3 className="font-sans font-bold text-h3 text-offwhite mb-md border-b border-hairline/60 pb-md">
-            Create New Administrator
-          </h3>
-          <p className="font-sans text-caption text-steelblue leading-relaxed mb-lg">
-            Enter the email address and password for the new administrator. The account will be created immediately and ready to use.
-          </p>
-
-          <form onSubmit={handleInviteSubmit} className="space-y-lg">
-            <div className="w-full">
-              <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                Email Address
-              </label>
-              <input
-                type="email"
-                value={inviteEmail}
-                onChange={(e) => setInviteEmail(e.target.value)}
-                className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
-                placeholder="e.g. colleague@simuflux.com"
-                required
-              />
-            </div>
-
-            <div className="w-full">
-              <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                Password (min 6 characters)
-              </label>
-              <input
-                type="password"
-                value={invitePassword}
-                onChange={(e) => setInvitePassword(e.target.value)}
-                className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
-                placeholder="Enter password"
-                required
-                minLength={6}
-              />
-            </div>
-
-            <div className="w-full">
-              <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                Confirm Password
-              </label>
-              <input
-                type="password"
-                value={inviteConfirmPassword}
-                onChange={(e) => setInviteConfirmPassword(e.target.value)}
-                className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
-                placeholder="Confirm password"
-                required
-                minLength={6}
-              />
-            </div>
+      {/* Invite Form - Only visible to Super Admin */}
+      {isSuperAdmin && (
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/10 to-accent/5 rounded-lg opacity-50 blur-sm" />
+          <div className="relative border border-hairline bg-navy/40 backdrop-blur-sm p-xl shadow-elevation-sm rounded-lg">
+            <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none rounded-tr-lg" />
             
-            <button
-              type="submit"
-              disabled={inviteLoading}
-              className="w-full sm:w-auto bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-label px-xl py-sm border border-transparent transition-colors disabled:opacity-50 select-none shadow-elevation-sm hover:shadow-elevation-md rounded"
-            >
-              {inviteLoading ? 'Creating...' : 'Create Admin Account'}
-            </button>
-          </form>
+            <h3 className="font-sans font-bold text-h3 text-offwhite mb-md border-b border-hairline/60 pb-md">
+              Create New Administrator
+            </h3>
+            <p className="font-sans text-caption text-steelblue leading-relaxed mb-lg">
+              Enter the email address and password for the new administrator. The account will be created immediately and ready to use.
+            </p>
 
-          {inviteError && (
-            <div className="mt-lg p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">
-              {inviteError}
-            </div>
-          )}
+            <form onSubmit={handleInviteSubmit} className="space-y-lg">
+              <div className="w-full">
+                <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
+                  placeholder="e.g. colleague@simuflux.com"
+                  required
+                />
+              </div>
 
-          {inviteSuccess && (
-            <div className="mt-lg p-lg border border-white/10 bg-white/5 text-green-400 font-mono text-label shadow-elevation-sm rounded">
-              {inviteSuccess}
-            </div>
-          )}
+              <div className="w-full">
+                <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                  Password (min 6 characters)
+                </label>
+                <input
+                  type="password"
+                  value={invitePassword}
+                  onChange={(e) => setInvitePassword(e.target.value)}
+                  className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
+                  placeholder="Enter password"
+                  required
+                  minLength={6}
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                  Confirm Password
+                </label>
+                <input
+                  type="password"
+                  value={inviteConfirmPassword}
+                  onChange={(e) => setInviteConfirmPassword(e.target.value)}
+                  className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
+                  placeholder="Confirm password"
+                  required
+                  minLength={6}
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={inviteLoading}
+                className="w-full sm:w-auto bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-label px-xl py-sm border border-transparent transition-colors disabled:opacity-50 select-none shadow-elevation-sm hover:shadow-elevation-md rounded"
+              >
+                {inviteLoading ? 'Creating...' : 'Create Admin Account'}
+              </button>
+            </form>
+
+            {inviteError && (
+              <div className="mt-lg p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">
+                {inviteError}
+              </div>
+            )}
+
+            {inviteSuccess && (
+              <div className="mt-lg p-lg border border-white/10 bg-white/5 text-green-400 font-mono text-label shadow-elevation-sm rounded">
+                {inviteSuccess}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Admins Directory */}
       <div className="space-y-xl">
@@ -217,6 +265,7 @@ export default function ManageAdminsPage() {
                       <th className="p-lg">Administrator Email</th>
                       <th className="p-lg w-40">Status</th>
                       <th className="p-lg w-52">Creation Date</th>
+                      {isSuperAdmin && <th className="p-lg w-32">Actions</th>}
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-hairline/60">
@@ -237,6 +286,23 @@ export default function ManageAdminsPage() {
                         <td className="p-lg font-mono text-caption text-steelblue">
                           {new Date(admin.createdAt).toLocaleDateString()}
                         </td>
+                        {isSuperAdmin && (
+                          <td className="p-lg">
+                            {!admin.isSuperAdmin && (
+                              <button
+                                onClick={() => handleDeleteAdmin(admin._id, admin.email)}
+                                className="font-mono text-label uppercase px-sm py-xs bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-colors shadow-elevation-sm rounded"
+                              >
+                                Delete
+                              </button>
+                            )}
+                            {admin.isSuperAdmin && (
+                              <span className="font-mono text-label uppercase px-sm py-xs bg-accent/10 text-accent border border-accent/20 shadow-elevation-sm rounded">
+                                Super Admin
+                              </span>
+                            )}
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -269,6 +335,25 @@ export default function ManageAdminsPage() {
           </>
         )}
       </div>
+
+      {/* Delete Error Message */}
+      {deleteError && (
+        <div className="p-lg border border-red-500/30 bg-red-500/5 text-red-400 font-mono text-label shadow-elevation-sm rounded">
+          {deleteError}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, adminId: null, adminEmail: '' })}
+        onConfirm={confirmDeleteAdmin}
+        title="Delete Administrator"
+        message={`Are you sure you want to permanently delete the admin account for ${deleteModal.adminEmail}? This action cannot be undone.`}
+        confirmText="Delete Account"
+        cancelText="Cancel"
+        variant="danger"
+      />
     </div>
   );
 }

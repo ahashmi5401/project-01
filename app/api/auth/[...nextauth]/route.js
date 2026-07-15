@@ -43,6 +43,7 @@ export const authOptions = {
           id: user._id.toString(),
           email: user.email,
           role: user.role || 'user',
+          isSuperAdmin: user.isSuperAdmin || false,
         };
       },
     }),
@@ -62,6 +63,7 @@ export const authOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.isSuperAdmin = user.isSuperAdmin;
       }
       return token;
     },
@@ -69,6 +71,7 @@ export const authOptions = {
       if (token) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.isSuperAdmin = token.isSuperAdmin;
       }
       return session;
     },
