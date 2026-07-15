@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyTurnstileToken } from '@/lib/turnstile';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { Resend } from 'resend';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -9,6 +10,19 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { name, email, phone, message, turnstileToken } = body;
+
+    // Rate limiting: 8 requests per hour per IP + email combination
+    const ip = getClientIp(req);
+    const emailLower = email?.toLowerCase().trim() || 'unknown';
+    const identifier = `${ip}:${emailLower}`;
+    const rateLimitResult = await checkRateLimit('contact', identifier);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
 
     // Validate inputs
     if (!name?.trim() || !email?.trim() || !message?.trim()) {

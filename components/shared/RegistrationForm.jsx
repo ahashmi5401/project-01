@@ -1,8 +1,342 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculatePricing, getCourseBadge, getDiscountSourceLabel } from '@/lib/pricingEngine';
+
+// Step components extracted outside to prevent remounting on parent re-renders
+const Step1 = memo(function Step1({ formData, errors, handleChange, handleCnicChange }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-lg"
+    >
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+      <div>
+        <label htmlFor="name" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+          Full Name *
+        </label>
+        <input
+          id="name"
+          type="text"
+          name="name"
+          value={formData.name}
+          onChange={handleChange}
+          className={`w-full bg-navy/60 border ${errors.name ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          placeholder="e.g. John Doe"
+        />
+        {errors.name && <span className="font-mono text-caption text-accent mt-sm block">{errors.name}</span>}
+      </div>
+
+      <div>
+        <label htmlFor="cnic" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+          CNIC Number *
+        </label>
+        <input
+          id="cnic"
+          type="text"
+          name="cnic"
+          value={formData.cnic}
+          onChange={handleCnicChange}
+          maxLength="15"
+          className={`w-full bg-navy/60 border ${errors.cnic ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          placeholder="e.g. 12345-1234567-1"
+        />
+        {errors.cnic && <span className="font-mono text-caption text-accent mt-sm block">{errors.cnic}</span>}
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+      <div>
+        <label htmlFor="email" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+          Email Address *
+        </label>
+        <input
+          id="email"
+          type="email"
+          name="email"
+          value={formData.email}
+          onChange={handleChange}
+          className={`w-full bg-navy/60 border ${errors.email ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          placeholder="e.g. john@example.com"
+        />
+        {errors.email && <span className="font-mono text-caption text-accent mt-sm block">{errors.email}</span>}
+      </div>
+
+      <div>
+        <label htmlFor="phone" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+          WhatsApp / Phone *
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          name="phone"
+          value={formData.phone}
+          onChange={handleChange}
+          className={`w-full bg-navy/60 border ${errors.phone ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          placeholder="e.g. +92 300 1234567"
+        />
+        {errors.phone && <span className="font-mono text-caption text-accent mt-sm block">{errors.phone}</span>}
+      </div>
+    </div>
+  </motion.div>
+  );
+});
+
+const Step2 = memo(function Step2({ formData, errors, handleChange, qualificationOptions, degreeOptions }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-lg"
+    >
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
+      <div>
+        <label htmlFor="university" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+          University Name *
+        </label>
+        <input
+          id="university"
+          type="text"
+          name="university"
+          value={formData.university}
+          onChange={handleChange}
+          className={`w-full bg-navy/60 border ${errors.university ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          placeholder="e.g. NED University"
+        />
+        {errors.university && <span className="font-mono text-caption text-accent mt-sm block">{errors.university}</span>}
+      </div>
+
+      <div>
+        <label htmlFor="city" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+          City *
+        </label>
+        <input
+          id="city"
+          type="text"
+          name="city"
+          value={formData.city}
+          onChange={handleChange}
+          className={`w-full bg-navy/60 border ${errors.city ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          placeholder="e.g. Karachi"
+        />
+        {errors.city && <span className="font-mono text-caption text-accent mt-sm block">{errors.city}</span>}
+      </div>
+    </div>
+
+    <div>
+      <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-md">
+        Highest Qualification *
+      </label>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-md">
+        {qualificationOptions.map((opt) => (
+          <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded">
+            <input
+              type="radio"
+              name="highestQualification"
+              value={opt}
+              checked={formData.highestQualification === opt}
+              onChange={handleChange}
+              className="accent-accent w-4 h-4 cursor-pointer"
+            />
+            <span className="text-body text-offwhite select-none">{opt}</span>
+          </label>
+        ))}
+      </div>
+      {errors.highestQualification && <span className="font-mono text-caption text-accent mt-sm block">{errors.highestQualification}</span>}
+    </div>
+
+    <div>
+      <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-md">
+        Degree Currently Pursuing *
+      </label>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-md">
+        {degreeOptions.map((opt) => (
+          <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded">
+            <input
+              type="radio"
+              name="currentlyPursuing"
+              value={opt}
+              checked={formData.currentlyPursuing === opt}
+              onChange={handleChange}
+              className="accent-accent w-4 h-4 cursor-pointer"
+            />
+            <span className="text-body text-offwhite select-none">{opt}</span>
+          </label>
+        ))}
+      </div>
+      {errors.currentlyPursuing && <span className="font-mono text-caption text-accent mt-sm block">{errors.currentlyPursuing}</span>}
+    </div>
+  </motion.div>
+  );
+});
+
+const Step3 = memo(function Step3({
+  formData,
+  errors,
+  handleChange,
+  handleFileChange,
+  screenshot,
+  courses,
+  selectedCourses,
+  setSelectedCourses,
+  discountSource,
+  subtotal,
+  discountPercent,
+  discountAmount,
+  totalPrice,
+  selectedCount,
+  discountReason,
+  getDiscountSourceLabel
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      transition={{ duration: 0.3 }}
+      className="space-y-lg"
+    >
+    <div>
+      <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-md">
+        Select Enrolling Course(s) *
+      </label>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
+        {courses.map((c) => {
+          const isChecked = selectedCourses.includes(c.title);
+          return (
+            <label key={c._id || c.id} className={`flex items-center gap-sm border px-md py-md cursor-pointer hover:border-accent/60 transition-colors rounded ${
+              isChecked ? 'border-accent bg-accent/5' : 'border-hairline/60 bg-navy/40'
+            }`}>
+              <input
+                type="checkbox"
+                name="courses"
+                value={c.title}
+                checked={isChecked}
+                onChange={(e) => {
+                  const { value, checked } = e.target;
+                  setSelectedCourses(prev =>
+                    checked ? [...prev, value] : prev.filter(item => item !== value)
+                  );
+                }}
+                className="accent-accent w-4 h-4 cursor-pointer"
+              />
+              <div className="select-none">
+                <span className="text-body font-bold text-offwhite block">{c.title}</span>
+                {c.price && (
+                  <div>
+                    {(() => {
+                      const badge = getCourseBadge(c, discountSource);
+                      const finalPrice = badge && discountSource === 'individual' 
+                        ? Math.round(c.price * (1 - c.discountPercent / 100))
+                        : c.price;
+                      
+                      return (
+                        <div>
+                          {badge && discountSource === 'individual' && (
+                            <span className="text-caption font-mono text-steelblue/60 line-through block">
+                              PKR {c.price.toLocaleString()}
+                            </span>
+                          )}
+                          <span className={`text-caption font-mono ${badge ? 'text-accent' : 'text-steelblue/75'}`}>
+                            PKR {finalPrice.toLocaleString()}
+                          </span>
+                          {badge && (
+                            <div className="text-caption font-mono text-accent mt-1">
+                              {badge}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            </label>
+          );
+        })}
+      </div>
+      {errors.course && <span className="font-mono text-caption text-accent mt-sm block">{errors.course}</span>}
+
+      {/* Dynamic Price Calculation display */}
+      {selectedCount > 0 && (
+        <div className="border border-hairline bg-navy/40 p-lg space-y-md font-sans mt-lg relative shadow-elevation-sm rounded">
+          <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/5 pointer-events-none rounded-tr" />
+          <div className="flex justify-between items-center text-body">
+            <span className="text-steelblue">Original Total</span>
+            <span className="font-mono text-offwhite">PKR {subtotal.toLocaleString()}</span>
+          </div>
+          {discountPercent > 0 && (
+            <>
+              <div className="flex justify-between items-center text-body text-accent">
+                <span>{getDiscountSourceLabel(discountSource)}</span>
+                <span className="font-mono">- PKR {discountAmount.toLocaleString()}</span>
+              </div>
+              <div className="text-xs text-steelblue/70 font-mono">
+                {discountReason}
+              </div>
+            </>
+          )}
+          <div className="border-t border-hairline pt-md flex justify-between items-center text-h3 font-bold text-offwhite">
+            <span>Final Payable Amount</span>
+            <span className="font-mono text-accent">PKR {totalPrice.toLocaleString()}</span>
+          </div>
+        </div>
+      )}
+    </div>
+
+    <div>
+      <label htmlFor="reason" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+        Why do you want to enroll in this course? *
+      </label>
+      <textarea
+        id="reason"
+        name="reason"
+        value={formData.reason}
+        onChange={handleChange}
+        rows="4"
+        className={`w-full bg-navy/60 border ${errors.reason ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none text-body rounded`}
+        placeholder="Provide a brief explanation (a few sentences)..."
+      />
+      {errors.reason && <span className="font-mono text-caption text-accent mt-sm block">{errors.reason}</span>}
+    </div>
+
+    <div>
+      <label htmlFor="screenshot" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+        Upload Payment Receipt Screenshot * (JPEG/PNG/WEBP, Max 5MB)
+      </label>
+      <div className="flex flex-col sm:flex-row gap-md items-center">
+        <input
+          id="screenshot"
+          type="file"
+          accept="image/*"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        <label
+          htmlFor="screenshot"
+          className={`cursor-pointer border w-full sm:w-auto hover:bg-accent/5 font-mono text-label uppercase tracking-wider px-xl py-sm transition-colors select-none text-center rounded ${
+            errors.screenshot ? 'border-accent text-accent' : 'border-hairline text-steelblue hover:text-offwhite'
+          }`}
+        >
+          {screenshot ? 'Change Screenshot' : 'Select Screenshot File'}
+        </label>
+        {screenshot && (
+          <span className="font-mono text-caption text-green-400 truncate max-w-xs block mt-sm sm:mt-0">
+            Selected: {screenshot.name} ({(screenshot.size / 1024 / 1024).toFixed(2)} MB)
+          </span>
+        )}
+      </div>
+      {errors.screenshot && <span className="font-mono text-caption text-accent mt-sm block">{errors.screenshot}</span>}
+    </div>
+  </motion.div>
+  );
+});
 
 export default function RegistrationForm({ courses, discountTiers = [], comboDeals = [], initialCourse = '', isLocked = false, token = null }) {
   const [selectedCourses, setSelectedCourses] = useState(initialCourse ? [initialCourse] : []);
@@ -31,6 +365,31 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
   });
 
   const [errors, setErrors] = useState({});
+
+  // Check token status on mount to prevent duplicate submissions
+  useEffect(() => {
+    const checkTokenStatus = async () => {
+      if (token) {
+        try {
+          const response = await fetch(`/api/registration-links?token=${token}`);
+          const data = await response.json();
+
+          if (data.success && data.status === 'used') {
+            setStatus({
+              submitting: false,
+              submitted: true,
+              error: null,
+              message: 'This registration link has already been used. Please contact us if you need assistance.',
+            });
+          }
+        } catch (error) {
+          console.error('Error checking token status:', error);
+        }
+      }
+    };
+
+    checkTokenStatus();
+  }, [token]);
 
   // Step-specific validation
   const validateStep = (step) => {
@@ -218,320 +577,6 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
     selectedCount,
   } = pricing;
 
-  // Step content components
-  const Step1 = () => (
-    <motion.div
-      key="step1"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-lg"
-    >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
-        <div>
-          <label htmlFor="name" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-            Full Name *
-          </label>
-          <input
-            id="name"
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            className={`w-full bg-navy/60 border ${errors.name ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
-            placeholder="e.g. John Doe"
-          />
-          {errors.name && <span className="font-mono text-caption text-accent mt-sm block">{errors.name}</span>}
-        </div>
-
-        <div>
-          <label htmlFor="cnic" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-            CNIC Number *
-          </label>
-          <input
-            id="cnic"
-            type="text"
-            name="cnic"
-            value={formData.cnic}
-            onChange={handleCnicChange}
-            maxLength="15"
-            className={`w-full bg-navy/60 border ${errors.cnic ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
-            placeholder="e.g. 12345-1234567-1"
-          />
-          {errors.cnic && <span className="font-mono text-caption text-accent mt-sm block">{errors.cnic}</span>}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
-        <div>
-          <label htmlFor="email" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-            Email Address *
-          </label>
-          <input
-            id="email"
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`w-full bg-navy/60 border ${errors.email ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
-            placeholder="e.g. john@example.com"
-          />
-          {errors.email && <span className="font-mono text-caption text-accent mt-sm block">{errors.email}</span>}
-        </div>
-
-        <div>
-          <label htmlFor="phone" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-            WhatsApp / Phone *
-          </label>
-          <input
-            id="phone"
-            type="tel"
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-            className={`w-full bg-navy/60 border ${errors.phone ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
-            placeholder="e.g. +92 300 1234567"
-          />
-          {errors.phone && <span className="font-mono text-caption text-accent mt-sm block">{errors.phone}</span>}
-        </div>
-      </div>
-    </motion.div>
-  );
-
-  const Step2 = () => (
-    <motion.div
-      key="step2"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-lg"
-    >
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
-        <div>
-          <label htmlFor="university" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-            University Name *
-          </label>
-          <input
-            id="university"
-            type="text"
-            name="university"
-            value={formData.university}
-            onChange={handleChange}
-            className={`w-full bg-navy/60 border ${errors.university ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
-            placeholder="e.g. NED University"
-          />
-          {errors.university && <span className="font-mono text-caption text-accent mt-sm block">{errors.university}</span>}
-        </div>
-
-        <div>
-          <label htmlFor="city" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-            City *
-          </label>
-          <input
-            id="city"
-            type="text"
-            name="city"
-            value={formData.city}
-            onChange={handleChange}
-            className={`w-full bg-navy/60 border ${errors.city ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
-            placeholder="e.g. Karachi"
-          />
-          {errors.city && <span className="font-mono text-caption text-accent mt-sm block">{errors.city}</span>}
-        </div>
-      </div>
-
-      <div>
-        <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-md">
-          Highest Qualification *
-        </label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-md">
-          {qualificationOptions.map((opt) => (
-            <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded">
-              <input
-                type="radio"
-                name="highestQualification"
-                value={opt}
-                checked={formData.highestQualification === opt}
-                onChange={handleChange}
-                className="accent-accent w-4 h-4 cursor-pointer"
-              />
-              <span className="text-body text-offwhite select-none">{opt}</span>
-            </label>
-          ))}
-        </div>
-        {errors.highestQualification && <span className="font-mono text-caption text-accent mt-sm block">{errors.highestQualification}</span>}
-      </div>
-
-      <div>
-        <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-md">
-          Degree Currently Pursuing *
-        </label>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-md">
-          {degreeOptions.map((opt) => (
-            <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded">
-              <input
-                type="radio"
-                name="currentlyPursuing"
-                value={opt}
-                checked={formData.currentlyPursuing === opt}
-                onChange={handleChange}
-                className="accent-accent w-4 h-4 cursor-pointer"
-              />
-              <span className="text-body text-offwhite select-none">{opt}</span>
-            </label>
-          ))}
-        </div>
-        {errors.currentlyPursuing && <span className="font-mono text-caption text-accent mt-sm block">{errors.currentlyPursuing}</span>}
-      </div>
-    </motion.div>
-  );
-
-  const Step3 = () => (
-    <motion.div
-      key="step3"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-      className="space-y-lg"
-    >
-      <div>
-        <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-md">
-          Select Enrolling Course(s) *
-        </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
-          {courses.map((c) => {
-            const isChecked = selectedCourses.includes(c.title);
-            return (
-              <label key={c._id || c.id} className={`flex items-center gap-sm border px-md py-md cursor-pointer hover:border-accent/60 transition-colors rounded ${
-                isChecked ? 'border-accent bg-accent/5' : 'border-hairline/60 bg-navy/40'
-              }`}>
-                <input
-                  type="checkbox"
-                  name="courses"
-                  value={c.title}
-                  checked={isChecked}
-                  onChange={(e) => {
-                    const { value, checked } = e.target;
-                    setSelectedCourses(prev =>
-                      checked ? [...prev, value] : prev.filter(item => item !== value)
-                    );
-                  }}
-                  className="accent-accent w-4 h-4 cursor-pointer"
-                />
-                <div className="select-none">
-                  <span className="text-body font-bold text-offwhite block">{c.title}</span>
-                  {c.price && (
-                    <div>
-                      {(() => {
-                        const badge = getCourseBadge(c, discountSource);
-                        const finalPrice = badge && discountSource === 'individual' 
-                          ? Math.round(c.price * (1 - c.discountPercent / 100))
-                          : c.price;
-                        
-                        return (
-                          <div>
-                            {badge && discountSource === 'individual' && (
-                              <span className="text-caption font-mono text-steelblue/60 line-through block">
-                                PKR {c.price.toLocaleString()}
-                              </span>
-                            )}
-                            <span className={`text-caption font-mono ${badge ? 'text-accent' : 'text-steelblue/75'}`}>
-                              PKR {finalPrice.toLocaleString()}
-                            </span>
-                            {badge && (
-                              <div className="text-caption font-mono text-accent mt-1">
-                                {badge}
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-                </div>
-              </label>
-            );
-          })}
-        </div>
-        {errors.course && <span className="font-mono text-caption text-accent mt-sm block">{errors.course}</span>}
-
-        {/* Dynamic Price Calculation display */}
-        {selectedCount > 0 && (
-          <div className="border border-hairline bg-navy/40 p-lg space-y-md font-sans mt-lg relative shadow-elevation-sm rounded">
-            <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/5 pointer-events-none rounded-tr" />
-            <div className="flex justify-between items-center text-body">
-              <span className="text-steelblue">Original Total</span>
-              <span className="font-mono text-offwhite">PKR {subtotal.toLocaleString()}</span>
-            </div>
-            {discountPercent > 0 && (
-              <>
-                <div className="flex justify-between items-center text-body text-accent">
-                  <span>{getDiscountSourceLabel(discountSource)}</span>
-                  <span className="font-mono">- PKR {discountAmount.toLocaleString()}</span>
-                </div>
-                <div className="text-xs text-steelblue/70 font-mono">
-                  {discountReason}
-                </div>
-              </>
-            )}
-            <div className="border-t border-hairline pt-md flex justify-between items-center text-h3 font-bold text-offwhite">
-              <span>Final Payable Amount</span>
-              <span className="font-mono text-accent">PKR {totalPrice.toLocaleString()}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
-      <div>
-        <label htmlFor="reason" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-          Why do you want to enroll in this course? *
-        </label>
-        <textarea
-          id="reason"
-          name="reason"
-          value={formData.reason}
-          onChange={handleChange}
-          rows="4"
-          className={`w-full bg-navy/60 border ${errors.reason ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none text-body rounded`}
-          placeholder="Provide a brief explanation (a few sentences)..."
-        />
-        {errors.reason && <span className="font-mono text-caption text-accent mt-sm block">{errors.reason}</span>}
-      </div>
-
-      <div>
-        <label htmlFor="screenshot" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-          Upload Payment Receipt Screenshot * (JPEG/PNG/WEBP, Max 5MB)
-        </label>
-        <div className="flex flex-col sm:flex-row gap-md items-center">
-          <input
-            id="screenshot"
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-          <label
-            htmlFor="screenshot"
-            className={`cursor-pointer border w-full sm:w-auto hover:bg-accent/5 font-mono text-label uppercase tracking-wider px-xl py-sm transition-colors select-none text-center rounded ${
-              errors.screenshot ? 'border-accent text-accent' : 'border-hairline text-steelblue hover:text-offwhite'
-            }`}
-          >
-            {screenshot ? 'Change Screenshot' : 'Select Screenshot File'}
-          </label>
-          {screenshot && (
-            <span className="font-mono text-caption text-green-400 truncate max-w-xs block mt-sm sm:mt-0">
-              Selected: {screenshot.name} ({(screenshot.size / 1024 / 1024).toFixed(2)} MB)
-            </span>
-          )}
-        </div>
-        {errors.screenshot && <span className="font-mono text-caption text-accent mt-sm block">{errors.screenshot}</span>}
-      </div>
-    </motion.div>
-  );
-
   return (
     <div className="max-w-3xl mx-auto border border-hairline bg-navy/60 p-xl sm:p-4xl relative text-offwhite font-sans shadow-elevation-sm rounded-lg">
       {/* Blueprint corners */}
@@ -593,9 +638,43 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
           {/* Fixed height form container */}
           <div className="min-h-[400px] max-h-[600px] overflow-y-auto pr-sm">
             <AnimatePresence mode="wait">
-              {currentStep === 1 && <Step1 />}
-              {currentStep === 2 && <Step2 />}
-              {currentStep === 3 && <Step3 />}
+              {currentStep === 1 && (
+                <Step1 
+                  formData={formData}
+                  errors={errors}
+                  handleChange={handleChange}
+                  handleCnicChange={handleCnicChange}
+                />
+              )}
+              {currentStep === 2 && (
+                <Step2 
+                  formData={formData}
+                  errors={errors}
+                  handleChange={handleChange}
+                  qualificationOptions={qualificationOptions}
+                  degreeOptions={degreeOptions}
+                />
+              )}
+              {currentStep === 3 && (
+                <Step3
+                  formData={formData}
+                  errors={errors}
+                  handleChange={handleChange}
+                  handleFileChange={handleFileChange}
+                  screenshot={screenshot}
+                  courses={courses}
+                  selectedCourses={selectedCourses}
+                  setSelectedCourses={setSelectedCourses}
+                  discountSource={discountSource}
+                  subtotal={subtotal}
+                  discountPercent={discountPercent}
+                  discountAmount={discountAmount}
+                  totalPrice={totalPrice}
+                  selectedCount={selectedCount}
+                  discountReason={discountReason}
+                  getDiscountSourceLabel={getDiscountSourceLabel}
+                />
+              )}
             </AnimatePresence>
           </div>
 

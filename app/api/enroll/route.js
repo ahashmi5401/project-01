@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { calculatePricing, getDiscountSourceLabel } from '@/lib/pricingEngine';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -10,6 +11,17 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const { name, phone, selectedCourses } = body;
+
+    // Rate limiting: 15 requests per hour per IP
+    const ip = getClientIp(req);
+    const rateLimitResult = await checkRateLimit('enroll', ip);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
 
     // 1. Validation
     if (!name?.trim() || !phone?.trim() || !Array.isArray(selectedCourses) || selectedCourses.length === 0) {

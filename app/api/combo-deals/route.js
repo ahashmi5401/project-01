@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../auth/[...nextauth]/route';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 // GET: Fetch all combo deals (Public)
 export async function GET() {
@@ -24,6 +25,18 @@ export async function GET() {
 export async function POST(req) {
   try {
     const session = await getServerSession(authOptions);
+    const ip = getClientIp(req);
+
+    // Rate limiting: 100 requests per hour per IP, bypass for authenticated admins
+    const rateLimitResult = await checkRateLimit('adminCrud', ip, { skipIfAdmin: true, session });
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
+
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }

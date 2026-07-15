@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '../../auth/[...nextauth]/route';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 // Helper to generate a URL-safe slug from title
 function generateSlug(title) {
@@ -19,6 +20,18 @@ export async function PUT(req, { params }) {
   try {
     console.log('[COURSES PUT] Starting update request');
     const session = await getServerSession(authOptions);
+    const ip = getClientIp(req);
+
+    // Rate limiting: 100 requests per hour per IP, bypass for authenticated admins
+    const rateLimitResult = await checkRateLimit('adminCrud', ip, { skipIfAdmin: true, session });
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
+
     console.log('[COURSES PUT] Session:', session ? 'Found' : 'Not found', session);
     if (!session || session.user.role !== 'admin') {
       console.log('[COURSES PUT] Unauthorized - no session or not admin');
@@ -98,6 +111,18 @@ export async function DELETE(req, { params }) {
   try {
     console.log('[COURSES DELETE] Starting delete request');
     const session = await getServerSession(authOptions);
+    const ip = getClientIp(req);
+
+    // Rate limiting: 100 requests per hour per IP, bypass for authenticated admins
+    const rateLimitResult = await checkRateLimit('adminCrud', ip, { skipIfAdmin: true, session });
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
+
     console.log('[COURSES DELETE] Session:', session ? 'Found' : 'Not found', session);
     if (!session || session.user.role !== 'admin') {
       console.log('[COURSES DELETE] Unauthorized - no session or not admin');

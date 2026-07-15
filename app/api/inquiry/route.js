@@ -2,12 +2,24 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/escapeHtml';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 export async function POST(req) {
   try {
     const { name, phone, email, targetName, targetType } = await req.json();
+
+    // Rate limiting: 15 requests per hour per IP
+    const ip = getClientIp(req);
+    const rateLimitResult = await checkRateLimit('inquiry', ip);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
 
     // 1. Validation
     if (!name?.trim() || !phone?.trim() || !email?.trim() || !targetName?.trim() || !targetType?.trim()) {

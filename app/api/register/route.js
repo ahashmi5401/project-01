@@ -5,6 +5,7 @@ import { escapeHtml } from '@/lib/escapeHtml';
 import { Resend } from 'resend';
 import { google } from 'googleapis';
 import { calculatePricing, getDiscountSourceLabel } from '@/lib/pricingEngine';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -28,6 +29,17 @@ export async function POST(req) {
   let token = null;
   try {
     const formData = await req.formData();
+
+    // Rate limiting: 10 requests per hour per IP
+    const ip = getClientIp(req);
+    const rateLimitResult = await checkRateLimit('register', ip);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { error: rateLimitResult.error },
+        { status: 429 }
+      );
+    }
 
     const name              = formData.get('name');
     const cnicRaw           = formData.get('cnic');

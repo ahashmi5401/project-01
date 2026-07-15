@@ -64,41 +64,65 @@ export async function POST(req) {
 }
 
 /**
- * GET - List registration links for a specific course
+ * GET - Check token status or list registration links for a specific course
  */
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
+    const token = searchParams.get('token');
     const courseSlug = searchParams.get('courseSlug');
 
-    if (!courseSlug) {
-      return NextResponse.json(
-        { error: 'courseSlug query parameter is required.' },
-        { status: 400 }
-      );
-    }
+    // If token is provided, check its status
+    if (token) {
+      const { db } = await connectToDatabase();
+      const link = await db.collection('registrationLinks').findOne({ token });
 
-    const { db } = await connectToDatabase();
+      if (!link) {
+        return NextResponse.json(
+          { error: 'Token not found.' },
+          { status: 404 }
+        );
+      }
 
-    const links = await db.collection('registrationLinks')
-      .find({ courseSlug })
-      .sort({ createdAt: -1 })
-      .limit(50)
-      .toArray();
-
-    return NextResponse.json({
-      success: true,
-      links: links.map(link => ({
+      return NextResponse.json({
+        success: true,
         token: link.token,
         status: link.status,
+        courseSlug: link.courseSlug,
         createdAt: link.createdAt,
         usedAt: link.usedAt,
-      })),
-    });
-  } catch (error) {
-    console.error('Error fetching registration links:', error);
+      });
+    }
+
+    // If courseSlug is provided, list all links for that course
+    if (courseSlug) {
+      const { db } = await connectToDatabase();
+
+      const links = await db.collection('registrationLinks')
+        .find({ courseSlug })
+        .sort({ createdAt: -1 })
+        .limit(50)
+        .toArray();
+
+      return NextResponse.json({
+        success: true,
+        links: links.map(link => ({
+          token: link.token,
+          status: link.status,
+          createdAt: link.createdAt,
+          usedAt: link.usedAt,
+        })),
+      });
+    }
+
     return NextResponse.json(
-      { error: 'Failed to fetch registration links.' },
+      { error: 'Either token or courseSlug query parameter is required.' },
+      { status: 400 }
+    );
+  } catch (error) {
+    console.error('Error in registration links API:', error);
+    return NextResponse.json(
+      { error: 'Failed to process request.' },
       { status: 500 }
     );
   }
