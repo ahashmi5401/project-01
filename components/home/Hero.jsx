@@ -45,7 +45,7 @@ export default function Hero() {
         </div>
 
         {/* Right Image Column */}
-        <div className="lg:col-span-5 flex justify-center items-center relative order-2 lg:order-2 mb-4xl lg:mb-0">
+        <div className="lg:col-span-5 flex justify-center items-center relative order-2 lg:order-2 mb-lg lg:mb-0">
           <div className="relative w-full max-w-[350px] sm:max-w-[400px] lg:max-w-[450px]">
             <img
               src="/images/hero-engineering.webp"

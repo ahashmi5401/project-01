@@ -79,7 +79,7 @@ export default async function CourseDetailPage({ params }) {
     "url": `https://simufluxlab.com/courses/${displayCourse.slug}`,
     "provider": {
       "@type": "Organization",
-      "name": "SimuFlux Design Lab",
+      "name": "SimuFlux Lab",
       "url": "https://simufluxlab.com"
     },
     "inLanguage": "en",

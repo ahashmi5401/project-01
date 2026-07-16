@@ -9,7 +9,7 @@ import FaqAccordion from '@/components/courses/FaqAccordion';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "ANSYS FEA & Creo CAD Training Courses in Karachi | SimuFlux Design Lab",
+  title: "ANSYS FEA & Creo CAD Training Courses in Karachi | SimuFlux Lab",
   description: "Learn practical engineering FEA meshing and CAD assembly modelling in Karachi, Pakistan. Register for our ANSYS Workbench and Creo Parametric courses.",
 };
 

@@ -6,7 +6,7 @@ import WhatsAppButton from '@/components/shared/WhatsAppButton';
 
 export const metadata = {
   title: "Contact SimuFlux — Engineering Inquiries & Course Registration in Karachi",
-  description: "Reach SimuFlux Design Lab in Karachi, Pakistan for CFD simulation projects, FEA structural analysis, CAD modeling contracts, or engineering course registration.",
+  description: "Reach SimuFlux Lab in Karachi, Pakistan for CFD simulation projects, FEA structural analysis, CAD modeling contracts, or engineering course registration.",
 };
 
 export default function ContactPage() {

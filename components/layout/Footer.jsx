@@ -26,7 +26,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-steelblue hover:text-accent transition-colors"
-              aria-label="Follow SimuFlux Design Lab on Facebook"
+              aria-label="Follow SimuFlux Lab on Facebook"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" role="img" aria-label="Facebook logo">
                 <title>Facebook</title>

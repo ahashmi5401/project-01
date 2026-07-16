@@ -68,7 +68,7 @@ export default function AdminSignupForm() {
 
         <div className="text-center mb-8 border-b border-hairline/60 pb-6">
           <span className="font-mono text-xs uppercase tracking-widest text-accent block mb-2">
-            [ SIMUFLUX DESIGN LAB ]
+            [ SIMUFLUX LAB ]
           </span>
           <h1 className="font-sans font-bold text-2xl text-offwhite uppercase tracking-tight">
             Bootstrap Admin Signup

@@ -10,8 +10,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "SimuFlux Design Lab — CFD, FEA & CAD Training and Consultancy in Karachi",
-  description: "SimuFlux Design Lab provides professional engineering training and consultancy in Karachi, Pakistan. Validate designs with CFD, FEA, and CAD modeling.",
+  title: "SimuFlux Lab — CFD, FEA & CAD Training and Consultancy in Karachi",
+  description: "SimuFlux Lab provides professional engineering training and consultancy in Karachi, Pakistan. Validate designs with CFD, FEA, and CAD modeling.",
 };
 
 async function getHomeData() {
@@ -91,11 +91,11 @@ export default async function Home() {
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "SimuFlux Design Lab",
+    "name": "SimuFlux Lab",
     "image": "https://simufluxlab.com/images/logo.png", // fallback placeholder
     "@id": "https://simufluxlab.com/#local-business",
     "url": "https://simufluxlab.com",
-    "telephone": "+92-XXX-XXXXXXX", // TODO: Replace with client's actual phone number
+    "telephone": "+92 346 3517689", // TODO: Replace with client's actual phone number
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Karachi, Sindh, Pakistan", // TODO: Replace with exact office address if available
@@ -134,6 +134,16 @@ export default async function Home() {
         "@type": "Country",
         "name": "Pakistan"
       }
+    ],
+    "knowsAbout": [
+      "Computational Fluid Dynamics (CFD)",
+      "Finite Element Analysis (FEA)",
+      "Computer-Aided Design (CAD)",
+      "ANSYS Fluent",
+      "ANSYS Workbench",
+      "SolidWorks",
+      "3D Modeling",
+      "Product Design & Prototyping"
     ]
   };
 

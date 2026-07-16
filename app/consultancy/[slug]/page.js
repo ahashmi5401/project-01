@@ -79,7 +79,7 @@ export default async function ServiceDetailPage({ params }) {
     "url": `https://simufluxlab.com/consultancy/${displayService.slug}`,
     "provider": {
       "@type": "Organization",
-      "name": "SimuFlux Design Lab",
+      "name": "SimuFlux Lab",
       "url": "https://simufluxlab.com"
     },
     "areaServed": {

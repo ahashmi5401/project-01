@@ -22,7 +22,7 @@ export default function CourseCard({
     : duration;
 
   return (
-    <div className="group relative bg-navy border border-white/10 rounded-xl overflow-hidden transition-all duration-300 w-[280px] sm:w-[320px] lg:w-[360px] flex-shrink-0 h-[380px] sm:h-[400px] flex flex-col">
+    <div className="group relative bg-navy border border-white/10 rounded-xl overflow-hidden transition-all duration-300 w-[280px] sm:w-[320px] lg:w-[360px] flex-shrink-0 min-h-[380px] sm:min-h-[400px] pb-md flex flex-col">
       {/* Course Image - 16:9 ratio - clickable to details */}
       <Link href={`/courses/${slug}`} className="block relative w-full aspect-video overflow-hidden bg-navy border-b border-white/10">
         {image ? (

@@ -19,11 +19,11 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata = {
   title: {
-    template: "%s | SimuFlux Design Lab",
-    default: "SimuFlux Design Lab | Engineering Training & Consultancy",
+    template: "%s | SimuFlux Lab",
+    default: "SimuFlux Lab | Engineering Training & Consultancy",
   },
   description:
-    "SimuFlux Design Lab provides professional engineering training and consultancy in CFD, FEA, CAD, 3D modelling, and product design — empowering students, professionals, and industries with practical engineering solutions.",
+    "SimuFlux Lab provides professional engineering training and consultancy in CFD, FEA, CAD, 3D modelling, and product design — empowering students, professionals, and industries with practical engineering solutions.",
   metadataBase: new URL("https://simufluxlab.com"),
   alternates: {
     canonical: "/",

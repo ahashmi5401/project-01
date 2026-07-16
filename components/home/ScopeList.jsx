@@ -71,7 +71,7 @@ export default function ScopeList({ services = [] }) {
           {services.map((service) => (
             <div 
               key={service._id || service.id} 
-              className="snap-start w-[280px] sm:w-[320px] lg:w-[360px] flex-shrink-0 bg-navy border border-white/10 rounded-xl overflow-hidden transition-all duration-300 relative group h-[440px] sm:h-[480px] flex flex-col"
+              className="snap-start w-[280px] sm:w-[320px] lg:w-[360px] flex-shrink-0 bg-navy border border-white/10 rounded-xl overflow-hidden transition-all duration-300 relative group min-h-[440px] sm:min-h-[480px] pb-md flex flex-col"
             >
               {/* Image Thumbnail at Top - clickable to details */}
               <Link href={`/consultancy/${service.slug}`} className="relative w-full h-36 sm:h-40 bg-navy overflow-hidden border-b border-white/10 block">
