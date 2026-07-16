@@ -25,7 +25,7 @@ const Step1 = memo(function Step1({ formData, errors, handleChange, handleCnicCh
           name="name"
           value={formData.name}
           onChange={handleChange}
-          className={`w-full bg-navy/60 border ${errors.name ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          className={`w-full bg-navy/60 border ${errors.name ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded-md`}
           placeholder="e.g. John Doe"
         />
         {errors.name && <span className="font-mono text-caption text-accent mt-sm block">{errors.name}</span>}
@@ -42,7 +42,7 @@ const Step1 = memo(function Step1({ formData, errors, handleChange, handleCnicCh
           value={formData.cnic}
           onChange={handleCnicChange}
           maxLength="15"
-          className={`w-full bg-navy/60 border ${errors.cnic ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          className={`w-full bg-navy/60 border ${errors.cnic ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded-md`}
           placeholder="e.g. 12345-1234567-1"
         />
         {errors.cnic && <span className="font-mono text-caption text-accent mt-sm block">{errors.cnic}</span>}
@@ -60,7 +60,7 @@ const Step1 = memo(function Step1({ formData, errors, handleChange, handleCnicCh
           name="email"
           value={formData.email}
           onChange={handleChange}
-          className={`w-full bg-navy/60 border ${errors.email ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          className={`w-full bg-navy/60 border ${errors.email ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded-md`}
           placeholder="e.g. john@example.com"
         />
         {errors.email && <span className="font-mono text-caption text-accent mt-sm block">{errors.email}</span>}
@@ -76,7 +76,7 @@ const Step1 = memo(function Step1({ formData, errors, handleChange, handleCnicCh
           name="phone"
           value={formData.phone}
           onChange={handleChange}
-          className={`w-full bg-navy/60 border ${errors.phone ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          className={`w-full bg-navy/60 border ${errors.phone ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded-md`}
           placeholder="e.g. +92 300 1234567"
         />
         {errors.phone && <span className="font-mono text-caption text-accent mt-sm block">{errors.phone}</span>}
@@ -106,7 +106,7 @@ const Step2 = memo(function Step2({ formData, errors, handleChange, qualificatio
           name="university"
           value={formData.university}
           onChange={handleChange}
-          className={`w-full bg-navy/60 border ${errors.university ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          className={`w-full bg-navy/60 border ${errors.university ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded-md`}
           placeholder="e.g. NED University"
         />
         {errors.university && <span className="font-mono text-caption text-accent mt-sm block">{errors.university}</span>}
@@ -122,7 +122,7 @@ const Step2 = memo(function Step2({ formData, errors, handleChange, qualificatio
           name="city"
           value={formData.city}
           onChange={handleChange}
-          className={`w-full bg-navy/60 border ${errors.city ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded`}
+          className={`w-full bg-navy/60 border ${errors.city ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-body rounded-md`}
           placeholder="e.g. Karachi"
         />
         {errors.city && <span className="font-mono text-caption text-accent mt-sm block">{errors.city}</span>}
@@ -135,7 +135,7 @@ const Step2 = memo(function Step2({ formData, errors, handleChange, qualificatio
       </label>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-md">
         {qualificationOptions.map((opt) => (
-          <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded">
+          <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded-md">
             <input
               type="radio"
               name="highestQualification"
@@ -157,7 +157,7 @@ const Step2 = memo(function Step2({ formData, errors, handleChange, qualificatio
       </label>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-md">
         {degreeOptions.map((opt) => (
-          <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded">
+          <label key={opt} className="flex items-center gap-sm border border-hairline/60 bg-navy/40 px-md py-sm cursor-pointer hover:border-accent/60 transition-colors rounded-md">
             <input
               type="radio"
               name="currentlyPursuing"
@@ -300,7 +300,7 @@ const Step3 = memo(function Step3({
         value={formData.reason}
         onChange={handleChange}
         rows="4"
-        className={`w-full bg-navy/60 border ${errors.reason ? 'border-accent' : 'border-hairline'} px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none text-body rounded`}
+        className={`w-full bg-navy/60 border ${errors.reason ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none text-body rounded-md`}
         placeholder="Provide a brief explanation (a few sentences)..."
       />
       {errors.reason && <span className="font-mono text-caption text-accent mt-sm block">{errors.reason}</span>}
@@ -320,7 +320,7 @@ const Step3 = memo(function Step3({
         />
         <label
           htmlFor="screenshot"
-          className={`cursor-pointer border w-full sm:w-auto hover:bg-accent/5 font-mono text-label uppercase tracking-wider px-xl py-sm transition-colors select-none text-center rounded ${
+          className={`cursor-pointer border w-full sm:w-auto hover:bg-accent/5 font-mono text-label uppercase tracking-wider px-xl py-sm transition-colors select-none text-center rounded-md ${
             errors.screenshot ? 'border-accent text-accent' : 'border-hairline text-steelblue hover:text-offwhite'
           }`}
         >
@@ -694,7 +694,7 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
               <button
                 type="button"
                 onClick={handleNext}
-                className="font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] px-xl py-sm border border-transparent transition-colors rounded shadow-elevation-sm hover:shadow-elevation-md"
+                className="font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] px-6 py-3 border border-transparent transition-colors rounded-md shadow-elevation-sm hover:shadow-elevation-md"
               >
                 Next
               </button>
@@ -708,7 +708,7 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
                   }
                 }}
                 disabled={status.submitting}
-                className="font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] px-xl py-sm border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded shadow-elevation-sm hover:shadow-elevation-md"
+                className="font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] px-6 py-3 border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded-md shadow-elevation-sm hover:shadow-elevation-md"
               >
                 {status.submitting ? 'Transmitting Registration...' : 'Submit Registration'}
               </button>

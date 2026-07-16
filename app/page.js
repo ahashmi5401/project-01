@@ -92,9 +92,9 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "SimuFlux Design Lab",
-    "image": "https://simuflux.com/images/logo.png", // fallback placeholder
-    "@id": "https://simuflux.com/#local-business",
-    "url": "https://simuflux.com",
+    "image": "https://simufluxlab.com/images/logo.png", // fallback placeholder
+    "@id": "https://simufluxlab.com/#local-business",
+    "url": "https://simufluxlab.com",
     "telephone": "+92-XXX-XXXXXXX", // TODO: Replace with client's actual phone number
     "address": {
       "@type": "PostalAddress",
@@ -123,7 +123,7 @@ export default async function Home() {
       "closes": "18:00"
     },
     "sameAs": [
-      "https://www.linkedin.com/company/simuflux-design-lab" // placeholder/example
+      "https://www.facebook.com/profile.php?id=61591794389878"
     ],
     "areaServed": [
       {

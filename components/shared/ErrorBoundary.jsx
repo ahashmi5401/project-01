@@ -31,24 +31,24 @@ class ErrorBoundary extends Component {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
               </div>
-              <h2 className="font-sans font-bold text-2xl text-offwhite mb-4 uppercase tracking-tight">
+              <h2 className="font-sans font-bold text-h2 text-offwhite mb-xl uppercase tracking-tight">
                 Something went wrong
               </h2>
-              <p className="font-sans text-sm text-steelblue mb-6 leading-relaxed">
+              <p className="font-sans text-body text-steelblue mb-xl leading-relaxed">
                 An unexpected error occurred. Please refresh the page or try again later.
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className="font-mono text-xs uppercase tracking-wider text-accent border border-accent/20 px-8 py-3 hover:bg-accent/5 transition-colors rounded shadow-elevation-sm"
+                className="font-mono text-label uppercase tracking-wider text-accent border border-accent/20 px-xl py-3 hover:bg-accent/5 transition-colors rounded shadow-elevation-sm"
               >
                 Refresh Page
               </button>
               {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="mt-6 text-left">
-                  <summary className="font-mono text-xs text-steelblue cursor-pointer hover:text-accent">
+                <details className="mt-xl text-left">
+                  <summary className="font-mono text-label text-steelblue cursor-pointer hover:text-accent">
                     Error Details (Development)
                   </summary>
-                  <pre className="mt-2 p-4 bg-navy/80 border border-hairline rounded text-xs text-red-400 overflow-auto">
+                  <pre className="mt-md p-lg bg-navy/80 border border-hairline rounded text-label text-red-400 overflow-auto">
                     {this.state.error.toString()}
                     {this.state.errorInfo && this.state.errorInfo.componentStack}
                   </pre>

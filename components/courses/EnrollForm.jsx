@@ -16,7 +16,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const [status, setStatus] = useState({
     submitting: false,
@@ -80,6 +80,12 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
 
   // Calculate selected course titles for modal
   const selectedCourseTitles = selectedCourses.map(c => c.title);
+
+  // Filter courses based on search query
+  const filteredCourses = courses.filter(course =>
+    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.id.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -171,221 +177,407 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
           onClose={() => setShowToast(false)} 
         />
       )}
-      <div className="space-y-8">
+      <div className="min-h-screen bg-navy">
         {/* Header Block */}
-        <div className="border-b border-hairline pb-lg sm:pb-xl flex flex-col sm:flex-row sm:items-end justify-between gap-6">
-          <div>
-            <SectionEyebrow text="Package Configurator" />
-            <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-offwhite uppercase tracking-tight">
-              Enroll Now
-            </h1>
-            <p className="font-sans text-sm text-steelblue mt-2 leading-relaxed max-w-xl">
-              Choose your training courses. Your bundle discount updates dynamically based on the volume discount tiers set by the admin.
-            </p>
-          </div>
-          <div className="font-mono text-xs text-steelblue/50 select-none">
-            DESK ID: ENROLL-MAIN
+        <div className="border-b border-hairline bg-white/[0.02] px-4 py-8 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <SectionEyebrow text="Package Configurator" />
+                <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-offwhite tracking-tight mt-2">
+                  Enroll Now
+                </h1>
+                <p className="font-sans text-base text-steelblue mt-3 leading-relaxed max-w-xl">
+                  Choose your training courses. Your bundle discount updates dynamically based on the volume discount tiers set by the admin.
+                </p>
+              </div>
+              <div className="font-mono text-xs text-steelblue/50 select-none">
+                DESK ID: ENROLL-MAIN
+              </div>
+            </div>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="max-w-2xl mx-auto space-y-8">
+        <form onSubmit={handleSubmit} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
-          {/* Student Details Section */}
-          <div className="border border-hairline bg-navy/40 backdrop-blur-sm shadow-elevation-md p-xl space-y-xl rounded-lg">
-            <h4 className="font-mono text-label uppercase tracking-widest text-steelblue block mb-sm">
-              [ STUDENT SIGNATURE DETAILS ]
-            </h4>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Column - Course Selection & Student Details */}
+            <div className="lg:col-span-7 space-y-8">
+              
+              {/* Course Selection Panel */}
+              <div className="bg-white/[0.02] border border-hairline rounded-xl overflow-hidden">
+                <div className="px-6 py-5 border-b border-hairline">
+                  <h3 className="font-sans font-semibold text-lg text-offwhite">
+                    Select Your Training Courses
+                  </h3>
+                  <p className="font-sans text-sm text-steelblue mt-1">
+                    Choose one or more courses to build your custom package
+                  </p>
+                </div>
+                
+                {courses.length === 0 ? (
+                  <div className="p-12 text-center text-steelblue font-sans text-sm">
+                    No training courses available currently.
+                  </div>
+                ) : (
+                  <div className="p-6">
+                    {/* Search Input */}
+                    <div className="relative mb-6">
+                      <svg 
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-steelblue" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search courses by name or ID..."
+                        className="w-full bg-navy/50 border border-hairline rounded-lg pl-12 pr-4 py-3 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-sm"
+                        aria-label="Search courses"
+                      />
+                    </div>
 
-            <div>
-              <label htmlFor="student-name" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                Full Name <span className="text-accent">*</span>
-              </label>
-              <input
-                id="student-name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full bg-navy/50 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded text-body"
-                placeholder="e.g. John Doe"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="student-phone" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                WhatsApp / Phone <span className="text-accent">*</span>
-              </label>
-              <input
-                id="student-phone"
-                type="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full bg-navy/50 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded text-body"
-                placeholder="e.g. +92 300 1234567"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="student-email" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                Email Address <span className="text-accent">*</span>
-              </label>
-              <input
-                id="student-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-navy/50 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded text-body"
-                placeholder="e.g. john@example.com"
-                required
-              />
-            </div>
-          </div>
-
-          {/* Course Selection Dropdown */}
-          <div className="border border-hairline bg-navy/40 shadow-elevation-sm rounded-lg overflow-hidden">
-            <h3 className="font-mono text-label uppercase tracking-wider text-accent select-none border-b border-hairline/60 px-xl py-md">
-              [ SELECT YOUR TRAINING COURSES ]
-            </h3>
-            
-            {courses.length === 0 ? (
-              <div className="p-4xl text-center text-steelblue font-mono text-label">
-                NO TRAINING COURSES AVAILABLE CURRENTLY.
-              </div>
-            ) : (
-              <div className="p-xl">
-                {/* Dropdown Trigger */}
-                <button
-                  type="button"
-                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="w-full bg-navy/50 border border-hairline px-lg py-sm text-offwhite font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded text-body flex items-center justify-between"
-                >
-                  <span className={selectedCount > 0 ? 'text-offwhite' : 'text-steelblue/50'}>
-                    {selectedCount > 0 ? `${selectedCount} course${selectedCount > 1 ? 's' : ''} selected` : 'Select courses...'}
-                  </span>
-                  <svg className={`w-5 h-5 text-steelblue transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-
-                {/* Dropdown Content */}
-                {isDropdownOpen && (
-                  <div className="mt-4 border border-hairline bg-navy/30 rounded-lg max-h-[400px] overflow-y-auto custom-scrollbar">
-                    {courses.map((course) => {
-                      const isChecked = selectedCourseIds.includes(course._id);
-                      const badge = getCourseBadge(course, discountSource);
-                      const finalPrice = badge && discountSource === 'individual' 
-                        ? Math.round(course.price * (1 - course.discountPercent / 100))
-                        : course.price;
-                      
-                      return (
-                        <div
-                          key={course._id}
-                          onClick={() => handleToggleCourse(course._id)}
-                          className="px-xl py-lg border-b border-hairline/40 last:border-b-0 cursor-pointer transition-all duration-300 select-none bg-navy/40 hover:bg-white/[0.02]"
-                        >
-                          <div className="flex items-start gap-3">
-                            <div className={`w-6 h-6 border-2 flex items-center justify-center transition-all duration-300 rounded-sm mt-1 flex-shrink-0 ${
-                              isChecked ? 'border-accent bg-accent' : 'border-hairline bg-transparent hover:border-accent/50'
-                            }`}>
+                    {/* Course Cards Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                      {filteredCourses.map((course) => {
+                        const isChecked = selectedCourseIds.includes(course._id);
+                        const badge = getCourseBadge(course, discountSource);
+                        const finalPrice = badge && discountSource === 'individual' 
+                          ? Math.round(course.price * (1 - course.discountPercent / 100))
+                          : course.price;
+                        
+                        return (
+                          <button
+                            key={course._id}
+                            type="button"
+                            onClick={() => handleToggleCourse(course._id)}
+                            className={`
+                              relative p-5 rounded-lg border-2 transition-all duration-200 text-left
+                              ${isChecked 
+                                ? 'border-accent bg-accent/10 shadow-lg shadow-accent/20' 
+                                : 'border-hairline bg-white/[0.02] hover:border-hairline hover:bg-white/[0.04]'
+                              }
+                            `}
+                            aria-label={`Select ${course.title}`}
+                            aria-pressed={isChecked}
+                          >
+                            {/* Selection Indicator */}
+                            <div className={`
+                              absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-200
+                              ${isChecked 
+                                ? 'border-accent bg-accent' 
+                                : 'border-steelblue/40 bg-transparent'
+                              }
+                            `}>
                               {isChecked && (
-                                <svg className="w-4 h-4 text-offwhite fill-none stroke-current" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                                 </svg>
                               )}
                             </div>
-                            <div className="flex-1">
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="flex-1">
-                                  <span className="font-sans font-semibold text-body text-offwhite block">
-                                    {course.title}
-                                  </span>
-                                  <span className="font-mono text-caption text-steelblue/60 uppercase tracking-wider mt-1 block">
-                                    {course.id}
-                                  </span>
-                                </div>
-                                <div className="text-right flex-shrink-0">
-                                  {badge && discountSource === 'individual' && (
-                                    <span className="font-mono text-caption text-steelblue/60 line-through block">
-                                      PKR {course.price?.toLocaleString() || 'N/A'}
-                                    </span>
-                                  )}
-                                  <span className={`font-mono text-caption font-semibold block ${badge ? 'text-accent' : 'text-offwhite'}`}>
-                                    PKR {finalPrice?.toLocaleString() || 'N/A'}
-                                  </span>
-                                  {badge && (
-                                    <div className="font-mono text-caption text-accent mt-1">
-                                      {badge}
-                                    </div>
-                                  )}
-                                </div>
+
+                            {/* Course Content */}
+                            <div className="pr-8">
+                              <div className="font-mono text-xs text-steelblue/60 uppercase tracking-wider mb-2">
+                                {course.id}
                               </div>
+                              <h4 className="font-sans font-semibold text-base text-offwhite mb-3 leading-snug">
+                                {course.title}
+                              </h4>
+                              
+                              {/* Price Section */}
+                              <div className="flex items-baseline gap-2">
+                                {badge && discountSource === 'individual' && (
+                                  <span className="font-mono text-sm text-steelblue/60 line-through">
+                                    PKR {course.price?.toLocaleString() || 'N/A'}
+                                  </span>
+                                )}
+                                <span className={`font-mono text-lg font-semibold ${badge ? 'text-accent' : 'text-offwhite'}`}>
+                                  PKR {finalPrice?.toLocaleString() || 'N/A'}
+                                </span>
+                              </div>
+
+                              {/* Discount Badge */}
+                              {badge && (
+                                <div className="inline-block mt-3 px-2 py-1 bg-accent/20 border border-accent/30 rounded-md">
+                                  <span className="font-mono text-xs text-accent font-medium">
+                                    {badge}
+                                  </span>
+                                </div>
+                              )}
                             </div>
-                          </div>
-                        </div>
-                      );
-                    })}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Selection Counter */}
+                    <div className="mt-4 pt-4 border-t border-hairline flex items-center justify-between">
+                      <span className="font-sans text-sm text-steelblue">
+                        {selectedCount} course{selectedCount !== 1 ? 's' : ''} selected
+                      </span>
+                      {selectedCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCourseIds([])}
+                          className="font-sans text-sm text-steelblue hover:text-offwhite transition-colors"
+                        >
+                          Clear selection
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
-            )}
-          </div>
 
-          {/* Pricing Summary */}
-          <div className="border border-hairline bg-navy/40 backdrop-blur-sm shadow-elevation-md p-xl space-y-xl font-sans rounded-lg">
-            <h3 className="font-mono text-label uppercase tracking-wider text-accent select-none border-b border-hairline/60 pb-md">
-              [ FITTING SHEET SUMMARY ]
-            </h3>
+              {/* Student Details */}
+              <div className="bg-white/[0.02] border border-hairline rounded-xl p-6 space-y-6">
+                <div>
+                  <h3 className="font-sans font-semibold text-lg text-offwhite mb-1">
+                    Student Details
+                  </h3>
+                  <p className="font-sans text-sm text-steelblue">
+                    Please provide your contact information
+                  </p>
+                </div>
 
-            {/* Discount Gauge */}
-            <DiscountGauge 
-              selectedCount={selectedCount}
-              sortedTiers={sortedTiers}
-              activeTier={activeTier}
-              nextTier={nextTier}
-              coursesNeededForNext={coursesNeededForNext}
-            />
+                <div className="space-y-5">
+                  <div>
+                    <label htmlFor="student-name" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                      Full Name <span className="text-accent">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="student-name"
+                        type="text"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-3 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-sm"
+                        placeholder="e.g. John Doe"
+                        required
+                        aria-required="true"
+                      />
+                      <svg 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-steelblue pointer-events-none" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                    </div>
+                    <p className="font-sans text-xs text-steelblue/60 mt-2">
+                      Enter your full legal name as it appears on official documents
+                    </p>
+                  </div>
 
-            <div className="space-y-lg">
-              <div className="flex justify-between items-center">
-                <span className="text-steelblue text-body">Original Total</span>
-                <span className="font-mono text-offwhite text-caption">PKR {subtotal.toLocaleString()}</span>
+                  <div>
+                    <label htmlFor="student-phone" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                      WhatsApp / Phone <span className="text-accent">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="student-phone"
+                        type="tel"
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-3 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-sm"
+                        placeholder="e.g. +92 300 1234567"
+                        required
+                        aria-required="true"
+                      />
+                      <svg 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-steelblue pointer-events-none" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                      </svg>
+                    </div>
+                    <p className="font-sans text-xs text-steelblue/60 mt-2">
+                      We&apos;ll send enrollment confirmation via WhatsApp
+                    </p>
+                  </div>
+
+                  <div>
+                    <label htmlFor="student-email" className="block font-sans text-sm font-medium text-steelblue mb-2">
+                      Email Address <span className="text-accent">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="student-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full bg-navy/50 border border-hairline rounded-lg px-4 py-3 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all text-sm"
+                        placeholder="e.g. john@example.com"
+                        required
+                        aria-required="true"
+                      />
+                      <svg 
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-steelblue pointer-events-none" 
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <p className="font-sans text-xs text-steelblue/60 mt-2">
+                      For course materials and updates
+                    </p>
+                  </div>
+                </div>
               </div>
-              
-              {discountPercent > 0 && (
-                <>
-                  <div className="flex justify-between items-center text-accent">
-                    <span className="text-body">{getDiscountSourceLabel(discountSource)}</span>
-                    <span className="font-mono text-caption">- PKR {discountAmount.toLocaleString()}</span>
+            </div>
+
+            {/* Right Column - Sticky Pricing Summary */}
+            <div className="lg:col-span-5">
+              <div className="lg:sticky lg:top-8 space-y-6">
+                {/* Pricing Summary Card */}
+                <div className="bg-white/[0.02] border border-hairline rounded-xl p-6 space-y-6">
+                  <div>
+                    <h3 className="font-sans font-semibold text-lg text-offwhite mb-1">
+                      Order Summary
+                    </h3>
+                    <p className="font-sans text-sm text-steelblue">
+                      Review your package details
+                    </p>
                   </div>
-                  <div className="text-xs text-steelblue/70 font-mono">
-                    {discountReason}
+
+                  {/* Discount Gauge */}
+                  <DiscountGauge 
+                    selectedCount={selectedCount}
+                    sortedTiers={sortedTiers}
+                    activeTier={activeTier}
+                    nextTier={nextTier}
+                    coursesNeededForNext={coursesNeededForNext}
+                  />
+
+                  {/* Selected Courses List */}
+                  {selectedCourses.length > 0 && (
+                    <div className="space-y-3 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
+                      {selectedCourses.map((course) => (
+                        <div key={course._id} className="flex items-center justify-between text-sm">
+                          <span className="font-sans text-steelblue truncate flex-1 pr-4">
+                            {course.title}
+                          </span>
+                          <span className="font-mono text-steelblue/70 whitespace-nowrap">
+                            PKR {course.price?.toLocaleString() || 'N/A'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Pricing Breakdown */}
+                  <div className="space-y-4 pt-4 border-t border-hairline">
+                    <div className="flex justify-between items-center">
+                      <span className="font-sans text-sm text-steelblue">Original Total</span>
+                      <span className="font-mono text-sm text-offwhite">PKR {subtotal.toLocaleString()}</span>
+                    </div>
+                    
+                    {discountPercent > 0 && (
+                      <>
+                        <div className="flex justify-between items-center">
+                          <span className="font-sans text-sm text-accent">
+                            {getDiscountSourceLabel(discountSource)}
+                          </span>
+                          <span className="font-mono text-sm text-accent">
+                            - PKR {discountAmount.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="text-xs text-steelblue/70 font-sans leading-relaxed">
+                          {discountReason}
+                        </div>
+                      </>
+                    )}
+                    
+                    <div className="flex justify-between items-center pt-4 border-t border-hairline">
+                      <span className="font-sans font-semibold text-base text-offwhite">Final Total</span>
+                      <span className="font-mono font-bold text-2xl text-offwhite">
+                        PKR {totalPrice.toLocaleString()}
+                      </span>
+                    </div>
                   </div>
-                </>
-              )}
-              
-              <div className="border-t border-hairline/60 pt-lg flex justify-between items-center">
-                <span className="font-sans font-bold text-h3 text-offwhite uppercase tracking-wide">Final Payable Amount</span>
-                <span className="font-mono font-bold text-h2 text-accent leading-none">PKR {totalPrice.toLocaleString()}</span>
+                </div>
+
+                {/* Trust Section */}
+                <div className="bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 rounded-xl p-6">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                      </div>
+                      <span className="font-sans text-sm text-steelblue">Secure Enrollment</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                        </svg>
+                      </div>
+                      <span className="font-sans text-sm text-steelblue">WhatsApp Confirmation</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <span className="font-sans text-sm text-steelblue">Response within 15 minutes</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-12a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                      </div>
+                      <span className="font-sans text-sm text-steelblue">No hidden charges</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Error Display */}
+                {status.error && (
+                  <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 font-sans text-sm">
+                    {status.error}
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={status.submitting || selectedCount === 0}
+                  className="w-full bg-accent hover:bg-accent/90 active:bg-accent/80 text-offwhite font-sans font-semibold text-base px-6 py-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-accent shadow-lg shadow-accent/25 hover:shadow-accent/40 flex items-center justify-center gap-2"
+                >
+                  {status.submitting ? (
+                    <>
+                      <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>Processing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Send Enrollment Request</span>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
-
-          {/* Error Display */}
-          {status.error && (
-            <div className="p-lg bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 font-sans text-caption shadow-elevation-sm">
-              {status.error}
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={status.submitting || selectedCount === 0}
-            className="w-full bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-mono uppercase tracking-wider text-label px-xl py-sm border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none shadow-elevation-sm hover:shadow-elevation-md disabled:shadow-none rounded"
-          >
-            {status.submitting ? 'Transmitting Request...' : 'Send Enrollment Request'}
-          </button>
         </form>
       </div>
 
@@ -406,7 +598,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
 
 export default function EnrollForm({ courses, discountTiers, comboDeals }) {
   return (
-    <Suspense fallback={<div className="py-20 text-center font-mono text-xs text-steelblue animate-pulse">LOADING CONFIGURATOR FRAME...</div>}>
+    <Suspense fallback={<div className="py-20 text-center font-sans text-sm text-slate-500 animate-pulse">Loading configurator...</div>}>
       <EnrollFormContent courses={courses} discountTiers={discountTiers} comboDeals={comboDeals} />
     </Suspense>
   );

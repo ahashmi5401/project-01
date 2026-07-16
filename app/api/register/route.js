@@ -119,11 +119,11 @@ export async function POST(req) {
       }
     }
 
-    // --- 2. Duplicate detection (same email + any of the selected courses within 24 hours) ---
+    // --- 2. Duplicate detection (same email + same course combination within 24 hours) ---
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const existing = await db.collection('registrations').findOne({
       email: cleanEmail,
-      courses: { $in: cleanCourses },
+      courses: { $size: cleanCourses.length, $all: cleanCourses },
       createdAt: { $gte: twentyFourHoursAgo },
     });
 
@@ -136,7 +136,7 @@ export async function POST(req) {
         );
       }
       return NextResponse.json(
-        { error: "You've already registered for one of these courses within the last 24 hours — we'll be in touch!" },
+        { error: "You've already registered for these courses within the last 24 hours — we'll be in touch!" },
         { status: 409 }
       );
     }
@@ -289,7 +289,7 @@ export async function POST(req) {
       // A. Student confirmation email
       try {
         await resend.emails.send({
-          from: 'SimuFlux Academy <academy@simuflux.com>',
+          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
           to: cleanEmail,
           subject: `Registration Received: ${cleanCourses.join(', ')}`,
           text: `Hello ${name.trim()},\n\nWe have received your registration and payment proof for the following courses: ${cleanCourses.join(', ')}. Our team will verify the payment and contact you shortly to confirm your seat.\n\nThank you for choosing SimuFlux Design Lab.\n\nBest Regards,\nSimuFlux Team`,

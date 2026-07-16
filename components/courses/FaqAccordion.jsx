@@ -11,36 +11,35 @@ export default function FaqAccordion({ faqs = [] }) {
   };
 
   return (
-    <div className="border border-hairline/60 divide-y divide-hairline/60">
+    <div className="space-y-1">
       {faqs.map((faq, index) => {
         const isOpen = openIndex === index;
         const answerId = `faq-answer-${index}`;
 
         return (
-          <div key={index}>
-            {/* Question Row — real <button> for keyboard accessibility */}
+          <div key={index} className="border-b border-white/10">
+            {/* Clean Apple-style accordion */}
             <button
               type="button"
               onClick={() => toggle(index)}
               aria-expanded={isOpen}
               aria-controls={answerId}
-              className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-inset"
+              className="w-full text-left py-5 px-0 flex items-start justify-between gap-4 group focus:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-inset"
             >
-              <span className="flex items-start gap-3 font-sans font-bold text-base text-offwhite group-hover:text-accent transition-colors">
-                <span className="text-accent font-mono font-bold flex-shrink-0 mt-px">Q.</span>
+              <span className="font-sans font-medium text-base text-offwhite group-hover:text-offwhite/90 transition-colors flex-1">
                 {faq.q}
               </span>
 
-              {/* Chevron icon — rotates 180° when open */}
+              {/* Simple chevron */}
               <motion.span
                 animate={{ rotate: isOpen ? 180 : 0 }}
-                transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                className="flex-shrink-0 text-steelblue group-hover:text-accent transition-colors"
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+                className="flex-shrink-0 text-steelblue mt-0.5"
                 aria-hidden="true"
               >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path
-                    d="M3 5.5L8 10.5L13 5.5"
+                    d="M2 4L6 8L10 4"
                     stroke="currentColor"
                     strokeWidth="1.5"
                     strokeLinecap="round"
@@ -50,7 +49,7 @@ export default function FaqAccordion({ faqs = [] }) {
               </motion.span>
             </button>
 
-            {/* Answer Panel — animated height reveal */}
+            {/* Answer Panel */}
             <AnimatePresence initial={false}>
               {isOpen && (
                 <motion.div
@@ -61,11 +60,11 @@ export default function FaqAccordion({ faqs = [] }) {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.25, ease: 'easeInOut' }}
                   className="overflow-hidden"
                 >
-                  <div className="px-6 pb-6 pt-1">
-                    <p className="font-sans text-xs sm:text-sm text-steelblue leading-relaxed">
+                  <div className="pb-5">
+                    <p className="font-sans text-base text-steelblue/80 leading-relaxed max-w-3xl">
                       {faq.a}
                     </p>
                   </div>

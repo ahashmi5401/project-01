@@ -55,7 +55,7 @@ export async function POST(req) {
       // A. Client confirmation email
       try {
         await resend.emails.send({
-          from: 'SimuFlux Academy <academy@simuflux.com>',
+          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
           to: cleanEmail,
           subject: `Inquiry Received: ${safeTargetName}`,
           text: `Hello ${name.trim()},

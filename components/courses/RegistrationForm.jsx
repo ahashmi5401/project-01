@@ -169,44 +169,44 @@ export default function RegistrationForm({ courses }) {
   };
 
   return (
-    <section className="py-16 bg-navy/20 border-t border-hairline relative z-10" id="register-section">
-      <div className="max-w-3xl mx-auto border border-hairline bg-navy/60 p-8 sm:p-12 relative">
+    <section className="py-4xl bg-navy/20 border-t border-hairline relative z-10" id="register-section">
+      <div className="max-w-3xl mx-auto border border-hairline bg-navy/60 p-xl sm:p-4xl relative shadow-elevation-sm rounded-lg">
         {/* Engineering blueprint corners */}
-        <div className="absolute top-0 right-0 w-16 h-16 border-r border-t border-white/5 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-16 h-16 border-l border-b border-white/5 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-16 h-16 border-r border-t border-white/5 pointer-events-none rounded-tr-lg" />
+        <div className="absolute bottom-0 left-0 w-16 h-16 border-l border-b border-white/5 pointer-events-none rounded-bl-lg" />
 
-        <div className="text-center mb-10 border-b border-hairline/60 pb-6">
-          <span className="font-mono text-xs uppercase tracking-widest text-accent block mb-2">
+        <div className="text-center mb-xl border-b border-hairline/60 pb-xl">
+          <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
             [ REGISTRATION DESK ]
           </span>
-          <h2 className="font-sans font-bold text-2xl sm:text-3xl text-offwhite uppercase tracking-tight">
+          <h2 className="font-sans font-bold text-h2 sm:text-h1 text-offwhite uppercase tracking-tight">
             Seat Enrollment & Receipt Submission
           </h2>
-          <p className="font-sans text-xs sm:text-sm text-steelblue leading-relaxed mt-2 max-w-lg mx-auto">
+          <p className="font-sans text-caption sm:text-body text-steelblue leading-relaxed mt-md max-w-lg mx-auto">
             Once bank transfer or JazzCash details have been provided to you, fill out the details below along with a screenshot of the payment receipt.
           </p>
         </div>
 
         {status.submitted ? (
-          <div className="text-center py-12 space-y-6">
-            <div className="w-16 h-16 border border-accent flex items-center justify-center mx-auto">
+          <div className="text-center py-4xl space-y-xl">
+            <div className="w-16 h-16 border border-accent flex items-center justify-center mx-auto rounded-lg shadow-elevation-sm">
               <svg className="w-8 h-8 text-accent fill-none stroke-current" viewBox="0 0 24 24" role="img" aria-label="Success checkmark icon">
                 <title>Success</title>
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 className="font-sans font-bold text-xl text-offwhite uppercase tracking-tight">
+            <h3 className="font-sans font-bold text-h2 text-offwhite uppercase tracking-tight">
               Registration Logged
             </h3>
-            <p className="font-sans text-sm text-steelblue leading-relaxed max-w-md mx-auto">
+            <p className="font-sans text-body text-steelblue leading-relaxed max-w-md mx-auto">
               {status.message}
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <form onSubmit={handleSubmit} className="space-y-lg">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
               <div>
-                <label htmlFor="name" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                <label htmlFor="name" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                   Full Name *
                 </label>
                 <input
@@ -217,14 +217,14 @@ export default function RegistrationForm({ courses }) {
                   onChange={handleChange}
                   className={`w-full bg-navy/60 border ${
                     errors.name ? 'border-accent' : 'border-hairline'
-                  } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent transition-colors`}
+                  } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md text-body`}
                   placeholder="e.g. John Doe"
                 />
-                {errors.name && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.name}</span>}
+                {errors.name && <span className="font-mono text-caption text-accent mt-sm block">{errors.name}</span>}
               </div>
 
               <div>
-                <label htmlFor="email" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                <label htmlFor="email" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                   Email Address *
                 </label>
                 <input
@@ -235,16 +235,16 @@ export default function RegistrationForm({ courses }) {
                   onChange={handleChange}
                   className={`w-full bg-navy/60 border ${
                     errors.email ? 'border-accent' : 'border-hairline'
-                  } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent transition-colors`}
+                  } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md text-body`}
                   placeholder="e.g. john@example.com"
                 />
-                {errors.email && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.email}</span>}
+                {errors.email && <span className="font-mono text-caption text-accent mt-sm block">{errors.email}</span>}
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-lg">
               <div>
-                <label htmlFor="phone" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                <label htmlFor="phone" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                   WhatsApp / Phone *
                 </label>
                 <input
@@ -255,14 +255,14 @@ export default function RegistrationForm({ courses }) {
                   onChange={handleChange}
                   className={`w-full bg-navy/60 border ${
                     errors.phone ? 'border-accent' : 'border-hairline'
-                  } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent transition-colors`}
+                  } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md text-body`}
                   placeholder="e.g. +92 300 1234567"
                 />
-                {errors.phone && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.phone}</span>}
+                {errors.phone && <span className="font-mono text-caption text-accent mt-sm block">{errors.phone}</span>}
               </div>
 
               <div>
-                <label htmlFor="course" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+                <label htmlFor="course" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                   Select Course *
                 </label>
                 <select
@@ -272,7 +272,7 @@ export default function RegistrationForm({ courses }) {
                   onChange={handleChange}
                   className={`w-full bg-navy/60 border ${
                     errors.course ? 'border-accent' : 'border-hairline'
-                  } px-4 py-3.5 text-offwhite font-sans focus:outline-none focus:border-accent transition-colors appearance-none`}
+                  } px-4 py-3 text-offwhite font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all appearance-none rounded-md text-body`}
                   style={{ backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='none' stroke='%239DB4CB' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'></polyline></svg>")`, backgroundPosition: 'right 16px center', backgroundRepeat: 'no-repeat', backgroundSize: '16px' }}
                 >
                   <option value="" disabled className="bg-navy text-steelblue/50">-- Select Course --</option>
@@ -282,16 +282,16 @@ export default function RegistrationForm({ courses }) {
                     </option>
                   ))}
                 </select>
-                {errors.course && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.course}</span>}
+                {errors.course && <span className="font-mono text-caption text-accent mt-sm block">{errors.course}</span>}
               </div>
             </div>
 
             {/* Payment Screenshot File Upload */}
             <div>
-              <label htmlFor="screenshot" className="block font-mono text-xs uppercase tracking-wider text-steelblue mb-2">
+              <label htmlFor="screenshot" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Upload Payment Receipt Screenshot * (JPEG/PNG/WEBP, Max 5MB)
               </label>
-              <div className="flex flex-col sm:flex-row gap-4 items-center">
+              <div className="flex flex-col sm:flex-row gap-md items-center">
                 <input
                   id="screenshot"
                   type="file"
@@ -301,31 +301,31 @@ export default function RegistrationForm({ courses }) {
                 />
                 <label
                   htmlFor="screenshot"
-                  className={`cursor-pointer border w-full sm:w-auto hover:bg-accent/5 font-mono text-xs uppercase tracking-wider px-8 py-3.5 transition-colors select-none text-center ${
+                  className={`cursor-pointer border w-full sm:w-auto hover:bg-accent/5 font-mono text-label uppercase tracking-wider px-xl py-sm transition-colors select-none text-center rounded ${
                     errors.screenshot ? 'border-accent text-accent' : 'border-hairline text-steelblue hover:text-offwhite'
                   }`}
                 >
                   {screenshot ? 'Change Screenshot' : 'Select Screenshot File'}
                 </label>
                 {screenshot && (
-                  <span className="font-mono text-3xs text-green-400 truncate max-w-xs block mt-2 sm:mt-0">
+                  <span className="font-mono text-caption text-green-400 truncate max-w-xs block mt-sm sm:mt-0">
                     Selected: {screenshot.name} ({(screenshot.size / 1024 / 1024).toFixed(2)} MB)
                   </span>
                 )}
               </div>
-              {errors.screenshot && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.screenshot}</span>}
+              {errors.screenshot && <span className="font-mono text-caption text-accent mt-sm block">{errors.screenshot}</span>}
             </div>
 
             {/* Turnstile widget */}
             {siteKey && (
-              <div className="py-2 flex justify-start">
+              <div className="py-sm flex justify-start">
                 <div ref={turnstileContainerRef} />
               </div>
             )}
-            {errors.captcha && <span className="font-mono text-[10px] text-accent mt-1 block">{errors.captcha}</span>}
+            {errors.captcha && <span className="font-mono text-caption text-accent mt-sm block">{errors.captcha}</span>}
 
             {status.error && (
-              <div className="p-4 border border-accent bg-accent/5 text-offwhite font-mono text-xs">
+              <div className="p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">
                 {status.error}
               </div>
             )}
@@ -333,7 +333,7 @@ export default function RegistrationForm({ courses }) {
             <button
               type="submit"
               disabled={status.submitting}
-              className="w-full bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-mono uppercase tracking-wider text-sm py-4 border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none"
+              className="w-full bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-mono uppercase tracking-wider text-label px-6 py-3 border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none shadow-elevation-sm hover:shadow-elevation-md rounded-md"
             >
               {status.submitting ? 'Transmitting Registration...' : 'Complete Course Registration'}
             </button>

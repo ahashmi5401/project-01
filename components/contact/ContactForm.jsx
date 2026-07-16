@@ -91,10 +91,10 @@ export default function ContactForm() {
   };
 
   return (
-    <div className="border border-hairline bg-navy/40 shadow-elevation-sm p-xl w-full rounded-lg">
+    <div className="bg-navy p-xl w-full rounded-xl">
       {status.submitted ? (
         <div className="text-center py-3xl">
-          <div className="w-16 h-16 border border-accent flex items-center justify-center mx-auto mb-xl shadow-elevation-sm">
+          <div className="w-16 h-16 bg-accent/10 flex items-center justify-center mx-auto mb-xl shadow-elevation-sm">
             <svg className="w-8 h-8 text-accent fill-none stroke-current" viewBox="0 0 24 24" role="img" aria-label="Success checkmark icon">
               <title>Success</title>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
@@ -106,7 +106,7 @@ export default function ContactForm() {
           </p>
           <button
             onClick={() => setStatus((prev) => ({ ...prev, submitted: false }))}
-            className="mt-xl font-mono text-label uppercase tracking-wider text-accent border border-accent/20 px-lg py-sm hover:bg-accent/5 active:bg-accent/10 transition-colors rounded"
+            className="mt-xl font-sans text-label uppercase tracking-wider text-accent border border-accent/20 px-lg py-sm hover:bg-accent/5 active:bg-accent/10 transition-colors rounded font-semibold"
           >
             Send Another Message
           </button>
@@ -128,7 +128,7 @@ export default function ContactForm() {
           </div>
 
           <div>
-            <label htmlFor="name" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+            <label htmlFor="name" className="block font-sans text-label uppercase tracking-wider text-steelblue mb-sm font-semibold">
               Name *
             </label>
             <input
@@ -137,16 +137,16 @@ export default function ContactForm() {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className={`w-full bg-navy/60 border ${
+              className={`w-full bg-navy border ${
                 errors.name ? 'border-accent shadow-elevation-sm' : 'border-hairline'
-              } px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded`} 
+              } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md`} 
               placeholder="e.g. John Doe"
             />
-            {errors.name && <span className="font-mono text-label text-accent mt-sm block">{errors.name}</span>}
+            {errors.name && <span className="font-sans text-label text-accent mt-sm block">{errors.name}</span>}
           </div>
 
           <div>
-            <label htmlFor="email" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+            <label htmlFor="email" className="block font-sans text-label uppercase tracking-wider text-steelblue mb-sm font-semibold">
               Email Address *
             </label>
             <input
@@ -155,16 +155,16 @@ export default function ContactForm() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full bg-navy/60 border ${
+              className={`w-full bg-navy border ${
                 errors.email ? 'border-accent shadow-elevation-sm' : 'border-hairline'
-              } px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded`} 
+              } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md`} 
               placeholder="e.g. john@example.com"
             />
-            {errors.email && <span className="font-mono text-label text-accent mt-sm block">{errors.email}</span>}
+            {errors.email && <span className="font-sans text-label text-accent mt-sm block">{errors.email}</span>}
           </div>
 
           <div>
-            <label htmlFor="phone" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+            <label htmlFor="phone" className="block font-sans text-label uppercase tracking-wider text-steelblue mb-sm font-semibold">
               Phone Number (Optional)
             </label>
             <input
@@ -173,13 +173,13 @@ export default function ContactForm() {
               name="phone"
               value={formData.phone}
               onChange={handleChange}
-              className="w-full bg-navy/60 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded"
+              className="w-full bg-navy border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md"
               placeholder="e.g. +92 300 1234567"
             />
           </div>
 
           <div>
-            <label htmlFor="message" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+            <label htmlFor="message" className="block font-sans text-label uppercase tracking-wider text-steelblue mb-sm font-semibold">
               Message *
             </label>
             <textarea
@@ -188,16 +188,16 @@ export default function ContactForm() {
               value={formData.message}
               onChange={handleChange}
               rows="5"
-              className={`w-full bg-navy/60 border ${
+              className={`w-full bg-navy border ${
                 errors.message ? 'border-accent shadow-elevation-sm' : 'border-hairline'
-              } px-lg py-sm text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none rounded`} 
+              } px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all resize-none rounded-md`} 
               placeholder="Outline your project scope or training inquiry..."
             />
-            {errors.message && <span className="font-mono text-label text-accent mt-sm block">{errors.message}</span>}
+            {errors.message && <span className="font-sans text-label text-accent mt-sm block">{errors.message}</span>}
           </div>
 
           {status.error && (
-            <div className="p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">
+            <div className="p-lg border border-accent bg-accent/10 text-offwhite font-sans text-label shadow-elevation-sm rounded">
               {status.error}
             </div>
           )}
@@ -205,7 +205,7 @@ export default function ContactForm() {
           <button
             type="submit"
             disabled={status.submitting}
-            className="w-full bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-mono uppercase tracking-wider text-label py-lg border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none shadow-elevation-sm hover:shadow-elevation-md rounded"
+            className="w-full bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] text-offwhite font-sans uppercase tracking-wider text-label px-6 py-3 border border-transparent transition-colors disabled:opacity-50 disabled:cursor-not-allowed select-none shadow-elevation-sm hover:shadow-elevation-md rounded-md font-semibold"
           >
             {status.submitting ? 'Transmitting...' : 'Submit Inquiry'}
           </button>

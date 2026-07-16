@@ -1,13 +1,13 @@
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import PublicShell from "@/components/layout/PublicShell";
 import AuthProvider from "@/components/providers/AuthProvider";
 import ErrorBoundary from "@/components/shared/ErrorBoundary";
 import Script from "next/script";
 
-const ibmPlexSans = IBM_Plex_Sans({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
 });
 
@@ -24,16 +24,16 @@ export const metadata = {
   },
   description:
     "SimuFlux Design Lab provides professional engineering training and consultancy in CFD, FEA, CAD, 3D modelling, and product design — empowering students, professionals, and industries with practical engineering solutions.",
-  metadataBase: new URL("https://simuflux.com"),
+  metadataBase: new URL("https://simufluxlab.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "SimuFlux Design Lab",
+    title: "SimuFlux  Lab",
     description:
       "Professional engineering training and consultancy in CFD, FEA, CAD, 3D modelling, and product design.",
-    url: "https://simuflux.com",
-    siteName: "SimuFlux Design Lab",
+    url: "https://simufluxlab.com",
+    siteName: "SimuFlux  Lab",
     locale: "en_US",
     type: "website",
   },
@@ -45,7 +45,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>
+    <html lang="en" className={`${plusJakartaSans.variable} ${ibmPlexMono.variable}`}>
       <body className="antialiased bg-navy text-offwhite min-h-screen flex flex-col justify-between">
         <ErrorBoundary>
           <AuthProvider>

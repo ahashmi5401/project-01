@@ -14,7 +14,7 @@ export default function InquiryTrigger({ targetName, targetType, buttonText }) {
         onClick={() => setIsOpen(true)}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.98 }}
-        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-offwhite font-mono uppercase tracking-wider text-sm border border-transparent transition-colors hover:bg-[#d04e1b] active:bg-[#b03f13] select-none"
+        className="inline-flex items-center justify-center gap-sm px-xl py-sm bg-gradient-to-r from-accent to-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-label border border-transparent transition-all duration-300 hover:from-[#d04e1b] hover:to-[#c04315] active:from-[#b03f13] active:to-[#a03811] select-none rounded-lg shadow-elevation-sm hover:shadow-elevation-md hover:-translate-y-0.5"
       >
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" role="img" aria-label="Inquiry mail icon">
           <title>Inquiry</title>

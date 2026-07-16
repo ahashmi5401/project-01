@@ -88,16 +88,15 @@ export default async function CoursesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <section className="min-h-screen pt-32 pb-10 relative overflow-hidden bg-navy text-offwhite">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy/20 to-navy pointer-events-none" />
+      <section className="min-h-screen pt-24 pb-4xl relative overflow-hidden bg-navy text-offwhite">
 
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           
           {/* Header Block */}
           <AnimatedReveal>
-            <div className="border-b border-hairline pb-8 mb-16">
+            <div className="border-b border-hairline pb-xl mb-4xl">
               <SectionEyebrow text="Professional Curriculum" />
-              <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-offwhite uppercase tracking-tight">
+              <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
                 Training Courses
               </h1>
             </div>
@@ -107,11 +106,11 @@ export default async function CoursesPage() {
           <CoursesGrid courses={courses} />
 
           {/* FAQ Block (AEO / SEO) */}
-          <div className="mt-20 border-t border-hairline pt-16">
+          <div className="mt-4xl border-t border-hairline pt-4xl">
             <AnimatedReveal>
-              <div className="mb-12">
+              <div className="mb-3xl">
                 <SectionEyebrow text="Common Inquiries" />
-                <h2 className="font-sans font-bold text-2xl sm:text-3xl text-offwhite uppercase tracking-tight">
+                <h2 className="font-sans font-bold text-h2 sm:text-h1 text-offwhite uppercase tracking-tight">
                   Frequently Asked Questions
                 </h2>
               </div>

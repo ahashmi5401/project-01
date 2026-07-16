@@ -3,10 +3,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export default function WhatsAppButton({ phoneNumber = '923463517689', message = 'Hello, I would like to inquire about your services.', children }) {
+export default function WhatsAppButton({ phoneNumber, message = 'Hello, I would like to inquire about your services.', children }) {
+  const adminPhone = phoneNumber || process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_PHONE || '923463517689';
   // Real WhatsApp Business number: 0346-3517689 → international format 923463517689
   const encodedMessage = encodeURIComponent(message);
-  const waUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+  const waUrl = `https://wa.me/${adminPhone}?text=${encodedMessage}`;
 
   return (
     <motion.a
@@ -15,7 +16,7 @@ export default function WhatsAppButton({ phoneNumber = '923463517689', message =
       rel="noopener noreferrer"
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.98 }}
-      className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-offwhite font-mono uppercase tracking-wider text-sm border border-transparent transition-colors hover:bg-[#d04e1b] active:bg-[#b03f13] select-none"
+      className="inline-flex items-center justify-center gap-sm px-xl py-sm bg-gradient-to-r from-accent to-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-label border border-transparent transition-all duration-300 hover:from-[#d04e1b] hover:to-[#c04315] active:from-[#b03f13] active:to-[#a03811] select-none rounded-lg shadow-elevation-sm hover:shadow-elevation-md hover:-translate-y-0.5"
     >
       {children || (
         <>

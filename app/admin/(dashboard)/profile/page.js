@@ -151,7 +151,7 @@ export default function AdminProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 font-mono text-xs text-steelblue animate-pulse">
+      <div className="flex flex-col items-center justify-center py-4xl font-mono text-label text-steelblue animate-pulse">
         <span>RETRIEVING ACCOUNT SYSTEM CARD...</span>
       </div>
     );
@@ -159,16 +159,16 @@ export default function AdminProfilePage() {
 
   if (error) {
     return (
-      <div className="border border-accent bg-accent/5 p-6 font-mono text-xs text-offwhite">
+      <div className="border border-accent bg-accent/5 p-xl font-mono text-label text-offwhite">
         ERROR: {error}
       </div>
     );
   }
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-4xl">
       {/* Header */}
-      <div className="border-b border-hairline pb-8">
+      <div className="border-b border-hairline pb-2xl">
         <span className="font-mono text-xs uppercase tracking-widest text-accent block mb-2">
           [ ACCOUNT OVERVIEW ]
         </span>
@@ -180,7 +180,7 @@ export default function AdminProfilePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3xl">
         {/* Info Column */}
         <div className="border border-hairline bg-navy/40 p-8 relative flex flex-col justify-between h-full">
           <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />
@@ -218,7 +218,7 @@ export default function AdminProfilePage() {
         </div>
 
         {/* Update Forms */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-3xl">
           {/* Update Email Form */}
           <div className="border border-hairline bg-navy/40 p-8 relative">
             <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-white/5 pointer-events-none" />

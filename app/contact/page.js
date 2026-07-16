@@ -11,7 +11,7 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <section className="min-h-screen pt-32 pb-20 relative overflow-hidden">
+    <section className="min-h-screen pt-24 pb-4xl relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy/20 to-navy pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -27,7 +27,7 @@ export default function ContactPage() {
         </AnimatedReveal>
 
         {/* Form and info grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3xl items-start">
           
           {/* Info Column */}
           <div className="lg:col-span-5 space-y-3xl sm:space-y-4xl font-sans">
@@ -43,7 +43,7 @@ export default function ContactPage() {
             </AnimatedReveal>
 
             <AnimatedReveal delay={0.2}>
-              <div className="border border-hairline bg-white/5 p-xl space-y-xl font-mono text-label shadow-elevation-sm rounded">
+              <div className="bg-white/[0.02] border border-white/10 rounded-xl p-xl space-y-xl font-mono text-label">
                 <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ INQUIRY TIMELINE ]</span>
                   <span className="text-steelblue">Average response latency: &lt; 24 Hours</span>

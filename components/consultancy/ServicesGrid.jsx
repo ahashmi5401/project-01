@@ -28,15 +28,15 @@ export default function ServicesGrid({ services = [] }) {
           <AnimatedReveal key={service._id || service.id} delay={index * 0.1}>
             <Link
               href={`/consultancy/${service.slug}`}
-              className="border border-hairline bg-navy/40 shadow-elevation-sm hover:shadow-elevation-md hover:border-accent/50 flex flex-col h-full transition-all duration-300 relative group cursor-pointer overflow-hidden rounded-lg"
+              className="bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden transition-all duration-300 relative group cursor-pointer flex flex-col h-full"
             >
               {/* Image Thumbnail at Top - 16:9 aspect ratio */}
               {service.image ? (
-                <div className="relative w-full aspect-video bg-navy/50 overflow-hidden border-b border-hairline">
+                <div className="relative w-full aspect-video bg-navy/40 overflow-hidden border-b border-white/10">
                   <img
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover transition-transform duration-300"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
@@ -45,7 +45,7 @@ export default function ServicesGrid({ services = [] }) {
                   />
                 </div>
               ) : (
-                <div className="w-full aspect-video bg-navy/50 border-b border-hairline flex items-center justify-center">
+                <div className="w-full aspect-video bg-navy/50 flex items-center justify-center border-b border-white/10">
                   <div className="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
                     <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />
@@ -56,29 +56,38 @@ export default function ServicesGrid({ services = [] }) {
               )}
 
               {/* Card Content */}
-              <div className="p-xl flex flex-col flex-grow">
+              <div className="p-lg flex flex-col flex-grow h-full">
                 {/* Structural Motif: Number in Accent color */}
-                <div className="flex justify-between items-start mb-md border-b border-hairline/60 pb-md">
+                <div className="flex justify-between items-start mb-md border-b border-hairline/40 pb-md">
                   <span className="font-mono text-label text-steelblue">
                     SERVICE REF
                   </span>
-                  <span className="font-mono text-h3 font-bold text-accent">
+                  <span className="font-mono text-h3 font-bold text-accent/90">
                     {service.id}
                   </span>
                 </div>
 
-                <div className="flex-grow mb-lg">
-                  <h3 className="font-sans font-semibold text-h3 text-offwhite mb-sm group-hover:text-accent transition-colors">
+                <div className="flex-grow mb-md">
+                  <h3 className="font-sans font-semibold text-h3 text-offwhite mb-sm group-hover:text-accent/90 transition-colors leading-tight">
                     {service.title}
                   </h3>
-                  <p className="font-sans text-body text-steelblue leading-relaxed">
-                    {service.shortDescription}
+                  <p className="font-sans text-body text-steelblue/80 leading-relaxed">
+                    {service.shortDescription.length > 150 
+                      ? service.shortDescription.substring(0, 150) + '...' 
+                      : service.shortDescription}
                   </p>
                 </div>
 
-                <div className="border-t border-hairline/60 pt-lg flex justify-between items-center text-xs font-mono text-steelblue/50">
-                  <span>DISCIPLINE SPEC: {service.id}</span>
-                  <span className="text-accent group-hover:animate-pulse">● VIEW SPEC</span>
+                <div className="pt-sm mt-auto">
+                  <Link
+                    href={`/consultancy/${service.slug}`}
+                    className="w-full inline-flex items-center justify-center gap-sm font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] py-sm rounded-md transition-all duration-300"
+                  >
+                    <span>View Details →</span>
+                    <svg className="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </Link>
                 </div>
               </div>
             </Link>
@@ -89,12 +98,12 @@ export default function ServicesGrid({ services = [] }) {
       {/* Pagination Controls — only rendered when there are more items than one page */}
       {showPagination && (
         <AnimatedReveal>
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-16">
+          <div className="flex flex-wrap items-center justify-center gap-sm mb-4xl">
             {/* Previous Button */}
             <button
               onClick={() => goToPage(currentPage - 1)}
               disabled={currentPage === 1}
-              className="font-mono text-xs uppercase tracking-wider px-4 py-2.5 border border-hairline text-steelblue hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed select-none"
+              className="font-mono text-label uppercase tracking-wider px-md py-sm border border-hairline text-steelblue hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed select-none rounded-md"
               aria-label="Go to previous page"
             >
               ← Prev
@@ -106,7 +115,7 @@ export default function ServicesGrid({ services = [] }) {
                 key={page}
                 onClick={() => goToPage(page)}
                 aria-current={page === currentPage ? 'page' : undefined}
-                className={`font-mono text-xs uppercase tracking-wider px-4 py-2.5 border transition-colors select-none ${
+                className={`font-mono text-label uppercase tracking-wider px-md py-sm border transition-colors select-none rounded-md ${
                   page === currentPage
                     ? 'border-accent bg-accent/10 text-accent'
                     : 'border-hairline text-steelblue hover:border-accent hover:text-accent'
@@ -120,14 +129,14 @@ export default function ServicesGrid({ services = [] }) {
             <button
               onClick={() => goToPage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="font-mono text-xs uppercase tracking-wider px-4 py-2.5 border border-hairline text-steelblue hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed select-none"
+              className="font-mono text-label uppercase tracking-wider px-md py-sm border border-hairline text-steelblue hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed select-none rounded-md"
               aria-label="Go to next page"
             >
               Next →
             </button>
 
             {/* Page counter */}
-            <span className="font-mono text-xs text-steelblue/50 ml-2">
+            <span className="font-mono text-label text-steelblue/50 ml-sm">
               PAGE {currentPage} / {totalPages}
             </span>
           </div>

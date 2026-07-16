@@ -449,7 +449,7 @@ export default function ManageCoursesPage() {
   return (
     <div className="space-y-4xl">
       {/* Header */}
-      <div className="border-b border-hairline pb-xl flex flex-col sm:flex-row sm:items-end sm:justify-between gap-lg">
+      <div className="border-b border-hairline pb-2xl flex flex-col sm:flex-row sm:items-end sm:justify-between gap-lg">
         <div>
           <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
             [ PROFESSIONAL CURRICULUM ]
@@ -1036,7 +1036,7 @@ export default function ManageCoursesPage() {
             LOADING LIVE DATA SHEET...
           </div>
         ) : filteredCourses.length === 0 ? (
-          <div className="border border-dashed border-white/10 p-4xl text-center text-steelblue font-mono text-label rounded">
+          <div className="border border-dashed border-hairline/60 bg-gradient-to-b from-navy/40 to-navy/60 p-4xl text-center text-steelblue/70 font-mono text-label rounded-xl shadow-elevation-sm">
             {searchQuery ? 'No courses match your search.' : 'NO COURSES DEFINED IN DATABASE.'}
           </div>
         ) : (
@@ -1046,15 +1046,15 @@ export default function ManageCoursesPage() {
               <div className="relative overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-elevation-md p-lg">
                 <div className="flex gap-lg pb-sm min-w-max">
                   {paginatedCourses.map((course) => (
-                    <div key={course._id} className="flex-shrink-0 w-80 border border-hairline bg-navy/60 shadow-elevation-sm hover:shadow-elevation-md hover:border-accent/50 rounded-lg transition-all duration-200 overflow-hidden">
+                    <div key={course._id} className="flex-shrink-0 w-80 border border-hairline/60 bg-gradient-to-b from-navy/60 to-navy/80 shadow-elevation-sm hover:shadow-elevation-lg hover:border-accent/40 rounded-xl transition-all duration-500 overflow-hidden group">
                       <div className="flex flex-col h-full">
                         {/* Image Thumbnail at Top */}
                         {course.image ? (
-                          <div className="relative w-full h-40 bg-navy/50 overflow-hidden border-b border-hairline">
+                          <div className="relative w-full h-40 bg-navy/40 overflow-hidden border-b border-hairline/40">
                             <img
                               src={course.image}
                               alt={course.title}
-                              className="w-full h-full object-cover"
+                              className="w-full h-full object-cover group-hover:scale-105 group-hover:brightness-110 transition-transform duration-500"
                               onError={(e) => {
                                 e.target.style.display = 'none';
                                 e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
@@ -1069,9 +1069,9 @@ export default function ManageCoursesPage() {
                         )}
 
                         {/* Card Content */}
-                        <div className="p-lg flex flex-col flex-grow">
+                        <div className="p-lg flex flex-col flex-grow h-full">
                           <div className="flex items-center justify-between mb-sm">
-                            <span className="font-mono font-bold text-accent text-sm">REF: {course.id}</span>
+                            <span className="font-mono font-bold text-accent/90 text-sm">REF: {course.id}</span>
                             <div className="text-right">
                               {course.discountPercent && course.discountPercent > 0 ? (
                                 <>
@@ -1088,9 +1088,9 @@ export default function ManageCoursesPage() {
                             </div>
                           </div>
                           
-                          <h4 className="font-semibold text-offwhite text-h3 leading-tight mb-sm">{course.title}</h4>
+                          <h4 className="font-semibold text-offwhite text-h3 leading-tight mb-sm group-hover:text-accent/90 transition-colors">{course.title}</h4>
                           
-                          <p className="text-steelblue text-caption leading-relaxed line-clamp-2 mb-sm">{course.description}</p>
+                          <p className="text-steelblue/80 text-caption leading-relaxed line-clamp-2 mb-sm">{course.description}</p>
                           
                           <div className="flex gap-sm pt-sm border-t border-hairline/40 mt-auto">
                             <button

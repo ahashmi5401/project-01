@@ -1,0 +1,61 @@
+# SimuFlux Design Lab
+
+SimuFlux Design Lab is a professional engineering training and consultancy based in Karachi, Pakistan. We bridge the gap between academic theory and industrial application through practical, hands-on training and advanced engineering simulation solutions.
+
+## Services
+
+### Engineering Training
+- ANSYS Mechanical (FEA) - Finite Element Analysis for structural validation
+- ANSYS Fluent (CFD) - Computational Fluid Dynamics for thermal and aerodynamic analysis
+- Creo Parametric - 3D CAD modeling and assembly design
+- SolidWorks - Mechanical design and simulation
+- Engineering Design & Simulation - Comprehensive design validation workflows
+
+### Engineering Consultancy
+- Finite Element Analysis (FEA) - Stress analysis, structural optimization, mesh convergence reports
+- Computational Fluid Dynamics (CFD) - Flow simulation, heat transfer analysis, pressure drop prediction
+- Thermal Analysis - Temperature distribution, thermal management, heat transfer optimization
+- Structural Analysis - Load-bearing capacity, failure analysis, safety factor calculation
+- Product Design & Development - Concept to prototype, parametric modeling, design for manufacturing
+- CAD & 3D Modelling - Detailed part design, assembly modeling, technical drawings
+- Engineering Optimization - Design improvement, cost reduction, performance enhancement
+- Technical Reports & Design Validation - Comprehensive documentation, verification reports
+
+## Key Pages
+
+- Home: https://simufluxlab.com - Overview of services and courses
+- About: https://simufluxlab.com/about - Company mission, values, and team information
+- Courses: https://simufluxlab.com/courses - Available training programs with curriculum details
+- Consultancy: https://simufluxlab.com/consultancy - Engineering service offerings
+- Contact: https://simufluxlab.com/contact - Get in touch for inquiries and registrations
+
+## Contact Information
+
+- Location: Karachi, Sindh, Pakistan
+- Email: info@simuflux.com
+- WhatsApp: Available for direct inquiries
+- Response Time: Within 24-48 hours for general inquiries, 15 minutes for enrollment confirmations
+
+## Target Audience
+
+- Engineering students seeking practical skills
+- Researchers working on innovative projects
+- Companies requiring engineering consultancy
+- Professionals looking to enhance technical capabilities
+- Industries needing design validation and optimization
+
+## Unique Value Proposition
+
+- Industry-oriented training with real-world case studies
+- Professional guidance from experienced mechanical engineers
+- Practical solutions tailored to engineering challenges
+- Online delivery accessible worldwide
+- Volume discounts for multi-course enrollments
+- Combo deals for bundled course packages
+
+## Technology Stack
+
+- Simulation: ANSYS Workbench (FEA, CFD)
+- CAD: Creo Parametric, SolidWorks
+- Analysis: Mesh convergence, parametric optimization
+- Delivery: Online video conferencing for live sessions

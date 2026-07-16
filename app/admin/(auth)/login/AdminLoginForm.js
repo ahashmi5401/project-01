@@ -106,7 +106,7 @@ export default function AdminLoginForm({ adminExists }) {
         </form>
 
         {!adminExists && (
-          <div className="mt-6 p-4 border border-dashed border-accent bg-accent/5 text-center text-xs font-mono">
+          <div className="mt-lg p-xl border border-dashed border-accent/40 bg-gradient-to-r from-accent/10 to-accent/5 text-center text-label font-mono rounded-lg shadow-elevation-sm">
             <span className="text-steelblue block mb-1">First time setting up?</span>
             <Link href="/admin/signup" className="text-accent hover:underline font-bold">
               Create the first admin account →

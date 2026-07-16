@@ -300,7 +300,7 @@ export default function ManageDiscountsPage() {
   return (
     <div className="space-y-4xl">
       {/* Header */}
-      <div className="border-b border-hairline pb-xl flex flex-col sm:flex-row sm:items-end sm:justify-between gap-lg">
+      <div className="border-b border-hairline pb-2xl flex flex-col sm:flex-row sm:items-end sm:justify-between gap-lg">
         <div>
           <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
             [ VOLUME DISCOUNT RULES ]
@@ -560,7 +560,7 @@ export default function ManageDiscountsPage() {
             LOADING LIVE CONFIGURATION...
           </div>
         ) : tiers.length === 0 ? (
-          <div className="border border-dashed border-white/10 p-4xl text-center text-steelblue font-mono text-label rounded">
+          <div className="border border-dashed border-hairline/60 bg-gradient-to-b from-navy/40 to-navy/60 p-4xl text-center text-steelblue/70 font-mono text-label rounded-xl shadow-elevation-sm">
             NO DISCOUNT TIERS CONFIGURED. BUNDLE DISCOUNTS WILL NOT BE CALCULATED.
           </div>
         ) : (
@@ -610,7 +610,7 @@ export default function ManageDiscountsPage() {
         </h3>
 
         {comboDeals.length === 0 ? (
-          <div className="border border-dashed border-white/10 p-4xl text-center text-steelblue font-mono text-label rounded">
+          <div className="border border-dashed border-hairline/60 bg-gradient-to-b from-navy/40 to-navy/60 p-4xl text-center text-steelblue/70 font-mono text-label rounded-xl shadow-elevation-sm">
             NO COMBO DEALS CONFIGURED.
           </div>
         ) : (

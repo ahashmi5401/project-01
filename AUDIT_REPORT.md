@@ -1,6 +1,7 @@
 # SimuFlux Design Lab - Comprehensive Project Audit Report
 
 **Date**: July 13, 2026  
+**Last Updated**: July 16, 2026  
 **Auditor**: Cascade AI  
 **Project**: SimuFlux Design Lab - Engineering Training & Consultancy Platform  
 **Technology Stack**: Next.js 14, MongoDB, NextAuth, Cloudinary, Resend
@@ -27,23 +28,77 @@ This comprehensive audit examined the entire SimuFlux Design Lab codebase for se
 
 ---
 
-## 🔴 Critical Security Issues (7)
+## ✅ Fixes Implemented (July 16, 2026)
 
-### 1. Missing Turnstile Verification on Contact Form
-**Location**: `app/api/contact/route.js`  
-**Severity**: HIGH  
-**Issue**: Contact form API doesn't verify Turnstile token despite the component having honeypot protection.  
-**Risk**: Spam submissions can bypass CAPTCHA protection.  
-**Recommendation**: Add `verifyTurnstileToken` check before processing the form submission.
+The following critical issues have been fixed as part of this audit:
 
-### 2. Missing Turnstile Verification on Inquiry Form
+### 1. ✅ Deployment Config - OS-Agnostic Scripts
+**File**: `package.json`
+**Fix**: Removed PowerShell wrapping from default dev/build/start scripts for Vercel/Linux compatibility. Added `dev:win` script for Windows local development with junction fix.
+**Status**: COMPLETED
+
+### 2. ✅ Turnstile Verification on Contact Form
+**File**: `app/api/contact/route.js`
+**Fix**: Added server-side Turnstile token verification before processing form submission.
+**Status**: COMPLETED
+
+### 3. ✅ Hardcoded Email Senders
+**Files**: `app/api/contact/route.js`, `app/api/register/route.js`, `app/api/inquiry/route.js`
+**Fix**: Replaced hardcoded "academy@simuflux.com" with `process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'`
+**Status**: COMPLETED
+
+### 4. ✅ Hardcoded WhatsApp Numbers
+**Files**: `components/shared/WhatsAppButton.jsx`, `components/shared/InquiryModal.jsx`, `components/courses/EnrollForm.jsx`, `app/about/page.js`
+**Fix**: Replaced hardcoded "923463517689" with `process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_PHONE || '923463517689'`
+**Status**: COMPLETED
+
+### 5. ✅ Domain Standardization
+**Files**: `next.config.mjs`, `app/layout.js`
+**Fix**: Standardized domain to `simufluxlab.com` across all configuration files.
+**Status**: COMPLETED
+
+### 6. ✅ Sitemap - Added Courses Dynamic Routes
+**File**: `app/sitemap.js`
+**Fix**: Added courses collection query and dynamic entries to sitemap with priority 0.7 (higher than services at 0.6).
+**Status**: COMPLETED
+
+### 7. ✅ Robots.txt - Disallow Sensitive Paths
+**File**: `app/robots.js`
+**Fix**: Added disallow rules for `/admin`, `/dashboard`, `/login`, `/signup`, `/api` to prevent search engine crawling of sensitive areas.
+**Status**: COMPLETED
+
+### 8. ✅ Course Schema JSON-LD
+**File**: `app/courses/[slug]/page.js`
+**Fix**: Added Course structured data schema with name, description, provider, pricing, and instructor information.
+**Status**: COMPLETED
+
+### 9. ✅ Service Schema JSON-LD
+**File**: `app/consultancy/[slug]/page.js`
+**Fix**: Added Service structured data schema with name, description, provider, and area served.
+**Status**: COMPLETED
+
+### 10. ✅ BreadcrumbList Schema
+**Files**: `app/courses/[slug]/page.js`, `app/consultancy/[slug]/page.js`
+**Fix**: Added BreadcrumbList structured data schema for SEO to help search engines understand page hierarchy.
+**Status**: COMPLETED
+
+### 11. ✅ AI Crawler File (llms.txt)
+**File**: `public/llms.txt` (newly created)
+**Fix**: Created comprehensive llms.txt file for AI crawlers (ChatGPT, Perplexity, etc.) summarizing services, courses, contact info, and key pages.
+**Status**: COMPLETED
+
+---
+
+## 🔴 Remaining Critical Security Issues (5)
+
+### 1. Missing Turnstile Verification on Inquiry Form
 **Location**: `app/api/inquiry/route.js`  
 **Severity**: HIGH  
 **Issue**: No CAPTCHA verification on inquiry submissions.  
 **Risk**: Automated spam inquiries can flood the system.  
 **Recommendation**: Add Turnstile verification similar to registration form.
 
-### 3. Upload Route Missing Admin Role Check
+### 2. Upload Route Missing Admin Role Check
 **Location**: `app/api/upload/route.js:10-12`  
 **Severity**: CRITICAL  
 **Issue**: Only checks if session exists, not if user is admin.  
@@ -114,7 +169,7 @@ if (!secretKey) {
 }
 ```
 
-### 7. Missing Content Security Policy
+### 6. Missing Content Security Policy
 **Location**: `next.config.mjs`  
 **Severity**: MEDIUM  
 **Issue**: No CSP headers configured.  
@@ -129,87 +184,9 @@ if (!secretKey) {
 
 ---
 
-## 🟡 SEO Issues (8)
+## 🟡 Remaining SEO Issues (5)
 
-### 8. Missing robots.txt
-**Location**: Project root  
-**Severity**: MEDIUM  
-**Issue**: No robots.txt file found in public directory.  
-**Impact**: Search engines can't understand crawling rules, may index admin pages.  
-**Recommendation**: Create `public/robots.txt`:
-```txt
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api
-Disallow: /dashboard
-Disallow: /login
-Disallow: /signup
-
-Sitemap: https://simuflux.com/sitemap.xml
-```
-
-### 9. Sitemap Missing Courses
-**Location**: `app/sitemap.js`  
-**Severity**: MEDIUM  
-**Issue**: Only includes services, not courses in dynamic sitemap generation.  
-**Current Code**:
-```javascript
-const dynamicEntries = services.map((service) => ({
-  url: `${BASE_URL}/consultancy/${service.slug}`,
-  lastModified: new Date(),
-  changeFrequency: 'monthly',
-  priority: 0.6,
-}));
-```
-**Impact**: Course pages not indexed properly by search engines.  
-**Recommendation**: Add courses to sitemap:
-```javascript
-const courses = await db.collection('courses')
-  .find({}, { projection: { slug: 1 } })
-  .toArray();
-
-const courseEntries = courses.map((course) => ({
-  url: `${BASE_URL}/courses/${course.slug}`,
-  lastModified: new Date(),
-  changeFrequency: 'monthly',
-  priority: 0.7,
-}));
-
-return [...staticEntries, ...dynamicEntries, ...courseEntries];
-```
-
-### 10. Missing Structured Data
-**Location**: Dynamic pages (`app/courses/[slug]/page.js`, `app/consultancy/[slug]/page.js`)  
-**Severity**: MEDIUM  
-**Issue**: Only LocalBusiness schema on homepage. Missing schemas for:
-- Course schema for course pages
-- Service schema for service pages  
-- Organization schema
-- BreadcrumbList schema
-
-**Impact**: Missing rich snippet opportunities in search results.  
-**Recommendation**: Add JSON-LD structured data to dynamic pages. Example for courses:
-```javascript
-const courseJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Course",
-  "name": course.title,
-  "description": course.description,
-  "provider": {
-    "@type": "Organization",
-    "name": "SimuFlux Design Lab",
-    "sameAs": "https://simuflux.com"
-  },
-  "offers": {
-    "@type": "Offer",
-    "price": course.price,
-    "priceCurrency": "PKR"
-  }
-};
-```
-
-### 11. Missing Canonical URLs on Dynamic Pages
+### 1. Missing Canonical URLs on Dynamic Pages
 **Location**: `app/courses/[slug]/page.js`, `app/consultancy/[slug]/page.js`  
 **Severity**: LOW  
 **Issue**: No canonical URLs set in generateMetadata.  
@@ -225,7 +202,7 @@ return {
 };
 ```
 
-### 12. Missing Open Graph Images
+### 2. Missing Open Graph Images
 **Location**: All page metadata  
 **Severity**: MEDIUM  
 **Issue**: No og:image in any metadata configuration.  
@@ -235,13 +212,13 @@ return {
 openGraph: {
   title: "SimuFlux Design Lab",
   description: "Professional engineering training and consultancy...",
-  url: "https://simuflux.com",
+  url: "https://simufluxlab.com",
   siteName: "SimuFlux Design Lab",
   locale: "en_US",
   type: "website",
   images: [
     {
-      url: "https://simuflux.com/images/og-image.jpg",
+      url: "https://simufluxlab.com/images/og-image.jpg",
       width: 1200,
       height: 630,
       alt: "SimuFlux Design Lab"
@@ -250,7 +227,7 @@ openGraph: {
 }
 ```
 
-### 13. Missing Twitter Card Metadata
+### 3. Missing Twitter Card Metadata
 **Location**: All page metadata  
 **Severity**: LOW  
 **Issue**: No Twitter card tags.  
@@ -261,11 +238,11 @@ twitter: {
   card: "summary_large_image",
   title: "SimuFlux Design Lab",
   description: "Professional engineering training and consultancy...",
-  images: ["https://simuflux.com/images/og-image.jpg"],
+  images: ["https://simufluxlab.com/images/og-image.jpg"],
 }
 ```
 
-### 14. Incomplete GEO Implementation
+### 4. Incomplete GEO Implementation
 **Location**: `app/page.js:76-83`  
 **Severity**: MEDIUM  
 **Issue**: Placeholder address and phone in LocalBusiness schema.  
@@ -284,7 +261,7 @@ twitter: {
 **Impact**: Local SEO not optimized, incorrect business information.  
 **Recommendation**: Replace with actual business address and phone number.
 
-### 15. Limited AEO Implementation
+### 5. Limited AEO Implementation
 **Location**: FAQ pages  
 **Severity**: LOW  
 **Issue**: No FAQ schema markup.  
@@ -311,7 +288,7 @@ const faqJsonLd = {
 
 ## 🟠 Functionality Bugs (5)
 
-### 16. Registration Duplicate Detection Too Narrow
+### 1. Registration Duplicate Detection Too Narrow
 **Location**: `app/api/register/route.js:82-95`  
 **Severity**: MEDIUM  
 **Issue**: Only checks same email + any of the selected courses within 24 hours.  
@@ -332,14 +309,14 @@ const existing = await db.collection('registrations').findOne({
 });
 ```
 
-### 17. Inconsistent Dynamic Rendering
+### 2. Inconsistent Dynamic Rendering
 **Location**: `app/courses/[slug]/page.js:12`, `app/consultancy/[slug]/page.js:12`  
 **Severity**: LOW  
 **Issue**: `export const dynamic = 'force-dynamic'` but also has `generateStaticParams`.  
 **Impact**: Conflicting rendering strategy, potential performance issues.  
 **Recommendation**: Choose one strategy consistently. For dynamic content, remove `generateStaticParams` and keep `force-dynamic`. For static content, remove `force-dynamic` and use ISR with revalidate.
 
-### 18. No Error Handling for Cloudinary Upload Failures
+### 3. No Error Handling for Cloudinary Upload Failures
 **Location**: `lib/upload.js:69-72`  
 **Severity**: LOW  
 **Issue**: Throws generic error without retry logic or detailed feedback.  
@@ -368,7 +345,7 @@ while (retries > 0) {
 }
 ```
 
-### 19. Missing Discount Tiers Validation
+### 4. Missing Discount Tiers Validation
 **Location**: `app/api/discounts/route.js:35-40`  
 **Severity**: LOW  
 **Issue**: No validation that discount tiers make logical sense.  
@@ -386,7 +363,7 @@ if (hasOverlap) {
 }
 ```
 
-### 20. No Database Connection Pooling Configuration
+### 5. No Database Connection Pooling Configuration
 **Location**: `lib/mongodb.js`  
 **Severity**: LOW  
 **Issue**: No connection pool settings in MongoClient options.  
@@ -405,7 +382,7 @@ const options = {
 
 ## 🔵 Performance & Infrastructure (4)
 
-### 21. No Image Optimization Strategy
+### 1. No Image Optimization Strategy
 **Location**: `next.config.mjs`, image usage throughout app  
 **Severity**: MEDIUM  
 **Issue**: Using Next.js Image component but no comprehensive optimization config.  
@@ -426,7 +403,7 @@ images: {
 }
 ```
 
-### 22. No API Response Caching
+### 2. No API Response Caching
 **Location**: Public API routes (`app/api/courses/route.js`, `app/api/services/route.js`)  
 **Severity**: LOW  
 **Issue**: Public APIs not cached, causing unnecessary database queries.  
@@ -436,7 +413,7 @@ images: {
 export const revalidate = 3600; // Revalidate every hour
 ```
 
-### 23. Missing Environment Variable Validation
+### 3. Missing Environment Variable Validation
 **Location**: Application startup  
 **Severity**: LOW  
 **Issue**: No centralized environment variable validation at startup.  
@@ -458,7 +435,7 @@ requiredEnvVars.forEach(varName => {
 });
 ```
 
-### 24. No Health Check Endpoint
+### 4. No Health Check Endpoint
 **Location**: API routes  
 **Severity**: LOW  
 **Issue**: No /health endpoint for monitoring.  

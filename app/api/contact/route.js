@@ -24,6 +24,12 @@ export async function POST(req) {
       );
     }
 
+    // Verify Turnstile token
+    const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
+    if (!turnstileValid) {
+      return NextResponse.json({ error: 'CAPTCHA verification failed.' }, { status: 400 });
+    }
+
     // Validate inputs
     if (!name?.trim() || !email?.trim() || !message?.trim()) {
       return NextResponse.json({ error: 'Name, email, and message are required.' }, { status: 400 });
@@ -54,7 +60,7 @@ export async function POST(req) {
       // A. Client confirmation email
       try {
         await resend.emails.send({
-          from: 'SimuFlux Academy <academy@simuflux.com>',
+          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
           to: cleanEmail,
           subject: 'Contact Inquiry Received',
           text: `Hello ${name.trim()},

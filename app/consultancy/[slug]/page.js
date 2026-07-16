@@ -70,15 +70,70 @@ export default async function ServiceDetailPage({ params }) {
     _id: service._id.toString(),
   };
 
+  // Service JSON-LD Structured Data for SEO
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": displayService.title,
+    "description": displayService.shortDescription,
+    "url": `https://simufluxlab.com/consultancy/${displayService.slug}`,
+    "provider": {
+      "@type": "Organization",
+      "name": "SimuFlux Design Lab",
+      "url": "https://simufluxlab.com"
+    },
+    "areaServed": {
+      "@type": "Country",
+      "name": "Pakistan"
+    },
+    "serviceType": "Engineering Consultancy"
+  };
+
+  // BreadcrumbList JSON-LD for SEO
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://simufluxlab.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Consultancy",
+        "item": "https://simufluxlab.com/consultancy"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": displayService.title,
+        "item": `https://simufluxlab.com/consultancy/${displayService.slug}`
+      }
+    ]
+  };
+
   return (
-    <section className="min-h-screen pt-32 pb-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy/20 to-navy pointer-events-none" />
+    <>
+      {/* Inject Service Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
+      {/* Inject BreadcrumbList Schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <section className="min-h-screen pt-32 pb-20 bg-navy relative overflow-hidden">
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Breadcrumb back navigation */}
         <AnimatedReveal>
-          <div className="mb-8 flex items-center gap-2 font-mono text-xs uppercase tracking-wider text-steelblue select-none">
+          <div className="mb-4xl flex items-center gap-sm font-mono text-label uppercase tracking-wider text-steelblue select-none">
             <Link href="/consultancy" className="hover:text-accent transition-colors">
               Consultancy
             </Link>
@@ -89,44 +144,44 @@ export default async function ServiceDetailPage({ params }) {
 
         {/* Title and Header Eyebrow */}
         <AnimatedReveal delay={0.05}>
-          <div className="border-b border-hairline pb-8 mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="border-b border-hairline pb-4xl mb-4xl flex flex-col md:flex-row md:items-end justify-between gap-xl">
             <div>
               <SectionEyebrow text={`Service Ref ${displayService.id}`} />
-              <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-offwhite uppercase tracking-tight">
+              <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
                 {displayService.title}
               </h1>
             </div>
-            <div className="font-mono text-xs text-steelblue/55 select-none">
+            <div className="font-mono text-label text-steelblue/55 select-none">
               DISCIPLINE SPEC ID: {displayService.id}
             </div>
           </div>
         </AnimatedReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4xl items-start mb-4xl">
           
           {/* Detail Text & CTA Column */}
-          <div className="lg:col-span-6 space-y-8">
+          <div className="lg:col-span-6 space-y-4xl">
             <AnimatedReveal delay={0.1}>
-              <div className="space-y-6">
-                <h2 className="font-mono text-xs uppercase tracking-wider text-accent select-none">
+              <div className="space-y-4xl">
+                <h2 className="font-mono text-label uppercase tracking-wider text-accent select-none">
                   [ SPECIFICATION DESCRIPTION ]
                 </h2>
-                <p className="font-sans text-base sm:text-lg text-steelblue leading-relaxed">
+                <p className="font-sans text-body sm:text-h4 text-steelblue leading-relaxed">
                   {displayService.shortDescription}
                 </p>
-                <p className="font-sans text-base sm:text-lg text-offwhite leading-relaxed whitespace-pre-wrap">
+                <p className="font-sans text-body sm:text-h4 text-offwhite leading-relaxed whitespace-pre-wrap">
                   {displayService.detail}
                 </p>
 
                 {/* Service Highlights / Points */}
                 {displayService.points && displayService.points.length > 0 && (
-                  <div className="pt-4">
-                    <h3 className="font-mono text-xs uppercase tracking-wider text-accent select-none mb-3">
+                  <div className="pt-xl">
+                    <h3 className="font-mono text-label uppercase tracking-wider text-accent select-none mb-xl">
                       [ SERVICE HIGHLIGHTS ]
                     </h3>
-                    <ul className="space-y-2">
+                    <ul className="space-y-md">
                       {displayService.points.map((point, idx) => (
-                        <li key={idx} className="flex items-start gap-2.5 text-sm sm:text-base text-steelblue leading-relaxed">
+                        <li key={idx} className="flex items-start gap-sm text-small sm:text-body text-steelblue leading-relaxed">
                           <span className="text-accent mt-0.5 select-none font-bold">✓</span>
                           <span>{point}</span>
                         </li>
@@ -138,8 +193,8 @@ export default async function ServiceDetailPage({ params }) {
             </AnimatedReveal>
 
             <AnimatedReveal delay={0.2}>
-              <div className="border-t border-hairline pt-8 space-y-4">
-                <p className="text-xs font-mono uppercase tracking-wider text-steelblue select-none">
+              <div className="border-t border-hairline pt-4xl space-y-4xl">
+                <p className="text-label font-mono uppercase tracking-wider text-steelblue select-none">
                   Initialize project scoping or technical review:
                 </p>
                 <InquiryTrigger 
@@ -154,8 +209,8 @@ export default async function ServiceDetailPage({ params }) {
           {/* Work Sample Image Column */}
           <div className="lg:col-span-6">
             <AnimatedReveal delay={0.15}>
-              <div className="space-y-4">
-                <h3 className="font-mono text-xs uppercase tracking-wider text-steelblue select-none">
+              <div className="space-y-4xl">
+                <h3 className="font-mono text-label uppercase tracking-wider text-steelblue select-none">
                   [ DATA SHEET VISUAL / WORK SAMPLE ]
                 </h3>
                 <WorkSampleImage 
@@ -170,5 +225,6 @@ export default async function ServiceDetailPage({ params }) {
 
       </div>
     </section>
+    </>
   );
 }

@@ -37,16 +37,15 @@ export default async function ConsultancyPage() {
   const services = await getServices();
 
   return (
-    <section className="min-h-screen pt-32 pb-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy/20 to-navy pointer-events-none" />
+    <section className="min-h-screen pt-24 pb-4xl bg-navy relative overflow-hidden">
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         
         {/* Header Block */}
         <AnimatedReveal>
-          <div className="border-b border-hairline pb-8 mb-16">
+          <div className="border-b border-hairline pb-xl mb-4xl">
             <SectionEyebrow text="Professional Capabilities" />
-            <h1 className="font-sans font-bold text-3xl sm:text-4xl lg:text-5xl text-offwhite uppercase tracking-tight">
+            <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
               Consultancy Services
             </h1>
           </div>
@@ -57,16 +56,13 @@ export default async function ConsultancyPage() {
 
         {/* CTA Banner */}
         <AnimatedReveal delay={0.4}>
-          <div className="border border-hairline bg-white/5 p-8 sm:p-12 flex flex-col lg:flex-row items-center justify-between gap-8 relative overflow-hidden">
-            {/* Background design elements */}
-            <div className="absolute top-0 right-0 w-24 h-24 border-r border-t border-white/5 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 border-l border-b border-white/5 pointer-events-none" />
+          <div className="bg-white/[0.02] border border-white/10 rounded-xl p-xl sm:p-3xl flex flex-col lg:flex-row items-center justify-between gap-xl relative overflow-hidden">
             
             <div className="max-w-xl">
-              <h2 className="font-sans font-bold text-2xl text-offwhite mb-4">
+              <h2 className="font-sans font-bold text-h3 text-offwhite mb-lg">
                 Have a project or custom simulation requirement?
               </h2>
-              <p className="font-sans text-sm sm:text-base text-steelblue leading-relaxed">
+              <p className="font-sans text-body text-steelblue leading-relaxed">
                 Connect with our analysis department to discuss parameters, scoping documents, or training workflows tailored to your company&apos;s product line.
               </p>
             </div>

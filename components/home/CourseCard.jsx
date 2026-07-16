@@ -22,17 +22,14 @@ export default function CourseCard({
     : duration;
 
   return (
-    <Link
-      href={`/courses/${slug}`}
-      className="group relative bg-[#0B1220] rounded-xl overflow-hidden border border-white/10 hover:border-orange-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-orange-500/10 w-[290px] sm:w-[360px] flex-shrink-0"
-    >
-      {/* Course Image - 16:9 ratio */}
-      <div className="relative w-full aspect-video overflow-hidden bg-navy/50">
+    <div className="group relative bg-navy border border-white/10 rounded-xl overflow-hidden transition-all duration-300 w-[280px] sm:w-[320px] lg:w-[360px] flex-shrink-0 h-[380px] sm:h-[400px] flex flex-col">
+      {/* Course Image - 16:9 ratio - clickable to details */}
+      <Link href={`/courses/${slug}`} className="block relative w-full aspect-video overflow-hidden bg-navy border-b border-white/10">
         {image ? (
           <img
             src={image}
             alt={title}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-300"
             onError={(e) => {
               e.target.style.display = 'none';
               e.target.parentElement.innerHTML = `
@@ -53,65 +50,71 @@ export default function CourseCard({
             </svg>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* Card Content */}
-      <div className="p-5">
+      <div className="p-lg flex flex-col flex-grow">
         {/* Category Badge */}
         {category && (
-          <div className="mb-2">
-            <span className="inline-block px-2 py-1 text-xs font-mono font-medium text-orange-500 bg-orange-500/10 rounded border border-orange-500/20">
+          <div className="mb-sm">
+            <span className="inline-flex items-center px-sm py-xs text-caption font-sans font-medium text-accent bg-accent/10 rounded border border-accent/30">
               {category}
             </span>
           </div>
         )}
 
         {/* Course Number */}
-        <div className="mb-2">
-          <span className="font-mono text-xs font-bold text-orange-500">
+        <div className="mb-sm">
+          <span className="font-sans text-label font-bold text-accent">
             {courseNumber}
           </span>
         </div>
 
-        {/* Title */}
-        <h3 className="font-sans font-bold text-lg text-white mb-2 line-clamp-2">
-          {title}
-        </h3>
+        {/* Title - clickable to details */}
+        <Link href={`/courses/${slug}`} className="block">
+          <h3 className="font-sans font-semibold text-h4 text-offwhite mb-sm line-clamp-2 leading-tight group-hover:text-accent transition-colors">
+            {title}
+          </h3>
+        </Link>
 
         {/* Description */}
-        <p className="font-sans text-sm text-gray-400 line-clamp-2 mb-3">
+        <p className="font-sans text-caption sm:text-small text-steelblue/70 line-clamp-1 mb-sm leading-relaxed">
           {description}
         </p>
 
         {/* Duration */}
         {durationText && (
-          <div className="flex items-center gap-1 mb-3">
-            <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <div className="flex items-center gap-sm mb-sm">
+            <svg className="w-4 h-4 text-steelblue/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span className="font-mono text-xs text-gray-500">
+            <span className="font-sans text-caption text-steelblue/60">
               {durationText}
             </span>
           </div>
         )}
 
-        {/* Price & CTA */}
-        <div className="flex items-center justify-between pt-3 border-t border-white/10">
+        {/* Price & Enroll CTA */}
+        <div className="flex items-center justify-between pt-sm border-t border-white/10 mt-auto gap-sm">
           <div>
             {discountPercent > 0 && (
-              <span className="font-mono text-xs text-gray-500 line-through block">
+              <span className="font-sans text-caption text-steelblue/50 line-through block">
                 PKR {price.toLocaleString()}
               </span>
             )}
-            <span className="font-mono text-base font-bold text-orange-500">
+            <span className="font-sans text-body font-bold text-accent">
               PKR {finalPrice.toLocaleString()}
             </span>
           </div>
-          <button className="px-4 py-2 bg-orange-500 text-white font-mono text-xs font-medium rounded hover:bg-orange-600 transition-all duration-300">
+          {/* Enroll Button */}
+          <Link
+            href={`/enroll?course=${slug}`}
+            className="px-md py-sm bg-accent text-offwhite font-sans text-label uppercase font-medium rounded-md hover:bg-[#d04e1b] transition-all duration-300 font-semibold text-sm"
+          >
             Enroll →
-          </button>
+          </Link>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

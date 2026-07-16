@@ -67,7 +67,7 @@ export default function AdminDashboardHome() {
   return (
     <div className="space-y-4xl">
       {/* Welcome Banner */}
-      <div className="relative border-b border-hairline pb-xl">
+      <div className="relative border-b border-hairline pb-2xl">
         <div className="absolute inset-0 bg-gradient-to-r from-accent/5 via-transparent to-transparent pointer-events-none" />
         <div className="relative">
           <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
@@ -83,7 +83,7 @@ export default function AdminDashboardHome() {
       </div>
 
       {/* Grid Modules */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3xl">
         {/* Services Module */}
         <div className="relative group">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/20 to-accent/5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm" />

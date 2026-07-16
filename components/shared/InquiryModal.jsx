@@ -79,69 +79,69 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
       />
 
       {/* Modal Box */}
-      <div className="w-full max-w-md border border-hairline bg-navy/95 p-8 relative z-10 shadow-2xl transition-all duration-300">
+      <div className="w-full max-w-md border border-hairline bg-navy/95 p-xl relative z-10 shadow-elevation-xl transition-all duration-300 rounded-lg">
         {/* Subtle decorative grid/crosshair corners for tech aesthetic */}
-        <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-accent/20 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-accent/20 pointer-events-none" />
-        <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-white/5 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-white/5 pointer-events-none" />
+        <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-accent/20 pointer-events-none rounded-tr" />
+        <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-accent/20 pointer-events-none rounded-bl" />
+        <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-white/5 pointer-events-none rounded-tl" />
+        <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-white/5 pointer-events-none rounded-br" />
 
         {/* Close Button */}
         <button 
           onClick={onClose}
-          className="absolute top-6 right-6 text-steelblue hover:text-accent font-sans text-xl transition-all duration-300 hover:rotate-90 opacity-70 hover:opacity-100 p-1"
+          className="absolute top-xl right-xl text-steelblue hover:text-accent font-sans text-xl transition-all duration-300 hover:rotate-90 opacity-70 hover:opacity-100 p-sm"
           aria-label="Close modal"
         >
           ✕
         </button>
 
         {status.submitted ? (
-          <div className="text-center py-8 space-y-6">
-            <div className="w-12 h-12 border border-accent flex items-center justify-center mx-auto">
+          <div className="text-center py-4xl space-y-xl">
+            <div className="w-12 h-12 border border-accent flex items-center justify-center mx-auto rounded shadow-elevation-sm">
               <svg className="w-6 h-6 text-accent fill-none stroke-current" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
               </svg>
             </div>
             <div>
-              <h3 className="font-sans font-bold text-lg text-offwhite uppercase tracking-tight mb-2">
+              <h3 className="font-sans font-bold text-h3 text-offwhite uppercase tracking-tight mb-sm">
                 Inquiry Logged
               </h3>
-              <p className="font-sans text-xs text-steelblue leading-relaxed">
+              <p className="font-sans text-caption text-steelblue leading-relaxed">
                 Opening WhatsApp — send the prefilled message to reach us directly.
               </p>
             </div>
             <button
               onClick={onClose}
-              className="font-mono text-xs uppercase tracking-wider text-accent border border-accent/20 px-6 py-2.5 hover:bg-accent/5 transition-colors"
+              className="font-mono text-label uppercase tracking-wider text-accent border border-accent/20 px-lg py-sm hover:bg-accent/5 transition-colors rounded"
             >
               Done
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="border-b border-hairline/60 pb-4 mb-4">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-accent block mb-1">
+          <form onSubmit={handleSubmit} className="space-y-lg">
+            <div className="border-b border-hairline/60 pb-md mb-md">
+              <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
                 [ SERVICE / COURSE INQUIRY ]
               </span>
-              <h3 className="font-sans font-bold text-lg text-offwhite uppercase tracking-tight">
+              <h3 className="font-sans font-bold text-h3 text-offwhite uppercase tracking-tight">
                 Inquire Now
               </h3>
             </div>
 
             <div>
-              <label className="block font-mono text-[10px] uppercase tracking-wider text-steelblue mb-2">
+              <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Inquiring For
               </label>
               <input
                 type="text"
                 value={`${targetType.toUpperCase()}: ${targetName}`}
                 disabled
-                className="w-full bg-navy/40 border border-hairline px-4 py-3 text-steelblue font-sans text-xs outline-none cursor-not-allowed select-none"
+                className="w-full bg-navy/40 border border-hairline px-4 py-3 text-steelblue font-sans text-caption outline-none cursor-not-allowed select-none rounded-md"
               />
             </div>
 
             <div>
-              <label htmlFor="name" className="block font-mono text-[10px] uppercase tracking-wider text-steelblue mb-2">
+              <label htmlFor="name" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Your Name *
               </label>
               <input
@@ -149,15 +149,15 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className={`w-full bg-navy/60 border ${errors.name ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent text-sm`}
+                className={`w-full bg-navy/60 border ${errors.name ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md text-body`}
                 placeholder="e.g. John Doe"
                 required
               />
-              {errors.name && <span className="font-mono text-[9px] text-accent mt-1 block">{errors.name}</span>}
+              {errors.name && <span className="font-mono text-caption text-accent mt-sm block">{errors.name}</span>}
             </div>
 
             <div>
-              <label htmlFor="phone" className="block font-mono text-[10px] uppercase tracking-wider text-steelblue mb-2">
+              <label htmlFor="phone" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Phone Number *
               </label>
               <input
@@ -165,15 +165,15 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
                 type="tel"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                className={`w-full bg-navy/60 border ${errors.phone ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent text-sm`}
+                className={`w-full bg-navy/60 border ${errors.phone ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md text-body`}
                 placeholder="e.g. +92 300 1234567"
                 required
               />
-              {errors.phone && <span className="font-mono text-[9px] text-accent mt-1 block">{errors.phone}</span>}
+              {errors.phone && <span className="font-mono text-caption text-accent mt-sm block">{errors.phone}</span>}
             </div>
 
             <div>
-              <label htmlFor="email" className="block font-mono text-[10px] uppercase tracking-wider text-steelblue mb-2">
+              <label htmlFor="email" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                 Email Address *
               </label>
               <input
@@ -181,16 +181,16 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`w-full bg-navy/60 border ${errors.email ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent text-sm`}
+                className={`w-full bg-navy/60 border ${errors.email ? 'border-accent' : 'border-hairline'} px-4 py-3 text-offwhite placeholder-steelblue/40 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all rounded-md text-body`}
                 placeholder="e.g. john@example.com"
                 required
               />
-              {errors.email && <span className="font-mono text-[9px] text-accent mt-1 block">{errors.email}</span>}
+              {errors.email && <span className="font-mono text-caption text-accent mt-sm block">{errors.email}</span>}
             </div>
 
 
             {status.error && (
-              <div className="p-3 border border-accent bg-accent/5 text-offwhite font-mono text-xs">
+              <div className="p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">
                 {status.error}
               </div>
             )}
@@ -198,7 +198,7 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
             <button
               type="submit"
               disabled={status.submitting}
-              className="w-full bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-xs py-3.5 border border-transparent transition-colors disabled:opacity-50 select-none"
+              className="w-full bg-accent hover:bg-[#d04e1b] text-offwhite font-mono uppercase tracking-wider text-label px-6 py-3 border border-transparent transition-colors disabled:opacity-50 select-none shadow-elevation-sm hover:shadow-elevation-md rounded-md"
             >
               {status.submitting ? 'Processing...' : 'Submit & Open WhatsApp'}
             </button>

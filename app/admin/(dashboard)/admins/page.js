@@ -148,7 +148,7 @@ export default function ManageAdminsPage() {
   return (
     <div className="space-y-4xl">
       {/* Header */}
-      <div className="border-b border-hairline pb-xl">
+      <div className="border-b border-hairline pb-2xl">
         <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
           [ ACCESS LEVEL CONTROLLER ]
         </span>
@@ -251,7 +251,7 @@ export default function ManageAdminsPage() {
             LOADING ACCREDITATION LIST...
           </div>
         ) : admins.length === 0 ? (
-          <div className="border border-dashed border-white/10 p-4xl text-center text-steelblue font-mono text-label rounded">
+          <div className="border border-dashed border-hairline/60 bg-gradient-to-b from-navy/40 to-navy/60 p-4xl text-center text-steelblue/70 font-mono text-label rounded-xl shadow-elevation-sm">
             NO ADMINISTRATORS FOUND.
           </div>
         ) : (

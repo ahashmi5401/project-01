@@ -5,24 +5,24 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-navy border-t border-hairline pt-16 pb-8 text-sm text-steelblue font-sans relative z-10">
-      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+    <footer className="bg-navy border-t border-hairline pt-4xl pb-xl text-body text-steelblue font-sans relative z-10">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-2xl mb-4xl">
         <div className="md:col-span-2">
           {/* Logo */}
-          <Link href="/" className="inline-flex items-center gap-1.5 mb-4 select-none">
+          <Link href="/" className="inline-flex items-center gap-sm mb-xl select-none">
             {/* TODO: replace with client's real logo file once provided */}
             <span className="font-sans font-bold text-xl uppercase tracking-wider text-offwhite">
               SimuFlux
             </span>
             <span className="w-2 h-2 rounded-full bg-accent" />
           </Link>
-          <p className="max-w-sm mb-6 leading-relaxed">
+          <p className="max-w-sm mb-xl leading-relaxed">
             Empowering students, professionals, and industries with practical CFD, FEA, CAD, and product design solutions.
           </p>
-          <div className="flex gap-4">
+          <div className="flex gap-lg">
             {/* Facebook Link */}
             <a
-              href="https://facebook.com"
+              href="https://www.facebook.com/profile.php?id=61591794389878"
               target="_blank"
               rel="noopener noreferrer"
               className="text-steelblue hover:text-accent transition-colors"
@@ -37,8 +37,8 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-mono text-xs uppercase tracking-wider text-offwhite mb-4">Core Disciplines</h4>
-          <ul className="space-y-2.5">
+          <h4 className="font-mono text-label uppercase tracking-wider text-offwhite mb-xl">Core Disciplines</h4>
+          <ul className="space-y-md">
             <li>Computational Fluid Dynamics</li>
             <li>Finite Element Analysis</li>
             <li>CAD & 3D Modelling</li>
@@ -48,8 +48,8 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-mono text-xs uppercase tracking-wider text-offwhite mb-4">Navigation</h4>
-          <ul className="space-y-2.5">
+          <h4 className="font-mono text-label uppercase tracking-wider text-offwhite mb-xl">Navigation</h4>
+          <ul className="space-y-md">
             <li>
               <Link href="/" className="hover:text-offwhite transition-colors">Home</Link>
             </li>
@@ -69,8 +69,8 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 border-t border-hairline/60 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono">
-        <p>© {currentYear} SimuFlux Design Lab. All rights reserved.</p>
+      <div className="max-w-7xl mx-auto px-6 border-t border-hairline/60 pt-xl flex flex-col md:flex-row justify-between items-center gap-md font-mono text-label">
+        <p>© {currentYear} SimuFlux  Lab. All rights reserved.</p>
         <p className="text-steelblue/60">Designed & engineered for structural excellence.</p>
       </div>
     </footer>

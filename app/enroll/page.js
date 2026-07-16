@@ -63,8 +63,7 @@ export default async function EnrollPage() {
   const { courses, discountTiers, comboDeals } = await getEnrollData();
 
   return (
-    <section className="min-h-screen pt-32 pb-20 relative overflow-hidden bg-navy text-offwhite">
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-navy/20 to-navy pointer-events-none" />
+    <section className="min-h-screen pt-24 pb-4xl relative overflow-hidden bg-navy text-offwhite">
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         <EnrollForm courses={courses} discountTiers={discountTiers} comboDeals={comboDeals} />
       </div>

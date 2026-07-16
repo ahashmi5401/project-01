@@ -22,23 +22,23 @@ function AdminLayoutContent({ children }) {
   return (
     <div className="min-h-screen bg-navy text-offwhite flex flex-col">
       {/* Admin Nav Header */}
-      <header className="border-b border-hairline bg-navy/95 backdrop-blur-sm shadow-elevation-sm sticky top-0 z-30 px-6 py-4">
+      <header className="border-b border-white/10 bg-navy/95 backdrop-blur-sm sticky top-0 z-30 px-4 sm:px-6 py-3 sm:py-4">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-lg">
-            <Link href="/admin" className="font-sans font-bold text-h1 text-offwhite uppercase tracking-wider hover:text-accent transition-colors">
+          <div className="flex items-center gap-md sm:gap-lg">
+            <Link href="/admin" className="font-sans font-bold text-h2 sm:text-h1 text-offwhite uppercase tracking-wider hover:text-accent transition-colors">
               SimuFlux Admin
             </Link>
             
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-lg font-mono text-label uppercase tracking-wider">
+            <nav className="hidden lg:flex items-center gap-sm sm:gap-md font-mono text-label uppercase tracking-wider text-sm sm:text-label">
               {navLinks.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 return (
                   <Link
                     key={link.name}
                     href={link.href}
-                    className={`relative py-2 px-sm transition-colors hover:text-accent rounded ${
-                      isActive ? 'text-accent bg-accent/5' : 'text-steelblue'
+                    className={`relative py-sm px-md transition-all duration-300 hover:text-accent rounded-lg ${
+                      isActive ? 'text-accent bg-accent/10' : 'text-steelblue hover:text-offwhite'
                     }`}
                   >
                     {link.name}
@@ -55,13 +55,13 @@ function AdminLayoutContent({ children }) {
             </nav>
           </div>
 
-          <div className="flex items-center gap-md font-mono text-label">
-            <span className="text-steelblue/60 hidden lg:inline">
+          <div className="flex items-center gap-sm sm:gap-md font-mono text-label text-sm sm:text-label">
+            <span className="text-steelblue/60 hidden xl:inline">
               User: <strong className="text-offwhite">{session?.user?.email}</strong>
             </span>
             <button
               onClick={() => signOut({ callbackUrl: '/' })}
-              className="border border-accent/20 px-lg py-sm hover:bg-accent/10 text-accent transition-colors uppercase tracking-wider rounded shadow-elevation-sm hover:shadow-elevation-md"
+              className="border border-white/20 px-md sm:px-lg py-sm hover:bg-white/10 text-offwhite transition-all duration-300 uppercase tracking-wider rounded-lg text-xs sm:text-label"
             >
               Sign Out
             </button>
@@ -69,7 +69,7 @@ function AdminLayoutContent({ children }) {
             {/* Mobile menu button */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden text-offwhite hover:text-accent focus:outline-none p-1"
+              className="lg:hidden text-offwhite hover:text-accent focus:outline-none p-2 rounded-lg hover:bg-white/5 transition-colors"
               aria-label="Toggle Navigation Menu"
             >
               <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
@@ -92,9 +92,9 @@ function AdminLayoutContent({ children }) {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden bg-navy border-b border-hairline overflow-hidden"
+            className="md:hidden bg-navy border-b border-white/10 overflow-hidden"
           >
-            <div className="flex flex-col px-6 pt-2 pb-6 gap-md font-mono text-label uppercase tracking-wider border-t border-hairline mt-4">
+            <div className="flex flex-col px-xl pt-sm pb-xl gap-md font-mono text-label uppercase tracking-wider border-t border-white/10 mt-lg">
               {navLinks.map((link) => {
                 const isActive = pathname.startsWith(link.href);
                 return (
@@ -102,15 +102,15 @@ function AdminLayoutContent({ children }) {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className={`py-2 transition-colors hover:text-offwhite ${
-                      isActive ? 'text-accent pl-2 border-l-2 border-accent' : 'text-steelblue'
+                    className={`py-sm px-md transition-all duration-300 hover:text-offwhite rounded-lg ${
+                      isActive ? 'text-accent bg-accent/10' : 'text-steelblue hover:text-offwhite'
                     }`}
                   >
                     {link.name}
                   </Link>
                 );
               })}
-              <div className="pt-2 border-t border-hairline/40">
+              <div className="pt-2 border-t border-white/10">
                 <span className="text-steelblue/60 text-label">
                   User: <strong className="text-offwhite">{session?.user?.email}</strong>
                 </span>

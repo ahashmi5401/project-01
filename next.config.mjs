@@ -5,8 +5,7 @@ import dns from 'dns';
 dns.setServers(['1.1.1.1', '8.8.8.8']);
 dns.setDefaultResultOrder('ipv4first');
 
-// TODO: Replace with SimuFlux's real domain name once finalized
-const BASE_URL = 'https://simuflux.com';
+const BASE_URL = 'https://simufluxlab.com';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -27,6 +26,9 @@ const nextConfig = {
         pathname: '/**',
       },
     ],
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async headers() {
     return [
