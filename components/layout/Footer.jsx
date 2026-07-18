@@ -12,7 +12,7 @@ export default function Footer() {
           <Link href="/" className="inline-flex items-center gap-sm mb-xl select-none">
             {/* TODO: replace with client's real logo file once provided */}
             <span className="font-sans font-bold text-xl uppercase tracking-wider text-offwhite">
-              Simuflux
+              Simuflux Lab 
             </span>
             <span className="w-2 h-2 rounded-full bg-accent" />
           </Link>
