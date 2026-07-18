@@ -45,13 +45,13 @@ export async function generateMetadata({ params }) {
 
   if (!service) {
     return {
-      title: "Service Not Found | SimuFlux",
+      title: "Service Not Found | Simuflux",
       description: "The requested engineering service details could not be found.",
     };
   }
 
   return {
-    title: `${service.title} — Engineering Spec | SimuFlux`,
+    title: `${service.title} — Engineering Spec | Simuflux`,
     description: `${service.shortDescription.substring(0, 150)}...`,
   };
 }
@@ -79,7 +79,7 @@ export default async function ServiceDetailPage({ params }) {
     "url": `https://simufluxlab.com/consultancy/${displayService.slug}`,
     "provider": {
       "@type": "Organization",
-      "name": "SimuFlux Lab",
+      "name": "Simuflux Lab",
       "url": "https://simufluxlab.com"
     },
     "areaServed": {

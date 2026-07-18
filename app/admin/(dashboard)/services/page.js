@@ -135,7 +135,6 @@ export default function ManageServicesPage() {
 
   // Select Service for Editing
   const handleEditSelect = (service) => {
-    console.log('[FRONTEND] Editing service:', service);
     setIsEditing(true);
     setEditingId(service._id);
     setFormFields({
@@ -171,15 +170,11 @@ export default function ManageServicesPage() {
   const handleDelete = async (id, title) => {
     if (!confirm(`Are you absolutely sure you want to delete the service: "${title}"?`)) return;
 
-    console.log('[FRONTEND] Deleting service with ID:', id);
-    console.log('[FRONTEND] Service title:', title);
-
     try {
       const res = await fetch(`/api/services/${id}`, {
         method: 'DELETE',
       });
       const data = await res.json();
-      console.log('[FRONTEND] Delete response:', res.status, data);
       if (res.ok) {
         fetchServices();
         setSubmitSuccess('Service deleted successfully.');
@@ -208,13 +203,6 @@ export default function ManageServicesPage() {
     const url = isEditing ? `/api/services/${editingId}` : '/api/services';
     const method = isEditing ? 'PUT' : 'POST';
 
-    console.log('[FRONTEND] Submitting form:');
-    console.log('[FRONTEND] isEditing:', isEditing);
-    console.log('[FRONTEND] editingId:', editingId);
-    console.log('[FRONTEND] URL:', url);
-    console.log('[FRONTEND] Method:', method);
-    console.log('[FRONTEND] Form data:', formFields);
-
     try {
       const res = await fetch(url, {
         method,
@@ -222,7 +210,6 @@ export default function ManageServicesPage() {
         body: JSON.stringify(formFields),
       });
       const data = await res.json();
-      console.log('[FRONTEND] Submit response:', res.status, data);
 
       if (res.ok) {
         setSubmitSuccess(isEditing ? 'Service updated successfully!' : 'Service created successfully!');
@@ -245,7 +232,7 @@ export default function ManageServicesPage() {
       <div className="border-b border-hairline pb-2xl flex flex-col sm:flex-row sm:items-end sm:justify-between gap-lg">
         <div>
           <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
-            [ SIMUFLUX CAPABILITIES ]
+            [ Simuflux CAPABILITIES ]
           </span>
           <h1 className="font-sans font-bold text-h2 text-offwhite uppercase tracking-tight">
             Manage Services

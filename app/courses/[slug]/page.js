@@ -45,13 +45,13 @@ export async function generateMetadata({ params }) {
 
   if (!course) {
     return {
-      title: "Course Not Found | SimuFlux",
+      title: "Course Not Found | Simuflux",
       description: "The requested training course details could not be found.",
     };
   }
 
   return {
-    title: `${course.title} — Training Curriculum | SimuFlux`,
+    title: `${course.title} — Training Curriculum | Simuflux`,
     description: `${course.description.substring(0, 150)}...`,
   };
 }
@@ -79,7 +79,7 @@ export default async function CourseDetailPage({ params }) {
     "url": `https://simufluxlab.com/courses/${displayCourse.slug}`,
     "provider": {
       "@type": "Organization",
-      "name": "SimuFlux Lab",
+      "name": "Simuflux Lab",
       "url": "https://simufluxlab.com"
     },
     "inLanguage": "en",

@@ -118,7 +118,7 @@ export default function AboutPage() {
                 <span className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-accent rounded-br" />
                 
                 <h3 className="font-mono text-label uppercase tracking-wider text-accent mb-md">
-                  [ 03 / WHY CHOOSE SIMUFLUX LAB? ]
+                  [ 03 / WHY CHOOSE Simuflux LAB? ]
                 </h3>
                 <ul className="space-y-md font-sans text-body text-offwhite">
                   <li className="flex items-start gap-md">

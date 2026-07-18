@@ -10,8 +10,6 @@ const path = require('path');
 const { MongoClient, ObjectId } = require('mongodb');
 const dns = require('dns');
 
-// Force Cloudflare + Google DNS for SRV lookups (bypasses broken system resolver)
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
 // Node 17+ changed default DNS result order to prefer IPv6 which can break Atlas SRV resolution
 dns.setDefaultResultOrder("ipv4first");
 

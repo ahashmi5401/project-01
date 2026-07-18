@@ -239,7 +239,7 @@ export default function AdminProfilePage() {
                   value={emailForm.email}
                   onChange={handleEmailChange}
                   className="w-full max-w-md bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent text-sm"
-                  placeholder="new-email@simuflux.com"
+                  placeholder="new-email@Simuflux.com"
                   required
                 />
               </div>

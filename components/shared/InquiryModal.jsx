@@ -8,6 +8,9 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [mounted, setMounted] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileContainerRef = useRef(null);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const [status, setStatus] = useState({
     submitting: false,
@@ -22,6 +25,59 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
     return () => setMounted(false);
   }, []);
 
+  // Reset modal values and captcha on close
+  useEffect(() => {
+    if (!isOpen) {
+      setName('');
+      setPhone('');
+      setEmail('');
+      setTurnstileToken('');
+      setStatus({ submitting: false, submitted: false, error: null });
+      setErrors({});
+    }
+  }, [isOpen]);
+
+  // Initialize Turnstile widget when modal is open
+  useEffect(() => {
+    if (!siteKey || !isOpen) return;
+
+    let turnstileWidgetId = null;
+
+    const initializeTurnstile = () => {
+      if (window.turnstile && turnstileContainerRef.current && turnstileWidgetId === null) {
+        try {
+          turnstileWidgetId = window.turnstile.render(turnstileContainerRef.current, {
+            sitekey: siteKey,
+            callback: (token) => {
+              setTurnstileToken(token);
+              setErrors((prev) => ({ ...prev, captcha: null }));
+            },
+            'expired-callback': () => {
+              setTurnstileToken('');
+            },
+            'error-callback': () => {
+              setTurnstileToken('');
+            },
+          });
+        } catch (e) {
+          console.error('Turnstile render error:', e);
+        }
+      }
+    };
+
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          initializeTurnstile();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [siteKey, isOpen]);
+
   if (!isOpen || !mounted) return null;
 
   const validate = () => {
@@ -30,6 +86,9 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
     if (!phone.trim()) tempErrors.phone = 'Phone number is required.';
     if (!email.trim()) tempErrors.email = 'Email is required.';
     if (email.trim() && !/\S+@\S+\.\S+/.test(email)) tempErrors.email = 'Invalid email address.';
+    if (siteKey && !turnstileToken) {
+      tempErrors.captcha = 'Please complete the CAPTCHA verification.';
+    }
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -44,7 +103,7 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
       const res = await fetch('/api/inquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone, email, targetName, targetType }),
+        body: JSON.stringify({ name, phone, email, targetName, targetType, turnstileToken }),
       });
 
       const data = await res.json();
@@ -54,11 +113,15 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
       }
 
       setStatus({ submitting: false, submitted: true, error: null });
+      setTurnstileToken('');
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
 
       // Generate WhatsApp redirection URL
       // NEXT_PUBLIC_ADMIN_WHATSAPP_PHONE should be a string of digits, e.g. 923463517689
       const adminPhone = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_PHONE || '923463517689';
-      const text = `Hello SimuFlux, my name is ${name.trim()}. I would like to inquire about the ${targetType} "${targetName}". Please contact me back at ${phone.trim()}.`;
+      const text = `Hello Simuflux, my name is ${name.trim()}. I would like to inquire about the ${targetType} "${targetName}". Please contact me back at ${phone.trim()}.`;
       const encodedText = encodeURIComponent(text);
       const waUrl = `https://wa.me/${adminPhone}?text=${encodedText}`;
 
@@ -67,6 +130,10 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
 
     } catch (err) {
       setStatus({ submitting: false, submitted: false, error: err.message });
+      if (window.turnstile) {
+        window.turnstile.reset();
+        setTurnstileToken('');
+      }
     }
   };
 
@@ -188,6 +255,14 @@ export default function InquiryModal({ isOpen, onClose, targetName, targetType }
               {errors.email && <span className="font-mono text-caption text-accent mt-sm block">{errors.email}</span>}
             </div>
 
+
+            {/* Turnstile widget */}
+            {siteKey && (
+              <div className="py-sm flex justify-start">
+                <div ref={turnstileContainerRef} />
+              </div>
+            )}
+            {errors.captcha && <span className="font-mono text-caption text-accent mt-sm block">{errors.captcha}</span>}
 
             {status.error && (
               <div className="p-lg border border-accent bg-accent/5 text-offwhite font-mono text-label shadow-elevation-sm rounded">

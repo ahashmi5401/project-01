@@ -1,5 +1,5 @@
 /**
- * One-time Admin Seeding Script for SimuFlux Design Lab
+ * One-time Admin Seeding Script for Simuflux Lab
  * 
  * Usage:
  *   node scripts/seed-admin.js <email> <password> [--super-admin] [--force]

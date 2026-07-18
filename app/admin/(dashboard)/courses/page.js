@@ -306,7 +306,6 @@ export default function ManageCoursesPage() {
 
   // Select Course for Editing
   const handleEditSelect = (course) => {
-    console.log('[FRONTEND] Editing course:', course);
     setIsEditing(true);
     setEditingId(course._id);
     setFormFields({
@@ -360,10 +359,6 @@ export default function ManageCoursesPage() {
   const handleDelete = async (id, title) => {
     if (!confirm(`Are you absolutely sure you want to delete the course: "${title}"?`)) return;
 
-    console.log('[FRONTEND] Deleting course with ID:', id);
-    console.log('[FRONTEND] ID type:', typeof id);
-    console.log('[FRONTEND] Course title:', title);
-
     if (!id) {
       alert('Course ID is missing. Cannot delete.');
       return;
@@ -374,7 +369,6 @@ export default function ManageCoursesPage() {
         method: 'DELETE',
       });
       const data = await res.json();
-      console.log('[FRONTEND] Delete response:', res.status, data);
       if (res.ok) {
         fetchCourses();
         setSubmitSuccess('Course deleted successfully.');
@@ -415,13 +409,6 @@ export default function ManageCoursesPage() {
     const url = isEditing ? `/api/courses/${editingId}` : '/api/courses';
     const method = isEditing ? 'PUT' : 'POST';
 
-    console.log('[FRONTEND] Submitting form:');
-    console.log('[FRONTEND] isEditing:', isEditing);
-    console.log('[FRONTEND] editingId:', editingId);
-    console.log('[FRONTEND] URL:', url);
-    console.log('[FRONTEND] Method:', method);
-    console.log('[FRONTEND] Form data:', submitData);
-
     try {
       const res = await fetch(url, {
         method,
@@ -429,7 +416,6 @@ export default function ManageCoursesPage() {
         body: JSON.stringify(submitData),
       });
       const data = await res.json();
-      console.log('[FRONTEND] Submit response:', res.status, data);
 
       if (res.ok) {
         setSubmitSuccess(isEditing ? 'Course updated successfully!' : 'Course created successfully!');

@@ -9,7 +9,7 @@ import ServicesGrid from '@/components/consultancy/ServicesGrid';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "Engineering Consultancy Services — CFD, FEA, CAD, Product Design | SimuFlux",
+  title: "Engineering Consultancy Services — CFD, FEA, CAD, Product Design | Simuflux",
   description: "Verify your engineering designs with high-fidelity CFD simulations, structural FEA stress analysis, parametric CAD modeling, and product design services in Karachi, Pakistan.",
 };
 
@@ -69,7 +69,7 @@ export default async function ConsultancyPage() {
 
             <div>
               <WhatsAppButton 
-                message="Hello SimuFlux, I would like to inquire about a consultancy project/simulation proposal."
+                message="Hello Simuflux, I would like to inquire about a consultancy project/simulation proposal."
               >
                 Inquire About Project
               </WhatsAppButton>

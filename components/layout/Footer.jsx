@@ -12,7 +12,7 @@ export default function Footer() {
           <Link href="/" className="inline-flex items-center gap-sm mb-xl select-none">
             {/* TODO: replace with client's real logo file once provided */}
             <span className="font-sans font-bold text-xl uppercase tracking-wider text-offwhite">
-              SimuFlux
+              Simuflux
             </span>
             <span className="w-2 h-2 rounded-full bg-accent" />
           </Link>
@@ -26,7 +26,7 @@ export default function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-steelblue hover:text-accent transition-colors"
-              aria-label="Follow SimuFlux Lab on Facebook"
+              aria-label="Follow Simuflux Lab on Facebook"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24" role="img" aria-label="Facebook logo">
                 <title>Facebook</title>
@@ -70,7 +70,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 border-t border-hairline/60 pt-xl flex flex-col md:flex-row justify-between items-center gap-md font-mono text-label">
-        <p>© {currentYear} SimuFlux  Lab. All rights reserved.</p>
+        <p>© {currentYear} Simuflux  Lab. All rights reserved.</p>
         <p className="text-steelblue/60">Designed & engineered for structural excellence.</p>
       </div>
     </footer>

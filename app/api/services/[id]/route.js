@@ -18,7 +18,6 @@ function generateSlug(title) {
 // PUT: Update service (Admin Protected)
 export async function PUT(req, { params }) {
   try {
-    console.log('[SERVICES PUT] Starting update request');
     const session = await getServerSession(authOptions);
     const ip = getClientIp(req);
 
@@ -32,9 +31,7 @@ export async function PUT(req, { params }) {
       );
     }
 
-    console.log('[SERVICES PUT] Session:', session ? 'Found' : 'Not found', session);
     if (!session || session.user.role !== 'admin') {
-      console.log('[SERVICES PUT] Unauthorized - no session or not admin');
       return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
@@ -44,7 +41,6 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    console.log('[SERVICES PUT] Request body:', body);
     const { title, shortDescription, detail, image, id: serviceNum, points } = body;
 
     // Validation
@@ -56,9 +52,7 @@ export async function PUT(req, { params }) {
     
     // Check if the service exists
     const service = await db.collection('services').findOne({ _id: new ObjectId(id) });
-    console.log('[SERVICES PUT] Found service:', service ? 'Yes' : 'No', service ? service._id : null);
     if (!service) {
-      console.log('[SERVICES PUT] Service not found with ID:', id);
       return NextResponse.json({ error: 'Service not found.' }, { status: 404 });
     }
 
@@ -88,7 +82,6 @@ export async function PUT(req, { params }) {
       { _id: new ObjectId(id) },
       { $set: updateFields }
     );
-    console.log('[SERVICES PUT] Update result:', result);
 
     return NextResponse.json({ success: true, service: { ...service, ...updateFields } });
   } catch (error) {
@@ -100,7 +93,6 @@ export async function PUT(req, { params }) {
 // DELETE: Delete service (Admin Protected)
 export async function DELETE(req, { params }) {
   try {
-    console.log('[SERVICES DELETE] Starting delete request');
     const session = await getServerSession(authOptions);
     const ip = getClientIp(req);
 
@@ -114,9 +106,7 @@ export async function DELETE(req, { params }) {
       );
     }
 
-    console.log('[SERVICES DELETE] Session:', session ? 'Found' : 'Not found', session);
     if (!session || session.user.role !== 'admin') {
-      console.log('[SERVICES DELETE] Unauthorized - no session or not admin');
       return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
@@ -128,9 +118,7 @@ export async function DELETE(req, { params }) {
     const { db } = await connectToDatabase();
     
     const result = await db.collection('services').deleteOne({ _id: new ObjectId(id) });
-    console.log('[SERVICES DELETE] Delete result:', result);
     if (result.deletedCount === 0) {
-      console.log('[SERVICES DELETE] Service not found, deletedCount:', result.deletedCount);
       return NextResponse.json({ error: 'Service not found.' }, { status: 404 });
     }
 

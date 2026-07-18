@@ -69,8 +69,6 @@ export async function DELETE(req) {
     // Delete the admin
     await db.collection('users').deleteOne({ _id: objectId });
 
-    console.log('[Admin Delete] Admin account deleted:', adminToDelete.email);
-
     return NextResponse.json({ success: true, message: 'Admin account deleted successfully.' });
   } catch (error) {
     console.error('Delete admin API error:', error);
@@ -126,8 +124,6 @@ export async function POST(req) {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-
-    console.log('[Admin Create] New admin account created:', targetEmail);
 
     return NextResponse.json({ success: true, message: 'Admin account created successfully.' });
   } catch (error) {

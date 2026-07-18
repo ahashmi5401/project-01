@@ -68,7 +68,7 @@ export default function AdminSignupForm() {
 
         <div className="text-center mb-8 border-b border-hairline/60 pb-6">
           <span className="font-mono text-xs uppercase tracking-widest text-accent block mb-2">
-            [ SIMUFLUX LAB ]
+            [ Simuflux LAB ]
           </span>
           <h1 className="font-sans font-bold text-2xl text-offwhite uppercase tracking-tight">
             Bootstrap Admin Signup
@@ -103,7 +103,7 @@ export default function AdminSignupForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full bg-navy/80 border border-hairline px-4 py-3 text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent transition-colors"
-                placeholder="admin@simuflux.com"
+                placeholder="admin@Simuflux.com"
                 required
               />
             </div>

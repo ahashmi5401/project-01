@@ -70,7 +70,7 @@ function LoginForm() {
 
         <div className="text-center mb-xl border-b border-hairline/60 pb-xl">
           <span className="font-mono text-label uppercase tracking-widest text-accent block mb-sm">
-            [ SIMUFLUX LAB ]
+            [ Simuflux LAB ]
           </span>
           <h1 className="font-sans font-bold text-h2 text-offwhite uppercase tracking-tight">
             Account Sign In

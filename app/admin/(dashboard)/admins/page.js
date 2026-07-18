@@ -181,7 +181,7 @@ export default function ManageAdminsPage() {
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
                   className="w-full bg-navy/80 border border-hairline px-lg py-sm text-offwhite placeholder-steelblue/20 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 text-body transition-all rounded"
-                  placeholder="e.g. colleague@simuflux.com"
+                  placeholder="e.g. colleague@Simuflux.com"
                   required
                 />
               </div>

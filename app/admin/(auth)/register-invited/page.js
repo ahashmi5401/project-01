@@ -81,7 +81,7 @@ function RegisterInvitedForm() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           <p className="font-sans text-xs text-steelblue leading-relaxed mb-4">
-            Set a secure password below to finalize your administrator credentials for SimuFlux Design Lab.
+            Set a secure password below to finalize your administrator credentials for Simuflux Lab.
           </p>
 
           <div>

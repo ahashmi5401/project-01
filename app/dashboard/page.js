@@ -16,7 +16,7 @@ export default function UserDashboard() {
 
         <div className="mb-8 border-b border-hairline/60 pb-6">
           <span className="font-mono text-xs uppercase tracking-widest text-accent block mb-2">
-            [ SIMUFLUX LAB ]
+            [ Simuflux LAB ]
           </span>
           <h1 className="font-sans font-bold text-3xl uppercase tracking-tight">
             Welcome, {session?.user?.email}!
@@ -24,7 +24,7 @@ export default function UserDashboard() {
         </div>
 
         <p className="font-sans text-steelblue leading-relaxed mb-8">
-          Thank you for joining the SimuFlux Lab portal. We are actively constructing your personalized client dashboard where you can manage your service requests, view project files, download invoices, and schedule 1-on-1 engineering consultancy sessions.
+          Thank you for joining the Simuflux Lab portal. We are actively constructing your personalized client dashboard where you can manage your service requests, view project files, download invoices, and schedule 1-on-1 engineering consultancy sessions.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

@@ -109,12 +109,12 @@ export async function PUT(req) {
           await resend.emails.send({
             from: fromAddress,
             to: originalEmail,
-            subject: '[Security Alert] Your SimuFlux Admin email has been updated',
-            text: `Hello,\n\nThis is a security alert to confirm that the email address associated with your SimuFlux Admin account has been changed from ${originalEmail} to ${cleanEmail}.\n\nIf you did not request this change, please contact support or your system administrator immediately.\n\nBest Regards,\nSimuFlux Security Team`,
+            subject: '[Security Alert] Your Simuflux Admin email has been updated',
+            text: `Hello,\n\nThis is a security alert to confirm that the email address associated with your Simuflux Admin account has been changed from ${originalEmail} to ${cleanEmail}.\n\nIf you did not request this change, please contact support or your system administrator immediately.\n\nBest Regards,\nSimuflux Security Team`,
             html: `
               <h3>Security Alert: Email Address Updated</h3>
               <p>Hello,</p>
-              <p>This is a security alert to confirm that the email address associated with your SimuFlux Admin account has been changed:</p>
+              <p>This is a security alert to confirm that the email address associated with your Simuflux Admin account has been changed:</p>
               <ul>
                 <li><strong>Old Email:</strong> ${originalEmail}</li>
                 <li><strong>New Email:</strong> ${cleanEmail}</li>
@@ -122,7 +122,7 @@ export async function PUT(req) {
               <p>If you did not initiate this request, please contact support or your system administrator immediately to secure your account.</p>
               <br/>
               <p>Best Regards,</p>
-              <p><strong>SimuFlux Security Team</strong></p>
+              <p><strong>Simuflux Security Team</strong></p>
             `,
           });
         } catch (mailErr) {
@@ -168,16 +168,16 @@ export async function PUT(req) {
           await resend.emails.send({
             from: fromAddress,
             to: originalEmail,
-            subject: '[Security Alert] Your SimuFlux Admin password has been updated',
-            text: `Hello,\n\nThis is a security alert to confirm that the password for your SimuFlux Admin account (${originalEmail}) was changed on ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' })}.\n\nIf you did not request this change, please contact support or your system administrator immediately.\n\nBest Regards,\nSimuFlux Security Team`,
+            subject: '[Security Alert] Your Simuflux Admin password has been updated',
+            text: `Hello,\n\nThis is a security alert to confirm that the password for your Simuflux Admin account (${originalEmail}) was changed on ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' })}.\n\nIf you did not request this change, please contact support or your system administrator immediately.\n\nBest Regards,\nSimuflux Security Team`,
             html: `
               <h3>Security Alert: Password Updated</h3>
               <p>Hello,</p>
-              <p>This is a security alert to confirm that the password for your SimuFlux Admin account (<strong>${originalEmail}</strong>) was updated on ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' })}.</p>
+              <p>This is a security alert to confirm that the password for your Simuflux Admin account (<strong>${originalEmail}</strong>) was updated on ${new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' })}.</p>
               <p>If you did not initiate this request, please contact support or your system administrator immediately to secure your account.</p>
               <br/>
               <p>Best Regards,</p>
-              <p><strong>SimuFlux Security Team</strong></p>
+              <p><strong>Simuflux Security Team</strong></p>
             `,
           });
         } catch (mailErr) {

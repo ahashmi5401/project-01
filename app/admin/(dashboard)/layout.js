@@ -26,7 +26,7 @@ function AdminLayoutContent({ children }) {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-md sm:gap-lg">
             <Link href="/admin" className="font-sans font-bold text-h2 sm:text-h1 text-offwhite uppercase tracking-wider hover:text-accent transition-colors">
-              SimuFlux Admin
+              Simuflux Admin
             </Link>
             
             {/* Desktop Navigation */}

@@ -6,6 +6,7 @@ import { Resend } from 'resend';
 import { google } from 'googleapis';
 import { calculatePricing, getDiscountSourceLabel } from '@/lib/pricingEngine';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -47,6 +48,12 @@ export async function POST(req) {
         { error: rateLimitResult.error },
         { status: 429 }
       );
+    }
+
+    const turnstileToken = formData.get('turnstileToken');
+    const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
+    if (!turnstileValid) {
+      return NextResponse.json({ error: 'CAPTCHA verification failed.' }, { status: 400 });
     }
 
     const name              = formData.get('name');
@@ -300,7 +307,7 @@ export async function POST(req) {
           from: process.env.RESEND_FROM_EMAIL,
           to: cleanEmail,
           subject: `Registration Received: ${cleanCourses.join(', ')}`,
-          text: `Hello ${name.trim()},\n\nWe have received your registration and payment proof for the following courses: ${cleanCourses.join(', ')}. Our team will verify the payment and contact you shortly to confirm your seat.\n\nThank you for choosing SimuFlux Design Lab.\n\nBest Regards,\nSimuFlux Team`,
+          text: `Hello ${name.trim()},\n\nWe have received your registration and payment proof for the following courses: ${cleanCourses.join(', ')}. Our team will verify the payment and contact you shortly to confirm your seat.\n\nThank you for choosing Simuflux Lab.\n\nBest Regards,\nSimuflux Lab Team`,
           html: `
             <h3>Registration Received</h3>
             <p>Hello <strong>${safeName}</strong>,</p>
@@ -308,7 +315,7 @@ export async function POST(req) {
             <p>Our training coordination team will verify the payment receipt and contact you shortly with class schedule details.</p>
             <br/>
             <p>Best Regards,</p>
-            <p><strong>SimuFlux Design Lab</strong> — Karachi, Pakistan</p>
+            <p><strong>Simuflux Lab</strong> — Karachi, Pakistan</p>
           `,
         });
       } catch (err) {

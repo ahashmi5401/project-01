@@ -1,19 +1,29 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import AnimatedReveal from '@/components/shared/AnimatedReveal';
 
 const ITEMS_PER_PAGE = 6;
 
-export default function ServicesGrid({ services = [] }) {
+function ServicesGridInner({ services = [] }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const activeSlug = searchParams.get('service');
 
-  const totalPages = Math.ceil(services.length / ITEMS_PER_PAGE);
-  const showPagination = services.length > ITEMS_PER_PAGE;
+  // Filter by slug if query param is present
+  const filteredServices = activeSlug
+    ? services.filter((s) => s.slug === activeSlug)
+    : services;
+
+  const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
+  const showPagination = !activeSlug && filteredServices.length > ITEMS_PER_PAGE;
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const visibleServices = services.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const visibleServices = activeSlug
+    ? filteredServices
+    : filteredServices.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const goToPage = (page) => {
     setCurrentPage(page);
@@ -22,78 +32,96 @@ export default function ServicesGrid({ services = [] }) {
 
   return (
     <>
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl mb-4xl">
-        {visibleServices.map((service, index) => (
-          <AnimatedReveal key={service._id || service.id} delay={index * 0.1}>
+
+      {/* No result fallback */}
+      {activeSlug && filteredServices.length === 0 && (
+        <AnimatedReveal>
+          <div className="text-center py-4xl border border-hairline rounded-lg mb-4xl">
+            <p className="font-mono text-label text-steelblue/60 uppercase tracking-wider mb-lg">No service found for this filter.</p>
             <Link
-              href={`/consultancy/${service.slug}`}
-              className="bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden transition-all duration-300 relative group cursor-pointer flex flex-col h-full"
+              href="/consultancy"
+              className="font-mono text-label uppercase tracking-wider text-accent border border-accent/30 px-lg py-sm rounded-md hover:bg-accent/5 transition-colors"
             >
-              {/* Image Thumbnail at Top - 16:9 aspect ratio */}
-              {service.image ? (
-                <div className="relative w-full aspect-video bg-navy/40 overflow-hidden border-b border-white/10">
-                  <img
-                    src={service.image}
-                    alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
-                      e.target.parentElement.innerHTML = '<div class="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40"><svg class="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5" /></svg></div>';
-                    }}
-                  />
-                </div>
-              ) : (
-                <div className="w-full aspect-video bg-navy/50 flex items-center justify-center border-b border-white/10">
-                  <div className="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
-                    <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5M12 13l8 5m-8-5l-8 5" />
-                    </svg>
+              View All Services
+            </Link>
+          </div>
+        </AnimatedReveal>
+      )}
+
+      {/* Services Grid */}
+      {visibleServices.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl mb-4xl">
+          {visibleServices.map((service, index) => (
+            <AnimatedReveal key={service._id || service.id} delay={index * 0.1}>
+              <Link
+                href={`/consultancy/${service.slug}`}
+                className="bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden transition-all duration-300 relative group cursor-pointer flex flex-col h-full"
+              >
+                {/* Image Thumbnail at Top - 16:9 aspect ratio */}
+                {service.image ? (
+                  <div className="relative w-full aspect-video bg-navy/40 overflow-hidden border-b border-white/10">
+                    <img
+                      src={service.image}
+                      alt={service.title}
+                      className="w-full h-full object-cover transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
+                        e.target.parentElement.innerHTML = '<div class="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40"><svg class="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5" /></svg></div>';
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full aspect-video bg-navy/50 flex items-center justify-center border-b border-white/10">
+                    <div className="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
+                      <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5M12 13l8 5m-8-5l-8 5" />
+                      </svg>
+                    </div>
+                  </div>
+                )}
+
+                {/* Card Content */}
+                <div className="p-lg flex flex-col flex-grow h-full">
+                  {/* Structural Motif: Number in Accent color */}
+                  <div className="flex justify-between items-start mb-md border-b border-hairline/40 pb-md">
+                    <span className="font-mono text-label text-steelblue">
+                      SERVICE REF
+                    </span>
+                    <span className="font-mono text-h3 font-bold text-accent/90">
+                      {service.id}
+                    </span>
+                  </div>
+
+                  <div className="flex-grow mb-md">
+                    <h3 className="font-sans font-semibold text-h3 text-offwhite mb-sm group-hover:text-accent/90 transition-colors leading-tight">
+                      {service.title}
+                    </h3>
+                    <p className="font-sans text-body text-steelblue/80 leading-relaxed">
+                      {service.shortDescription.length > 150
+                        ? service.shortDescription.substring(0, 150) + '...'
+                        : service.shortDescription}
+                    </p>
+                  </div>
+
+                  <div className="pt-sm mt-auto">
+                    <Link
+                      href={`/consultancy/${service.slug}`}
+                      className="w-full inline-flex items-center justify-center gap-sm font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] py-sm rounded-md transition-all duration-300"
+                    >
+                      <span>View Details →</span>
+                      <svg className="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
                   </div>
                 </div>
-              )}
-
-              {/* Card Content */}
-              <div className="p-lg flex flex-col flex-grow h-full">
-                {/* Structural Motif: Number in Accent color */}
-                <div className="flex justify-between items-start mb-md border-b border-hairline/40 pb-md">
-                  <span className="font-mono text-label text-steelblue">
-                    SERVICE REF
-                  </span>
-                  <span className="font-mono text-h3 font-bold text-accent/90">
-                    {service.id}
-                  </span>
-                </div>
-
-                <div className="flex-grow mb-md">
-                  <h3 className="font-sans font-semibold text-h3 text-offwhite mb-sm group-hover:text-accent/90 transition-colors leading-tight">
-                    {service.title}
-                  </h3>
-                  <p className="font-sans text-body text-steelblue/80 leading-relaxed">
-                    {service.shortDescription.length > 150 
-                      ? service.shortDescription.substring(0, 150) + '...' 
-                      : service.shortDescription}
-                  </p>
-                </div>
-
-                <div className="pt-sm mt-auto">
-                  <Link
-                    href={`/consultancy/${service.slug}`}
-                    className="w-full inline-flex items-center justify-center gap-sm font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] py-sm rounded-md transition-all duration-300"
-                  >
-                    <span>View Details →</span>
-                    <svg className="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              </div>
-            </Link>
-          </AnimatedReveal>
-        ))}
-      </div>
+              </Link>
+            </AnimatedReveal>
+          ))}
+        </div>
+      )}
 
       {/* Pagination Controls — only rendered when there are more items than one page */}
       {showPagination && (
@@ -143,5 +171,20 @@ export default function ServicesGrid({ services = [] }) {
         </AnimatedReveal>
       )}
     </>
+  );
+}
+
+// Wrap in Suspense because useSearchParams() requires it in Next.js
+export default function ServicesGrid({ services = [] }) {
+  return (
+    <Suspense fallback={
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl mb-4xl">
+        {[...Array(3)].map((_, i) => (
+          <div key={i} className="bg-white/[0.02] border border-white/10 rounded-xl aspect-video animate-pulse" />
+        ))}
+      </div>
+    }>
+      <ServicesGridInner services={services} />
+    </Suspense>
   );
 }

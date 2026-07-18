@@ -192,7 +192,9 @@ const Step3 = memo(function Step3({
   totalPrice,
   selectedCount,
   discountReason,
-  getDiscountSourceLabel
+  getDiscountSourceLabel,
+  turnstileContainerRef,
+  siteKey
 }) {
   return (
     <motion.div
@@ -334,6 +336,14 @@ const Step3 = memo(function Step3({
       </div>
       {errors.screenshot && <span className="font-mono text-caption text-accent mt-sm block">{errors.screenshot}</span>}
     </div>
+
+    {/* Turnstile widget */}
+    {siteKey && (
+      <div className="py-sm flex justify-start">
+        <div ref={turnstileContainerRef} />
+      </div>
+    )}
+    {errors.captcha && <span className="font-mono text-caption text-accent mt-sm block">{errors.captcha}</span>}
   </motion.div>
   );
 });
@@ -356,6 +366,9 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
   });
   
   const [screenshot, setScreenshot] = useState(null);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileContainerRef = useRef(null);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   const [status, setStatus] = useState({
     submitting: false,
@@ -391,6 +404,47 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
     checkTokenStatus();
   }, [token]);
 
+  // Initialize Turnstile widget on Step 3
+  useEffect(() => {
+    if (!siteKey || currentStep !== 3) return;
+
+    let turnstileWidgetId = null;
+
+    const initializeTurnstile = () => {
+      if (window.turnstile && turnstileContainerRef.current && turnstileWidgetId === null) {
+        try {
+          turnstileWidgetId = window.turnstile.render(turnstileContainerRef.current, {
+            sitekey: siteKey,
+            callback: (token) => {
+              setTurnstileToken(token);
+              setErrors((prev) => ({ ...prev, captcha: null }));
+            },
+            'expired-callback': () => {
+              setTurnstileToken('');
+            },
+            'error-callback': () => {
+              setTurnstileToken('');
+            },
+          });
+        } catch (e) {
+          console.error('Turnstile render error:', e);
+        }
+      }
+    };
+
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          initializeTurnstile();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [siteKey, currentStep]);
+
   // Step-specific validation
   const validateStep = (step) => {
     const tempErrors = {};
@@ -425,6 +479,9 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
       if (!formData.reason.trim()) tempErrors.reason = 'Please explain why you want to enroll.';
       if (selectedCourses.length === 0) tempErrors.course = 'Please select at least one course.';
       if (!screenshot) tempErrors.screenshot = 'Payment receipt screenshot proof is required.';
+      if (siteKey && !turnstileToken) {
+        tempErrors.captcha = 'Please complete the CAPTCHA verification.';
+      }
     }
 
     setErrors(tempErrors);
@@ -516,6 +573,7 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
     if (token) {
       submissionData.append('token', token);
     }
+    submissionData.append('turnstileToken', turnstileToken);
 
     try {
       const response = await fetch('/api/register', {
@@ -546,6 +604,10 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
         setSelectedCourses(initialCourse ? [initialCourse] : []);
         setScreenshot(null);
         setCurrentStep(1);
+        setTurnstileToken('');
+        if (window.turnstile) {
+          window.turnstile.reset();
+        }
       } else {
         throw new Error(resData.error || 'Failed to submit registration.');
       }
@@ -556,7 +618,10 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
         error: err.message || 'An error occurred. Please try again.',
         message: null,
       });
-
+      if (window.turnstile) {
+        window.turnstile.reset();
+        setTurnstileToken('');
+      }
     }
   };
 
@@ -673,6 +738,8 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
                   selectedCount={selectedCount}
                   discountReason={discountReason}
                   getDiscountSourceLabel={getDiscountSourceLabel}
+                  turnstileContainerRef={turnstileContainerRef}
+                  siteKey={siteKey}
                 />
               )}
             </AnimatePresence>

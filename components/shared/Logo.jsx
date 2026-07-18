@@ -61,7 +61,7 @@ export default function Logo({ className = '' }) {
         <circle cx="86" cy="85" r="6" fill="#FFFFFF" stroke="#E21A22" strokeWidth="3.2" />
       </g>
 
-      {/* Typography - SIMUFLUX */}
+      {/* Typography - Simuflux */}
       <g transform="translate(120, 26)">
         {/* Letter S */}
         <g transform="translate(0, 0)">

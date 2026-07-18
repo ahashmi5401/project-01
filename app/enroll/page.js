@@ -3,7 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import EnrollForm from '@/components/courses/EnrollForm';
 
 export const metadata = {
-  title: "Course Enrollment & Packages | SimuFlux Academy",
+  title: "Course Enrollment & Packages | Simuflux Academy",
   description: "Configure your customized training package, select multiple engineering courses, and view live volume discount calculations.",
 };
 

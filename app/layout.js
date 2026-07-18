@@ -19,23 +19,24 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata = {
   title: {
-    template: "%s | SimuFlux Lab",
-    default: "SimuFlux Lab | Engineering Training & Consultancy",
+    template: "%s | Simuflux Lab",
+    default: "Simuflux Lab | Engineering Training & Consultancy",
   },
   description:
-    "SimuFlux Lab provides professional engineering training and consultancy in CFD, FEA, CAD, 3D modelling, and product design — empowering students, professionals, and industries with practical engineering solutions.",
+    "Simuflux Lab provides professional engineering training and consultancy in CFD, FEA, CAD, 3D Modelling, and product design. We empower students, professionals, and industries with innovative engineering solutions.",
   metadataBase: new URL("https://simufluxlab.com"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "SimuFlux  Lab",
+    title: "Simuflux Lab",
     description:
-      "Professional engineering training and consultancy in CFD, FEA, CAD, 3D modelling, and product design.",
+      "Simuflux Lab provides professional engineering training and consultancy in CFD, FEA, CAD, 3D Modelling, and product design. We empower students, professionals, and industries with innovative engineering solutions.",
     url: "https://simufluxlab.com",
-    siteName: "SimuFlux  Lab",
+    siteName: "Simuflux Lab",
     locale: "en_US",
     type: "website",
+    images: ['/images/og-banner.jpg'],
   },
   robots: {
     index: true,

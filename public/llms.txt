@@ -1,6 +1,6 @@
-# SimuFlux Design Lab
+# Simuflux  Lab
 
-SimuFlux Design Lab is a professional engineering training and consultancy based in Karachi, Pakistan. We bridge the gap between academic theory and industrial application through practical, hands-on training and advanced engineering simulation solutions.
+Simuflux  Lab is a professional engineering training and consultancy based in Karachi, Pakistan. We bridge the gap between academic theory and industrial application through practical, hands-on training and advanced engineering simulation solutions.
 
 ## Services
 
@@ -23,16 +23,16 @@ SimuFlux Design Lab is a professional engineering training and consultancy based
 
 ## Key Pages
 
-- Home: https://simufluxlab.com - Overview of services and courses
-- About: https://simufluxlab.com/about - Company mission, values, and team information
-- Courses: https://simufluxlab.com/courses - Available training programs with curriculum details
-- Consultancy: https://simufluxlab.com/consultancy - Engineering service offerings
-- Contact: https://simufluxlab.com/contact - Get in touch for inquiries and registrations
+- Home: https://Simufluxlab.com - Overview of services and courses
+- About: https://Simufluxlab.com/about - Company mission, values, and team information
+- Courses: https://Simufluxlab.com/courses - Available training programs with curriculum details
+- Consultancy: https://Simufluxlab.com/consultancy - Engineering service offerings
+- Contact: https://Simufluxlab.com/contact - Get in touch for inquiries and registrations
 
 ## Contact Information
 
 - Location: Karachi, Sindh, Pakistan
-- Email: info@simuflux.com
+- Email: info@Simufluxlab.com
 - WhatsApp: Available for direct inquiries
 - Response Time: Within 24-48 hours for general inquiries, 15 minutes for enrollment confirmations
 

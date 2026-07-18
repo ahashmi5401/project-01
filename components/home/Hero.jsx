@@ -32,7 +32,7 @@ export default function Hero() {
 
           <div className="flex flex-wrap gap-md sm:gap-lg items-center">
             {/* Primary WhatsApp CTA Button */}
-            <WhatsAppButton message="Hello SimuFlux, I would like to inquire about your engineering training and consultancy services." />
+            <WhatsAppButton message="Hello Simuflux, I would like to inquire about your engineering training and consultancy services." />
             
             {/* Secondary Outline Link */}
             <Link

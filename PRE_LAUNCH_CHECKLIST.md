@@ -9,19 +9,19 @@
 - [ ] Consider replacing `<img>` with Next.js `<Image>` components (7 warnings found)
 
 ### 2. Domain Configuration
-Replace all instances of `simuflux.com` with `simufluxlab.com`:
-- [ ] `next.config.mjs` - Line 9: `const BASE_URL = 'https://simuflux.com'` → `https://simufluxlab.com`
-- [ ] `app/sitemap.js` - Line 4: `const BASE_URL = 'https://simuflux.com'` → `https://simufluxlab.com`
-- [ ] `app/robots.js` - Line 2: `const BASE_URL = 'https://simuflux.com'` → `https://simufluxlab.com`
-- [ ] `app/layout.js` - Line 27: `metadataBase: new URL("https://simuflux.com")` → `https://simufluxlab.com`
-- [ ] `app/page.js` - Lines 95-97: Schema markup URLs → `https://simufluxlab.com`
+Replace all instances of `Simuflux.com` with `Simufluxlab.com`:
+- [ ] `next.config.mjs` - Line 9: `const BASE_URL = 'https://Simuflux.com'` → `https://Simufluxlab.com`
+- [ ] `app/sitemap.js` - Line 4: `const BASE_URL = 'https://Simuflux.com'` → `https://Simufluxlab.com`
+- [ ] `app/robots.js` - Line 2: `const BASE_URL = 'https://Simuflux.com'` → `https://Simufluxlab.com`
+- [ ] `app/layout.js` - Line 27: `metadataBase: new URL("https://Simuflux.com")` → `https://Simufluxlab.com`
+- [ ] `app/page.js` - Lines 95-97: Schema markup URLs → `https://Simufluxlab.com`
 
 ### 3. Contact Information Updates
 Update with real business details:
 - [ ] `app/page.js` - Line 98: Replace `"+92-XXX-XXXXXXX"` with actual phone
 - [ ] `app/page.js` - Line 101: Replace "Karachi, Sindh, Pakistan" with exact address
-- [ ] `app/contact/page.js` - Line 53: Update `info@simuflux.com` → `info@simufluxlab.com`
-- [ ] Update all email references in code to use `@simufluxlab.com` domain
+- [ ] `app/contact/page.js` - Line 53: Update `info@Simuflux.com` → `info@Simufluxlab.com`
+- [ ] Update all email references in code to use `@Simufluxlab.com` domain
 
 ### 4. WhatsApp Number Verification
 Confirm production number is correct (currently: `923463517689`):
@@ -34,7 +34,7 @@ Confirm production number is correct (currently: `923463517689`):
 
 #### Domain Verification (Required for Production)
 - [ ] Go to https://resend.com/domains
-- [ ] Add domain: `simufluxlab.com`
+- [ ] Add domain: `Simufluxlab.com`
 - [ ] Add DNS records provided by Resend (TXT, CNAME)
 - [ ] Wait for domain verification to complete
 - [ ] **Important**: Test mode (`onboarding@resend.dev`) only delivers to your Resend-verified account email
@@ -42,8 +42,8 @@ Confirm production number is correct (currently: `923463517689`):
 #### Environment Variables Setup
 Update `.env.local` with production values:
 - [ ] `RESEND_API_KEY` - Your actual Resend API key
-- [ ] `RESEND_FROM_EMAIL` - Use verified domain: `SimuFlux Academy <academy@simufluxlab.com>`
-- [ ] `ADMIN_EMAIL` - Set to: `info@simufluxlab.com`
+- [ ] `RESEND_FROM_EMAIL` - Use verified domain: `Simuflux Academy <academy@Simufluxlab.com>`
+- [ ] `ADMIN_EMAIL` - Set to: `info@Simufluxlab.com`
 
 #### Test Email Functionality
 Before going live, test email sending:
@@ -52,8 +52,8 @@ curl https://api.resend.com/emails \
   -H "Authorization: Bearer YOUR_RESEND_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "from": "academy@simufluxlab.com",
-    "to": "info@simufluxlab.com",
+    "from": "academy@Simufluxlab.com",
+    "to": "info@Simufluxlab.com",
     "subject": "Test Email",
     "html": "<h1>Test</h1>"
   }'
@@ -86,7 +86,7 @@ If emails are not being received:
 - [ ] **Logout behavior**: Log out, confirm cookie is cleared, test browser back button doesn't show cached content
 - [ ] **Session independence**: Log in as regular user, then as admin - confirm sessions don't interfere
 - [ ] **Super Admin restrictions**: 
-  - Log in as `admin@simuflux.com`, verify "Create Admin" and "Delete" buttons visible
+  - Log in as `admin@Simuflux.com`, verify "Create Admin" and "Delete" buttons visible
   - Log in as regular admin, verify these buttons are hidden
   - Attempt to create/delete admin as regular admin - confirm 403 error
 

@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Resend } from 'resend';
 import { escapeHtml } from '@/lib/escapeHtml';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -16,7 +17,7 @@ export async function POST(req) {
       throw new Error('ADMIN_EMAIL environment variable is not configured');
     }
 
-    const { name, phone, email, targetName, targetType } = await req.json();
+    const { name, phone, email, targetName, targetType, turnstileToken } = await req.json();
 
     // Rate limiting: 15 requests per hour per IP
     const ip = getClientIp(req);
@@ -27,6 +28,12 @@ export async function POST(req) {
         { error: rateLimitResult.error },
         { status: 429 }
       );
+    }
+
+    // Verify Turnstile token
+    const turnstileValid = await verifyTurnstileToken(turnstileToken, ip);
+    if (!turnstileValid) {
+      return NextResponse.json({ error: 'CAPTCHA verification failed.' }, { status: 400 });
     }
 
     // 1. Validation
@@ -75,7 +82,7 @@ We have received your request and our team will review it. You can expect a resp
 In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.
 
 Best Regards,
-Simuflux Design Lab Team`,
+Simuflux Lab Team`,
           html: `
             <h3>Inquiry Received</h3>
             <p>Hello <strong>${safeName}</strong>,</p>
@@ -84,7 +91,7 @@ Simuflux Design Lab Team`,
             <p>In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.</p>
             <br/>
             <p>Best Regards,</p>
-            <p><strong>Simuflux Design Lab</strong> — Karachi, Pakistan</p>
+            <p><strong>Simuflux Lab</strong> — Karachi, Pakistan</p>
           `
         });
       } catch (emailError) {
@@ -98,7 +105,7 @@ Simuflux Design Lab Team`,
           to: process.env.ADMIN_EMAIL,
           subject: `[New Inquiry] ${safeTargetType.toUpperCase()} - ${safeTargetName}`,
           text: `
-You have received a new inquiry from SimuFlux.
+You have received a new inquiry from Simuflux Lab.
 
 Client Name: ${name.trim()}
 Email: ${cleanEmail}

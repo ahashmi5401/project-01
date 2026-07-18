@@ -77,7 +77,7 @@ export default function AdminDashboardHome() {
             Control Panel
           </h1>
           <p className="font-sans text-body sm:text-h3 text-steelblue leading-relaxed mt-md max-w-2xl">
-            Welcome to the SimuFlux control panel. Use the modules below to modify live services, schedule/manage training courses, or invite administrative accounts.
+            Welcome to the Simuflux control panel. Use the modules below to modify live services, schedule/manage training courses, or invite administrative accounts.
           </p>
         </div>
       </div>

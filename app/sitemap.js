@@ -1,7 +1,7 @@
 import { connectToDatabase } from '@/lib/mongodb';
 
-// TODO: Replace with SimuFlux's real domain name once finalized
-const BASE_URL = 'https://simufluxlab.com';
+// TODO: Replace with Simuflux's real domain name once finalized
+const BASE_URL = 'https://Simufluxlab.com';
 
 export default async function sitemap() {
   const staticRoutes = ['', '/about', '/consultancy', '/courses', '/contact'];

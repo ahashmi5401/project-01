@@ -18,7 +18,6 @@ function generateSlug(title) {
 // PUT: Update course (Admin Protected)
 export async function PUT(req, { params }) {
   try {
-    console.log('[COURSES PUT] Starting update request');
     const session = await getServerSession(authOptions);
     const ip = getClientIp(req);
 
@@ -32,9 +31,7 @@ export async function PUT(req, { params }) {
       );
     }
 
-    console.log('[COURSES PUT] Session:', session ? 'Found' : 'Not found', session);
     if (!session || session.user.role !== 'admin') {
-      console.log('[COURSES PUT] Unauthorized - no session or not admin');
       return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
@@ -44,7 +41,6 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    console.log('[COURSES PUT] Request body:', body);
     const { title, description, image, id: courseNum, price, discountPercent, points, curriculum, duration, features, targetAudience, instructor } = body;
 
     // Validation
@@ -59,9 +55,7 @@ export async function PUT(req, { params }) {
     
     // Check if the course exists
     const course = await db.collection('courses').findOne({ _id: new ObjectId(id) });
-    console.log('[COURSES PUT] Found course:', course ? 'Yes' : 'No', course ? course._id : null);
     if (!course) {
-      console.log('[COURSES PUT] Course not found with ID:', id);
       return NextResponse.json({ error: 'Course not found.' }, { status: 404 });
     }
 
@@ -97,7 +91,6 @@ export async function PUT(req, { params }) {
       { _id: new ObjectId(id) },
       { $set: updateFields }
     );
-    console.log('[COURSES PUT] Update result:', result);
 
     return NextResponse.json({ success: true, course: { ...course, ...updateFields } });
   } catch (error) {
@@ -109,7 +102,6 @@ export async function PUT(req, { params }) {
 // DELETE: Delete course (Admin Protected)
 export async function DELETE(req, { params }) {
   try {
-    console.log('[COURSES DELETE] Starting delete request');
     const session = await getServerSession(authOptions);
     const ip = getClientIp(req);
 
@@ -123,9 +115,7 @@ export async function DELETE(req, { params }) {
       );
     }
 
-    console.log('[COURSES DELETE] Session:', session ? 'Found' : 'Not found', session);
     if (!session || session.user.role !== 'admin') {
-      console.log('[COURSES DELETE] Unauthorized - no session or not admin');
       return NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 });
     }
 
@@ -137,9 +127,7 @@ export async function DELETE(req, { params }) {
     const { db } = await connectToDatabase();
     
     const result = await db.collection('courses').deleteOne({ _id: new ObjectId(id) });
-    console.log('[COURSES DELETE] Delete result:', result);
     if (result.deletedCount === 0) {
-      console.log('[COURSES DELETE] Course not found, deletedCount:', result.deletedCount);
       return NextResponse.json({ error: 'Course not found.' }, { status: 404 });
     }
 

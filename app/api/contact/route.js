@@ -73,23 +73,23 @@ export async function POST(req) {
           subject: 'Contact Inquiry Received',
           text: `Hello ${name.trim()},
 
-Thank you for contacting SimuFlux Design Lab.
+Thank you for contacting Simuflux Lab.
 
 We have received your message and our team will review it. You can expect a response within 24-48 hours.
 
 In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.
 
 Best Regards,
-Simuflux Design Lab Team`,
+Simuflux Lab Team`,
           html: `
             <h3>Contact Inquiry Received</h3>
             <p>Hello <strong>${safeName}</strong>,</p>
-            <p>Thank you for contacting SimuFlux Design Lab.</p>
+            <p>Thank you for contacting Simuflux Lab.</p>
             <p>We have received your message and our team will review it. You can expect a response within <strong>24-48 hours</strong>.</p>
             <p>In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.</p>
             <br/>
             <p>Best Regards,</p>
-            <p><strong>SimuFlux Design Lab</strong> — Karachi, Pakistan</p>
+            <p><strong>Simuflux Lab</strong> — Karachi, Pakistan</p>
           `
         });
       } catch (err) {

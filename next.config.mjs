@@ -1,10 +1,3 @@
-import dns from 'dns';
-
-// Fix: Node 17+ defaults to IPv6-first DNS lookup order which breaks MongoDB Atlas SRV queries.
-// Forcing Cloudflare/Google DNS + IPv4-first order ensures the lookup succeeds on all machines.
-dns.setServers(['1.1.1.1', '8.8.8.8']);
-dns.setDefaultResultOrder('ipv4first');
-
 const BASE_URL = 'https://simufluxlab.com';
 
 /** @type {import('next').NextConfig} */
@@ -54,6 +47,23 @@ const nextConfig = {
           {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=()',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://res.cloudinary.com https://simufluxlab.com",
+              "font-src 'self' data:",
+              "connect-src 'self' https://res.cloudinary.com https://challenges.cloudflare.com https://*.mongodb.net",
+              "frame-src 'self' https://challenges.cloudflare.com",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests",
+            ].join('; '),
           },
         ],
       },

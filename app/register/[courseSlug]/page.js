@@ -4,7 +4,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import RegistrationForm from '@/components/shared/RegistrationForm';
 
 export const metadata = {
-  title: "Course Enrollment | SimuFlux",
+  title: "Course Enrollment | Simuflux",
   description: "Secure student seat registration and receipt submission.",
   robots: {
     index: false,

@@ -10,8 +10,8 @@ import { connectToDatabase } from '@/lib/mongodb';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "SimuFlux Lab — CFD, FEA & CAD Training and Consultancy in Karachi",
-  description: "SimuFlux Lab provides professional engineering training and consultancy in Karachi, Pakistan. Validate designs with CFD, FEA, and CAD modeling.",
+  title: "Simuflux Lab — CFD, FEA & CAD Training and Consultancy in Karachi",
+  description: "Simuflux Lab provides professional engineering training and consultancy in Karachi, Pakistan. Validate designs with CFD, FEA, and CAD modeling.",
 };
 
 async function getHomeData() {
@@ -91,7 +91,7 @@ export default async function Home() {
   const localBusinessJsonLd = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
-    "name": "SimuFlux Lab",
+    "name": "Simuflux Lab",
     "image": "https://simufluxlab.com/images/logo.png", // fallback placeholder
     "@id": "https://simufluxlab.com/#local-business",
     "url": "https://simufluxlab.com",
@@ -123,7 +123,7 @@ export default async function Home() {
       "closes": "18:00"
     },
     "sameAs": [
-      "https://www.facebook.com/profile.php?id=61591794389878"
+      "https://www.facebook.com/61591794389878"
     ],
     "areaServed": [
       {
@@ -156,8 +156,8 @@ export default async function Home() {
       />
       
       <Hero />
-      <StatsBar />
-      <ScopeList services={services} />
+      {/* <StatsBar /> */}
+      {/* <ScopeList services={services} /> */}
       <CoursesPreview courses={courses} />
       <DiscountPromo discountTiers={discountTiers} comboDeals={comboDeals} />
     </>

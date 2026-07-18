@@ -9,7 +9,7 @@ import FaqAccordion from '@/components/courses/FaqAccordion';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: "ANSYS FEA & Creo CAD Training Courses in Karachi | SimuFlux Lab",
+  title: "ANSYS FEA & Creo CAD Training Courses in Karachi | Simuflux Lab",
   description: "Learn practical engineering FEA meshing and CAD assembly modelling in Karachi, Pakistan. Register for our ANSYS Workbench and Creo Parametric courses.",
 };
 
@@ -53,8 +53,8 @@ export default async function CoursesPage() {
       a: "Finite Element Analysis (FEA) focuses on solid structures (solving for stresses, displacements, and structural failures under mechanical loads). Computational Fluid Dynamics (CFD) focuses on moving fluids (gases/liquids) and heat transport profiles within fluid or solid margins."
     },
     {
-      q: "Does SimuFlux offer consultancy for companies, not just training?",
-      a: "Yes. SimuFlux is a dual-purpose design lab. We provide professional engineering consultancy, design validation, mesh convergence reports, and parametric modeling capacity to product companies and fabrication shops."
+      q: "Does Simuflux offer consultancy for companies, not just training?",
+      a: "Yes. Simuflux is a dual-purpose design lab. We provide professional engineering consultancy, design validation, mesh convergence reports, and parametric modeling capacity to product companies and fabrication shops."
     },
     {
       q: "How do I register for a course?",
@@ -62,7 +62,7 @@ export default async function CoursesPage() {
     },
     {
       q: "Is training done online or in-person?",
-      a: "All SimuFlux training is delivered fully online. Our live virtual sessions are conducted via video conferencing, making our courses accessible to engineering students and working professionals anywhere in the world — no in-person attendance required."
+      a: "All Simuflux training is delivered fully online. Our live virtual sessions are conducted via video conferencing, making our courses accessible to engineering students and working professionals anywhere in the world — no in-person attendance required."
     }
   ];
 

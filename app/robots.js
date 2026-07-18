@@ -1,4 +1,4 @@
-// TODO: Replace with SimuFlux's real domain name once finalized
+// TODO: Replace with Simuflux's real domain name once finalized
 const BASE_URL = 'https://simufluxlab.com';
 
 export default function robots() {

@@ -50,7 +50,7 @@ export default function ContactPage() {
                 </div>
                 <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ ENVELOPE PARAMETERS ]</span>
-                  <span className="text-steelblue">Email: info@simufluxlab.com</span>
+                  <span className="text-steelblue">Email: info@Simufluxlab.com</span>
                 </div>
                 <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ PHYSICAL STATION ]</span>
@@ -65,7 +65,7 @@ export default function ContactPage() {
                   Direct connection line:
                 </p>
                 <WhatsAppButton 
-                  message="Hello SimuFlux, I am reaching out to discuss a design, simulation or training inquiry."
+                  message="Hello Simuflux, I am reaching out to discuss a design, simulation or training inquiry."
                 >
                   Connect On WhatsApp
                 </WhatsAppButton>

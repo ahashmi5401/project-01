@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import SectionEyebrow from '@/components/shared/SectionEyebrow';
 import DiscountGauge from './DiscountGauge';
@@ -17,7 +17,10 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileContainerRef = useRef(null);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
   const [status, setStatus] = useState({
     submitting: false,
     submitted: false,
@@ -41,6 +44,46 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCourseSlug, courses]);
+
+  // Initialize Turnstile widget
+  useEffect(() => {
+    if (!siteKey) return;
+
+    let turnstileWidgetId = null;
+
+    const initializeTurnstile = () => {
+      if (window.turnstile && turnstileContainerRef.current && turnstileWidgetId === null) {
+        try {
+          turnstileWidgetId = window.turnstile.render(turnstileContainerRef.current, {
+            sitekey: siteKey,
+            callback: (token) => {
+              setTurnstileToken(token);
+            },
+            'expired-callback': () => {
+              setTurnstileToken('');
+            },
+            'error-callback': () => {
+              setTurnstileToken('');
+            },
+          });
+        } catch (e) {
+          console.error('Turnstile render error:', e);
+        }
+      }
+    };
+
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          initializeTurnstile();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [siteKey]);
 
   // Handle checking/unchecking
   const handleToggleCourse = (id) => {
@@ -110,6 +153,13 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
       setShowToast(true);
       return;
     }
+    if (siteKey && !turnstileToken) {
+      setStatus({ submitting: false, submitted: false, error: 'Please complete the CAPTCHA verification.' });
+      setToastMessage('Please complete the CAPTCHA verification.');
+      setToastType('error');
+      setShowToast(true);
+      return;
+    }
 
     const selectedCourseTitles = selectedCourses.map(c => c.title);
 
@@ -123,6 +173,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
           phone: phone.trim(),
           email: email.trim(),
           selectedCourses: selectedCourseTitles,
+          turnstileToken,
           // Client calculations passed for convenience, server will verify
           clientDiscountPercent: discountPercent,
           clientTotalPrice: totalPrice,
@@ -139,13 +190,17 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
       setToastMessage('Enrollment confirmed! Opening WhatsApp...');
       setToastType('success');
       setShowToast(true);
+      setTurnstileToken('');
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
 
       // 2. Open prefilled WhatsApp chat window
       const adminPhone = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_PHONE || '923463517689';
       
       let coursesText = selectedCourses.map(c => `- ${c.title} (PKR ${c.price?.toLocaleString() || 'N/A'})`).join('\n');
       
-      const whatsappText = `Hello SimuFlux, my name is ${name.trim()}.\n\nI would like to enroll in the following course(s):\n${coursesText}\n\nSubtotal: PKR ${subtotal.toLocaleString()}\nDiscount: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})\nTotal Price: PKR ${totalPrice.toLocaleString()}\n\nPlease contact me back at ${phone.trim()}.`;
+      const whatsappText = `Hello Simuflux, my name is ${name.trim()}.\n\nI would like to enroll in the following course(s):\n${coursesText}\n\nSubtotal: PKR ${subtotal.toLocaleString()}\nDiscount: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})\nTotal Price: PKR ${totalPrice.toLocaleString()}\n\nPlease contact me back at ${phone.trim()}.`;
       
       const encodedText = encodeURIComponent(whatsappText);
       const waUrl = `https://wa.me/${adminPhone}?text=${encodedText}`;
@@ -157,6 +212,10 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
       setToastMessage(err.message);
       setToastType('error');
       setShowToast(true);
+      setTurnstileToken('');
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
     }
   };
 
@@ -432,6 +491,13 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                       For course materials and updates
                     </p>
                   </div>
+
+                  {/* Turnstile widget */}
+                  {siteKey && (
+                    <div className="py-sm flex justify-start">
+                      <div ref={turnstileContainerRef} />
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -555,7 +621,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={status.submitting || selectedCount === 0}
+                  disabled={status.submitting || selectedCount === 0 || (siteKey && !turnstileToken)}
                   className="w-full bg-accent hover:bg-accent/90 active:bg-accent/80 text-offwhite font-sans font-semibold text-base px-6 py-4 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-accent shadow-lg shadow-accent/25 hover:shadow-accent/40 flex items-center justify-center gap-2"
                 >
                   {status.submitting ? (
