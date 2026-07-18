@@ -1,6 +1,24 @@
 import { NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '../auth/[...nextauth]/route';
 import { connectToDatabase } from '@/lib/mongodb';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import crypto from 'crypto';
+
+async function requireAdminSession(req) {
+  const session = await getServerSession(authOptions);
+  if (!session || session.user.role !== 'admin') {
+    return { error: NextResponse.json({ error: 'Unauthorized request.' }, { status: 403 }) };
+  }
+
+  const ip = getClientIp(req);
+  const rateLimitResult = await checkRateLimit('adminCrud', ip, { skipIfAdmin: true, session });
+  if (!rateLimitResult.success) {
+    return { error: NextResponse.json({ error: rateLimitResult.error }, { status: 429 }) };
+  }
+
+  return { session };
+}
 
 /**
  * Generate a cryptographically secure random token
@@ -14,6 +32,9 @@ function generateToken() {
  */
 export async function POST(req) {
   try {
+    const auth = await requireAdminSession(req);
+    if (auth.error) return auth.error;
+
     const body = await req.json();
     const { courseSlug } = body;
 
@@ -94,8 +115,11 @@ export async function GET(req) {
       });
     }
 
-    // If courseSlug is provided, list all links for that course
+    // If courseSlug is provided, list all links for that course (admin only)
     if (courseSlug) {
+      const auth = await requireAdminSession(req);
+      if (auth.error) return auth.error;
+
       const { db } = await connectToDatabase();
 
       const links = await db.collection('registrationLinks')

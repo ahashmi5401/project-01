@@ -133,10 +133,6 @@ function LoginForm() {
           <Link href="/signup" className="text-steelblue/60 hover:text-accent transition-colors">
             Register Account
           </Link>
-          <span className="text-steelblue/20">|</span>
-          <Link href="/admin/forgot-password" className="text-steelblue/60 hover:text-accent transition-colors">
-            Forgot Password?
-          </Link>
         </div>
       </div>
     </section>

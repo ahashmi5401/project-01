@@ -36,6 +36,11 @@ export async function GET(req) {
 // PUT: Update admin email or password
 export async function PUT(req) {
   try {
+    // Validate required environment variables
+    if (!process.env.RESEND_FROM_EMAIL) {
+      throw new Error('RESEND_FROM_EMAIL environment variable is not configured');
+    }
+
     const session = await getServerSession(authOptions);
     if (!session || session.user.role !== 'admin') {
       return NextResponse.json({ error: 'Unauthorized request.' }, { status: 401 });
@@ -67,7 +72,7 @@ export async function PUT(req) {
       return NextResponse.json({ error: 'Incorrect current password.' }, { status: 400 });
     }
 
-    const fromAddress = process.env.RESEND_FROM_EMAIL || 'SimuFlux Security <onboarding@resend.dev>';
+    const fromAddress = process.env.RESEND_FROM_EMAIL;
     const originalEmail = admin.email;
 
     // --- Action: Update Email ---

@@ -115,10 +115,6 @@ export default function AdminLoginForm({ adminExists }) {
         )}
 
         <div className="mt-6 pt-4 border-t border-hairline/60 flex justify-between items-center text-xs font-mono">
-          <Link href="/admin/forgot-password" className="text-steelblue/60 hover:text-accent transition-colors">
-            Forgot Password?
-          </Link>
-          <span className="text-steelblue/20">|</span>
           <Link href="/" className="text-steelblue/60 hover:text-accent transition-colors">
             Back to Site
           </Link>

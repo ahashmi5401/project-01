@@ -8,6 +8,14 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 export async function POST(req) {
   try {
+    // Validate required environment variables
+    if (!process.env.RESEND_FROM_EMAIL) {
+      throw new Error('RESEND_FROM_EMAIL environment variable is not configured');
+    }
+    if (!process.env.ADMIN_EMAIL) {
+      throw new Error('ADMIN_EMAIL environment variable is not configured');
+    }
+
     const { name, phone, email, targetName, targetType } = await req.json();
 
     // Rate limiting: 15 requests per hour per IP
@@ -55,7 +63,7 @@ export async function POST(req) {
       // A. Client confirmation email
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          from: process.env.RESEND_FROM_EMAIL,
           to: cleanEmail,
           subject: `Inquiry Received: ${safeTargetName}`,
           text: `Hello ${name.trim()},
@@ -67,7 +75,7 @@ We have received your request and our team will review it. You can expect a resp
 In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.
 
 Best Regards,
-SimuFlux Design Lab Team`,
+Simuflux Design Lab Team`,
           html: `
             <h3>Inquiry Received</h3>
             <p>Hello <strong>${safeName}</strong>,</p>
@@ -76,7 +84,7 @@ SimuFlux Design Lab Team`,
             <p>In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.</p>
             <br/>
             <p>Best Regards,</p>
-            <p><strong>SimuFlux Design Lab</strong> — Karachi, Pakistan</p>
+            <p><strong>Simuflux Design Lab</strong> — Karachi, Pakistan</p>
           `
         });
       } catch (emailError) {
@@ -86,7 +94,7 @@ SimuFlux Design Lab Team`,
       // B. Admin notification email
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          from: process.env.RESEND_FROM_EMAIL,
           to: process.env.ADMIN_EMAIL,
           subject: `[New Inquiry] ${safeTargetType.toUpperCase()} - ${safeTargetName}`,
           text: `

@@ -5,8 +5,8 @@ import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import Link from 'next/link';
 
 export const metadata = {
-  title: "About SimuFlux Lab — Engineering Training & Consultancy Karachi",
-  description: "SimuFlux Lab is an engineering training and consultancy based in Karachi, Pakistan, closing the gap between theory and industry practice.",
+  title: "About Simuflux Lab — Engineering Training & Consultancy Karachi",
+  description: "Simuflux Lab is an engineering training and consultancy based in Karachi, Pakistan, closing the gap between theory and industry practice.",
 };
 
 export default function AboutPage() {

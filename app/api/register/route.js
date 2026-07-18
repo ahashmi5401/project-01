@@ -28,6 +28,14 @@ function formatCnic(digits) {
 export async function POST(req) {
   let token = null;
   try {
+    // Validate required environment variables
+    if (!process.env.RESEND_FROM_EMAIL) {
+      throw new Error('RESEND_FROM_EMAIL environment variable is not configured');
+    }
+    if (!process.env.ADMIN_EMAIL) {
+      throw new Error('ADMIN_EMAIL environment variable is not configured');
+    }
+
     const formData = await req.formData();
 
     // Rate limiting: 10 requests per hour per IP
@@ -289,7 +297,7 @@ export async function POST(req) {
       // A. Student confirmation email
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          from: process.env.RESEND_FROM_EMAIL,
           to: cleanEmail,
           subject: `Registration Received: ${cleanCourses.join(', ')}`,
           text: `Hello ${name.trim()},\n\nWe have received your registration and payment proof for the following courses: ${cleanCourses.join(', ')}. Our team will verify the payment and contact you shortly to confirm your seat.\n\nThank you for choosing SimuFlux Design Lab.\n\nBest Regards,\nSimuFlux Team`,
@@ -310,7 +318,7 @@ export async function POST(req) {
       // B. Admin notification email (full details)
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          from: process.env.RESEND_FROM_EMAIL,
           to: process.env.ADMIN_EMAIL,
           subject: `[New Registration] Multi-Course — ${name.trim()}`,
           text: `

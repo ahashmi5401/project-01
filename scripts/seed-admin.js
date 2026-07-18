@@ -2,7 +2,7 @@
  * One-time Admin Seeding Script for SimuFlux Design Lab
  * 
  * Usage:
- *   node scripts/seed-admin.js <email> <password>
+ *   node scripts/seed-admin.js <email> <password> [--super-admin] [--force]
  * 
  * Make sure MONGODB_URI is defined in your .env.local file!
  */
@@ -14,13 +14,16 @@ const bcrypt = require('bcryptjs');
 
 // Parse command line arguments
 const args = process.argv.slice(2);
-if (args.length < 2) {
+const positionalArgs = args.filter((arg) => !arg.startsWith('--'));
+const flags = new Set(args.filter((arg) => arg.startsWith('--')));
+
+if (positionalArgs.length < 2) {
   console.error('\x1b[31mError: Missing arguments.\x1b[0m');
-  console.log('Usage: node scripts/seed-admin.js <email> <password>');
+  console.log('Usage: node scripts/seed-admin.js <email> <password> [--super-admin] [--force]');
   process.exit(1);
 }
 
-const [email, password] = args;
+const [email, password] = positionalArgs;
 
 if (!email.includes('@') || password.length < 6) {
   console.error('\x1b[31mError: Invalid email or password (min 6 characters).\x1b[0m');
@@ -66,8 +69,7 @@ async function main() {
     const existing = await usersCollection.findOne({ email: email.toLowerCase().trim() });
     if (existing) {
       console.error(`\x1b[33mWarning: User or Admin with email ${email} already exists.\x1b[0m`);
-      const confirmArg = args[2] === '--force';
-      if (!confirmArg) {
+      if (!flags.has('--force')) {
         console.log('To overwrite this admin, run again with: node scripts/seed-admin.js <email> <password> --force');
         process.exit(0);
       }
@@ -84,6 +86,7 @@ async function main() {
       password: hashedPassword,
       role: 'admin',
       isVerified: true,
+      isSuperAdmin: flags.has('--super-admin'),
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -91,7 +94,8 @@ async function main() {
     await usersCollection.insertOne(newAdmin);
     console.log(`\n\x1b[32mSuccess: Admin account created successfully!\x1b[0m`);
     console.log(`Email: ${email}`);
-    console.log(`Verified: Yes\n`);
+    console.log(`Verified: Yes`);
+    console.log(`Super Admin: ${newAdmin.isSuperAdmin ? 'Yes' : 'No'}\n`);
   } catch (err) {
     console.error('\x1b[31mDatabase operation failed:\x1b[0m', err);
   } finally {

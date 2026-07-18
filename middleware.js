@@ -13,8 +13,6 @@ export async function middleware(req) {
   const isPublicAdminPath =
     path === '/admin/login' ||
     path === '/admin/signup' ||
-    path === '/admin/forgot-password' ||
-    path === '/admin/reset-password' ||
     path === '/admin/register-invited';
 
   // 1. If not authenticated

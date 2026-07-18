@@ -9,6 +9,14 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 export async function POST(req) {
   try {
+    // Validate required environment variables
+    if (!process.env.RESEND_FROM_EMAIL) {
+      throw new Error('RESEND_FROM_EMAIL environment variable is not configured');
+    }
+    if (!process.env.ADMIN_EMAIL) {
+      throw new Error('ADMIN_EMAIL environment variable is not configured');
+    }
+
     const body = await req.json();
     const { name, phone, selectedCourses } = body;
 
@@ -59,7 +67,7 @@ export async function POST(req) {
 
     // 4. Send Business Email via Resend
     let emailSent = false;
-    if (resend && process.env.ADMIN_EMAIL) {
+    if (resend) {
       const safeName = escapeHtml(name.trim());
       const safePhone = escapeHtml(phone.trim());
       const safeCoursesText = dbCourses.map(c => `- ${escapeHtml(c.title)} (PKR ${c.price?.toLocaleString() || 'N/A'})`).join('\n');
@@ -68,7 +76,7 @@ export async function POST(req) {
       // Admin notification email
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          from: process.env.RESEND_FROM_EMAIL,
           to: process.env.ADMIN_EMAIL,
           subject: `[New Enrollment Inquiry] Multi-Course Bundle — ${name.trim()}`,
           text: `

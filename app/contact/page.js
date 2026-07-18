@@ -5,8 +5,8 @@ import ContactForm from '@/components/contact/ContactForm';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 
 export const metadata = {
-  title: "Contact SimuFlux — Engineering Inquiries & Course Registration in Karachi",
-  description: "Reach SimuFlux Lab in Karachi, Pakistan for CFD simulation projects, FEA structural analysis, CAD modeling contracts, or engineering course registration.",
+  title: "Contact Simuflux — Engineering Inquiries & Course Registration in Karachi",
+  description: "Reach Simuflux Lab in Karachi, Pakistan for CFD simulation projects, FEA structural analysis, CAD modeling contracts, or engineering course registration.",
 };
 
 export default function ContactPage() {
@@ -21,7 +21,7 @@ export default function ContactPage() {
           <div className="border-b border-hairline pb-xl mb-4xl">
             <SectionEyebrow text="Get In Touch" />
             <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
-              Contact SimuFlux
+              Contact Simuflux
             </h1>
           </div>
         </AnimatedReveal>
@@ -50,7 +50,7 @@ export default function ContactPage() {
                 </div>
                 <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ ENVELOPE PARAMETERS ]</span>
-                  <span className="text-steelblue">Email: info@simuflux.com</span>
+                  <span className="text-steelblue">Email: info@simufluxlab.com</span>
                 </div>
                 <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ PHYSICAL STATION ]</span>

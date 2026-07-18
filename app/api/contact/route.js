@@ -8,6 +8,14 @@ const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KE
 
 export async function POST(req) {
   try {
+    // Validate required environment variables
+    if (!process.env.RESEND_FROM_EMAIL) {
+      throw new Error('RESEND_FROM_EMAIL environment variable is not configured');
+    }
+    if (!process.env.ADMIN_EMAIL) {
+      throw new Error('ADMIN_EMAIL environment variable is not configured');
+    }
+
     const body = await req.json();
     const { name, email, phone, message, turnstileToken } = body;
 
@@ -60,7 +68,7 @@ export async function POST(req) {
       // A. Client confirmation email
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          from: process.env.RESEND_FROM_EMAIL,
           to: cleanEmail,
           subject: 'Contact Inquiry Received',
           text: `Hello ${name.trim()},
@@ -72,7 +80,7 @@ We have received your message and our team will review it. You can expect a resp
 In the meantime, feel free to reach out to us directly on WhatsApp for immediate assistance.
 
 Best Regards,
-SimuFlux Design Lab Team`,
+Simuflux Design Lab Team`,
           html: `
             <h3>Contact Inquiry Received</h3>
             <p>Hello <strong>${safeName}</strong>,</p>
@@ -91,8 +99,8 @@ SimuFlux Design Lab Team`,
       // B. Admin notification email
       try {
         await resend.emails.send({
-          from: process.env.RESEND_FROM_EMAIL || 'system@simuflux.com',
-          to: process.env.ADMIN_EMAIL || 'info@simuflux.com', // Recipient business inbox
+          from: process.env.RESEND_FROM_EMAIL,
+          to: process.env.ADMIN_EMAIL,
           subject: `New Contact Inquiry from ${safeName}`,
           text: `
 Name: ${name.trim()}
