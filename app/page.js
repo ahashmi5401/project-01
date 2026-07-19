@@ -1,7 +1,8 @@
 import React from 'react';
 import Hero from "@/components/home/Hero";
 import CoursesPreview from "@/components/home/CoursesPreview";
-import DiscountPromo from "@/components/home/DiscountPromo";
+import ComboDealsSection from "@/components/home/ComboDealsSection";
+import VolumePricingSection from "@/components/home/VolumePricingSection";
 import { connectToDatabase } from '@/lib/mongodb';
 
 // Force every request to be server-rendered live from MongoDB (no static caching)
@@ -159,7 +160,8 @@ export default async function Home() {
       {/* <StatsBar /> */}
       {/* <ScopeList services={services} /> */}
       <CoursesPreview courses={courses} />
-      <DiscountPromo discountTiers={discountTiers} comboDeals={comboDeals} />
+      <ComboDealsSection comboDeals={comboDeals} />
+      <VolumePricingSection discountTiers={discountTiers} />
     </>
   );
 }

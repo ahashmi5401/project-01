@@ -58,8 +58,15 @@ export async function POST(req) {
 
     const { db } = await connectToDatabase();
 
-    // Check for duplicate minCourses
-    const existing = await db.collection('discountTiers').findOne({ minCourses });
+    // Check for duplicate minCourses — only block if an active (non-expired) tier exists
+    const now = new Date();
+    const existing = await db.collection('discountTiers').findOne({
+      minCourses,
+      $or: [
+        { expiryDate: null },
+        { expiryDate: { $gt: now } }
+      ]
+    });
     if (existing) {
       return NextResponse.json({ error: `A discount tier for ${minCourses} courses already exists.` }, { status: 400 });
     }

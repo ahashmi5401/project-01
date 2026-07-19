@@ -54,10 +54,15 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: 'Discount tier not found.' }, { status: 404 });
     }
 
-    // Verify minCourses uniqueness (excluding current tier)
+    // Verify minCourses uniqueness (excluding current tier and expired tiers)
+    const now = new Date();
     const existing = await db.collection('discountTiers').findOne({
       minCourses,
-      _id: { $ne: new ObjectId(id) }
+      _id: { $ne: new ObjectId(id) },
+      $or: [
+        { expiryDate: null },
+        { expiryDate: { $gt: now } }
+      ]
     });
     if (existing) {
       return NextResponse.json({ error: `Another discount tier for ${minCourses} courses already exists.` }, { status: 400 });
