@@ -1,7 +1,5 @@
 import React from 'react';
 import Hero from "@/components/home/Hero";
-import StatsBar from "@/components/home/StatsBar";
-import ScopeList from "@/components/home/ScopeList";
 import CoursesPreview from "@/components/home/CoursesPreview";
 import DiscountPromo from "@/components/home/DiscountPromo";
 import { connectToDatabase } from '@/lib/mongodb';
@@ -16,7 +14,9 @@ export const metadata = {
 
 async function getHomeData() {
   try {
+    console.log('[Home] Fetching home page data from database...');
     const { db } = await connectToDatabase();
+    console.log('[Home] Database connection established, fetching collections...');
     
     const servicesData = await db.collection('services')
       .find({})

@@ -106,13 +106,13 @@ export default function CourseCard({
               PKR {finalPrice.toLocaleString()}
             </span>
           </div>
-          {/* Enroll Button
+        {/* Description Button */}
           <Link
-            href={`/enroll?course=${slug}`}
+            href={`/courses/${slug}`}
             className="px-md py-sm bg-accent text-offwhite font-sans text-label uppercase font-medium rounded-md hover:bg-[#d04e1b] transition-all duration-300 font-semibold text-sm"
           >
-            Enroll →
-          </Link> */}
+            View Details →
+          </Link>
         </div>
       </div>
     </div>

@@ -25,8 +25,8 @@ export const authOptions = {
           throw new Error('Invalid email or password.');
         }
 
-        // Only enforce isVerified check for admin accounts
-        if (user.role === 'admin' && !user.isVerified) {
+        // Enforce isVerified check for all accounts
+        if (!user.isVerified) {
           throw new Error('This account has not been verified yet. Please check your email inbox.');
         }
 

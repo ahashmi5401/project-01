@@ -38,7 +38,6 @@ function ServicesGridInner({ services = [] }) {
 
             {/* Eyebrow */}
             <span className="font-mono text-label text-accent tracking-widest block mb-sm">
-              {`SERVICE REF ${selectedService.id}`}
             </span>
 
             {/* Title */}

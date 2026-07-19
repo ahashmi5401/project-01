@@ -76,10 +76,9 @@ export default function Navbar() {
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
                   >
-                    <Link
-                      href={link.href}
-                      className={`relative flex items-center gap-1 py-2 px-sm transition-colors rounded-full ${
-                        isActive ? 'text-offwhite' : 'text-steelblue hover:text-offwhite'
+                    <span
+                      className={`relative flex items-center gap-1 py-2 px-sm rounded-full cursor-default select-none ${
+                        isActive ? 'text-offwhite' : 'text-steelblue'
                       }`}
                     >
                       {link.name}
@@ -100,7 +99,7 @@ export default function Navbar() {
                           transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                         />
                       )}
-                    </Link>
+                    </span>
 
                     {/* Dropdown Panel */}
                     <AnimatePresence>
@@ -187,13 +186,11 @@ export default function Navbar() {
             if (link.name === 'Consultancy') {
               return (
                 <div key={link.name}>
-                  <Link
-                    href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="block px-6 py-4 text-white font-semibold border-b border-white/5"
+                  <div
+                    className="block px-6 py-4 text-white font-semibold border-b border-white/5 cursor-default select-none"
                   >
                     {link.name}
-                  </Link>
+                  </div>
                   {/* Nested services list under Consultancy */}
                   {services.length > 0 && (
                     <div className="bg-white/[0.02] border-b border-white/5">

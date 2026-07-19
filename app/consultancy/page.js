@@ -62,9 +62,6 @@ export default async function ConsultancyPage({ searchParams }) {
             </div>
           </AnimatedReveal>
 
-          {/* Services Grid */}
-          <ServicesGrid services={services} />
-
           {/* CTA Banner */}
           <AnimatedReveal delay={0.4}>
             <div className="bg-white/[0.02] border border-white/10 rounded-xl p-xl sm:p-3xl flex flex-col lg:flex-row items-center justify-between gap-xl relative overflow-hidden">
@@ -77,7 +74,7 @@ export default async function ConsultancyPage({ searchParams }) {
                 </p>
               </div>
               <div>
-                <WhatsAppButton 
+                <WhatsAppButton
                   message="Hello Simuflux, I would like to inquire about a consultancy project/simulation proposal."
                 >
                   Inquire About Project
