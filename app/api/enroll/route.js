@@ -59,9 +59,24 @@ export async function POST(req) {
       db.collection('discountTiers').find({}).toArray()
     ]);
 
+    const now = new Date();
+    const filteredComboDeals = dbComboDeals.filter(deal => {
+      if (deal.expiryDate === null || deal.expiryDate === undefined) {
+        return true;
+      }
+      return new Date(deal.expiryDate) >= now;
+    });
+
+    const filteredTiers = dbTiers.filter(tier => {
+      if (tier.expiryDate === null || tier.expiryDate === undefined) {
+        return true;
+      }
+      return new Date(tier.expiryDate) >= now;
+    });
+
     // Use shared pricing engine for calculation
     // Note: calculatePricing normalizes IDs to strings internally, so no pre-conversion needed
-    const pricing = calculatePricing(dbCourses, dbComboDeals, dbTiers);
+    const pricing = calculatePricing(dbCourses, filteredComboDeals, filteredTiers);
     const {
       subtotal: actualSubtotal,
       discountPercent,
