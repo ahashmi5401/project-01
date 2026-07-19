@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import SectionEyebrow from '@/components/shared/SectionEyebrow';
 import AnimatedReveal from '@/components/shared/AnimatedReveal';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
@@ -7,6 +8,15 @@ import Link from 'next/link';
 export const metadata = {
   title: "About Simuflux Lab — Engineering Training & Consultancy Karachi",
   description: "Simuflux Lab is an engineering training and consultancy based in Karachi, Pakistan, closing the gap between theory and industry practice.",
+  alternates: {
+    canonical: "/about",
+  },
+  openGraph: {
+    title: "About Simuflux Lab — Engineering Training & Consultancy Karachi",
+    description: "Simuflux Lab is an engineering training and consultancy based in Karachi, Pakistan, closing the gap between theory and industry practice.",
+    url: "https://simufluxlab.com/about",
+    images: ['/images/about-engineering.webp'],
+  },
 };
 
 export default function AboutPage() {
@@ -180,9 +190,11 @@ export default function AboutPage() {
           <div className="lg:col-span-5 relative">
             <AnimatedReveal delay={0.25}>
               <div className="w-full max-w-[450px] mx-auto">
-                <img
+                <Image
                   src="/images/about-engineering.webp"
                   alt="Engineering Design and Simulation"
+                  width={450}
+                  height={450}
                   className="w-full h-auto rounded-xl"
                 />
               </div>

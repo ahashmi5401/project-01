@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import SectionEyebrow from '@/components/shared/SectionEyebrow';
@@ -47,9 +48,11 @@ export default function Hero() {
         {/* Right Image Column */}
         <div className="lg:col-span-5 flex justify-center items-center relative order-2 lg:order-2 mb-lg lg:mb-0">
           <div className="relative w-full max-w-[350px] sm:max-w-[400px] lg:max-w-[450px]">
-            <img
+            <Image
               src="/images/hero-engineering.webp"
               alt="Engineering Design and Simulation"
+              width={450}
+              height={450}
               className="w-full rounded-xl"
             />
           </div>

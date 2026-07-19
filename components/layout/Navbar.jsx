@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -51,9 +52,11 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="group flex items-center select-none">
-          <img
+          <Image
             src="/logo.webp"
             alt="Simuflux Lab"
+            width={64}
+            height={64}
             className="h-10 sm:h-12 lg:h-16 w-auto transition-opacity group-hover:opacity-90"
           />
         </Link>

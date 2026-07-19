@@ -44,6 +44,23 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
     }
 
+    // Input length limits to prevent abuse
+    if (name.trim().length > 100) {
+      return NextResponse.json({ error: 'Name is too long (max 100 characters).' }, { status: 400 });
+    }
+    if (email.trim().length > 254) {
+      return NextResponse.json({ error: 'Email address is too long.' }, { status: 400 });
+    }
+    if (phone.trim().length > 20) {
+      return NextResponse.json({ error: 'Phone number is too long (max 20 characters).' }, { status: 400 });
+    }
+    if (targetName.trim().length > 100) {
+      return NextResponse.json({ error: 'Target name is too long (max 100 characters).' }, { status: 400 });
+    }
+    if (targetType.trim().length > 50) {
+      return NextResponse.json({ error: 'Target type is too long (max 50 characters).' }, { status: 400 });
+    }
+
     const { db } = await connectToDatabase();
     const cleanEmail = email.toLowerCase().trim();
 

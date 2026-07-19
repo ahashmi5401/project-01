@@ -53,6 +53,16 @@ export async function POST(req) {
       return NextResponse.json({ error: 'None of the selected courses could be found in the database.' }, { status: 400 });
     }
 
+    // Check if all requested courses were found
+    if (dbCourses.length !== selectedCourses.length) {
+      const foundTitles = dbCourses.map(c => c.title);
+      const missingCourses = selectedCourses.filter(title => !foundTitles.includes(title));
+      return NextResponse.json(
+        { error: `The following courses were not found: ${missingCourses.join(', ')}. Please check the course titles and try again.` },
+        { status: 400 }
+      );
+    }
+
     // 3. Security: Fetch combo deals and discount tiers from MongoDB
     const [dbComboDeals, dbTiers] = await Promise.all([
       db.collection('comboDeals').find({}).toArray(),

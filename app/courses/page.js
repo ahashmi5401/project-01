@@ -5,12 +5,21 @@ import AnimatedReveal from '@/components/shared/AnimatedReveal';
 import CoursesGrid from '@/components/courses/CoursesGrid';
 import FaqAccordion from '@/components/courses/FaqAccordion';
 
-// Force every request to be server-rendered live from MongoDB (no static caching)
-export const dynamic = 'force-dynamic';
+// Cache page and regenerate at most once per minute (ISR)
+export const revalidate = 60;
 
 export const metadata = {
   title: "ANSYS FEA & Creo CAD Training Courses in Karachi | Simuflux Lab",
   description: "Learn practical engineering FEA meshing and CAD assembly modelling in Karachi, Pakistan. Register for our ANSYS Workbench and Creo Parametric courses.",
+  alternates: {
+    canonical: "/courses",
+  },
+  openGraph: {
+    title: "ANSYS FEA & Creo CAD Training Courses in Karachi | Simuflux Lab",
+    description: "Learn practical engineering FEA meshing and CAD assembly modelling in Karachi, Pakistan. Register for our ANSYS Workbench and Creo Parametric courses.",
+    url: "https://simufluxlab.com/courses",
+    images: ['/images/og-banner.jpg'],
+  },
 };
 
 // Next.js Server Component fetching from MongoDB

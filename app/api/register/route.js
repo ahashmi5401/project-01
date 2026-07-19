@@ -187,6 +187,23 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Selected courses could not be found in the database.' }, { status: 400 });
     }
 
+    // Check if all requested courses were found
+    if (dbCourses.length !== cleanCourses.length) {
+      const foundTitles = dbCourses.map(c => c.title);
+      const missingCourses = cleanCourses.filter(title => !foundTitles.includes(title));
+      // Rollback token status if courses not found
+      if (token) {
+        await db.collection('registrationLinks').updateOne(
+          { token },
+          { $set: { status: 'pending', usedAt: null } }
+        );
+      }
+      return NextResponse.json(
+        { error: `The following courses were not found: ${missingCourses.join(', ')}. Please check the course titles and try again.` },
+        { status: 400 }
+      );
+    }
+
     // Fetch combo deals and discount tiers from MongoDB
     const [dbComboDeals, dbTiers] = await Promise.all([
       db.collection('comboDeals').find({}).toArray(),

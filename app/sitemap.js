@@ -21,7 +21,7 @@ export default async function sitemap() {
     ]);
 
     const serviceEntries = services.map((service) => ({
-      url: `${BASE_URL}/consultancy/${service.slug}`,
+      url: `${BASE_URL}/consultancy?service=${service.slug}`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
       priority: 0.6,

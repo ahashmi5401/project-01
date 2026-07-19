@@ -74,7 +74,7 @@ export default function ScopeList({ services = [] }) {
               className="snap-start w-[280px] sm:w-[320px] lg:w-[360px] flex-shrink-0 bg-navy border border-white/10 rounded-xl overflow-hidden transition-all duration-300 relative group min-h-[440px] sm:min-h-[480px] pb-md flex flex-col"
             >
               {/* Image Thumbnail at Top - clickable to details */}
-              <Link href={`/consultancy/${service.slug}`} className="relative w-full h-36 sm:h-40 bg-navy overflow-hidden border-b border-white/10 block">
+              <Link href={`/consultancy?service=${service.slug}`} className="relative w-full h-36 sm:h-40 bg-navy overflow-hidden border-b border-white/10 block">
                 {service.image ? (
                   <img
                     src={service.image}
@@ -111,7 +111,7 @@ export default function ScopeList({ services = [] }) {
                 </div>
 
                 <div className="flex-grow mb-sm">
-                  <Link href={`/consultancy/${service.slug}`} className="block">
+                  <Link href={`/consultancy?service=${service.slug}`} className="block">
                     <h3 className="font-sans font-semibold text-h4 sm:text-h3 text-offwhite mb-sm group-hover:text-accent transition-colors leading-tight">
                       {service.title}
                     </h3>
@@ -123,7 +123,7 @@ export default function ScopeList({ services = [] }) {
 
                 <div className="mt-auto pt-sm">
                   <Link
-                    href={`/consultancy/${service.slug}`}
+                    href={`/consultancy?service=${service.slug}`}
                     className="w-full inline-flex items-center justify-center gap-sm font-sans text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] py-sm rounded-md transition-all duration-300 font-semibold"
                   >
                     <span>Details →</span>

@@ -7,9 +7,8 @@ import AnimatedReveal from '@/components/shared/AnimatedReveal';
 import InquiryTrigger from '@/components/shared/InquiryTrigger';
 import WorkSampleImage from '@/components/consultancy/WorkSampleImage';
 
-// Force every request to be server-rendered live from MongoDB.
-// This ensures that admin edits (title, description, image) appear immediately.
-export const dynamic = 'force-dynamic';
+// Cache page and regenerate at most once per minute (ISR)
+export const revalidate = 60;
 
 // Fetch dynamic service from database by slug helper
 async function getServiceBySlug(slug) {
@@ -47,12 +46,24 @@ export async function generateMetadata({ params }) {
     return {
       title: "Service Not Found | Simuflux",
       description: "The requested engineering service details could not be found.",
+      alternates: {
+        canonical: "/consultancy",
+      },
     };
   }
 
   return {
     title: `${service.title} — Engineering Spec | Simuflux`,
     description: `${service.shortDescription.substring(0, 150)}...`,
+    alternates: {
+      canonical: `/consultancy/${service.slug}`,
+    },
+    openGraph: {
+      title: `${service.title} — Engineering Spec | Simuflux`,
+      description: `${service.shortDescription.substring(0, 150)}...`,
+      url: `https://simufluxlab.com/consultancy/${service.slug}`,
+      images: service.image ? [service.image] : ['/images/og-banner.jpg'],
+    },
   };
 }
 

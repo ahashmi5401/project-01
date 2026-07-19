@@ -25,9 +25,15 @@ export async function POST(req) {
 
     const { db } = await connectToDatabase();
 
-    // 2. Security Check: Block if ANY admin already exists
-    const existingAdmin = await db.collection('users').findOne({ role: 'admin' });
-    if (existingAdmin) {
+    // 2. Atomic Security Check: Use singleton bootstrap document to prevent race conditions
+    const bootstrapResult = await db.collection('systemConfig').findOneAndUpdate(
+      { _id: 'bootstrap' },
+      { $setOnInsert: { used: true } },
+      { upsert: true }
+    );
+
+    // If upsertedCount is 0, the document already exists -> bootstrap already completed
+    if (bootstrapResult.upsertedCount === 0) {
       return NextResponse.json(
         { error: 'Bootstrap registration is permanently disabled because an administrator already exists.' },
         { status: 403 }

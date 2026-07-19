@@ -11,6 +11,15 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: "Engineering Consultancy Services — CFD, FEA, CAD, Product Design | Simuflux",
   description: "Verify your engineering designs with high-fidelity CFD simulations, structural FEA stress analysis, parametric CAD modeling, and product design services in Karachi, Pakistan.",
+  alternates: {
+    canonical: "/consultancy",
+  },
+  openGraph: {
+    title: "Engineering Consultancy Services — CFD, FEA, CAD, Product Design | Simuflux",
+    description: "Verify your engineering designs with high-fidelity CFD simulations, structural FEA stress analysis, parametric CAD modeling, and product design services in Karachi, Pakistan.",
+    url: "https://simufluxlab.com/consultancy",
+    images: ['/images/og-banner.jpg'],
+  },
 };
 
 async function getServices() {
@@ -33,50 +42,55 @@ async function getServices() {
   }
 }
 
-export default async function ConsultancyPage() {
+export default async function ConsultancyPage({ searchParams }) {
   const services = await getServices();
+  const activeSlug = searchParams?.service;
+  const isServiceSelected = !!activeSlug;
 
   return (
-    <section className="min-h-screen pt-24 pb-4xl bg-navy relative overflow-hidden">
+    <section className="min-h-screen bg-navy relative overflow-hidden">
 
-      <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
-        {/* Header Block */}
-        <AnimatedReveal>
-          <div className="border-b border-hairline pb-xl mb-4xl">
-            <SectionEyebrow text="Professional Capabilities" />
-            <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
-              Consultancy Services
-            </h1>
-          </div>
-        </AnimatedReveal>
-
-        {/* Services Grid with Pagination */}
-        <ServicesGrid services={services} />
-
-        {/* CTA Banner */}
-        <AnimatedReveal delay={0.4}>
-          <div className="bg-white/[0.02] border border-white/10 rounded-xl p-xl sm:p-3xl flex flex-col lg:flex-row items-center justify-between gap-xl relative overflow-hidden">
-            
-            <div className="max-w-xl">
-              <h2 className="font-sans font-bold text-h3 text-offwhite mb-lg">
-                Have a project or custom simulation requirement?
-              </h2>
-              <p className="font-sans text-body text-steelblue leading-relaxed">
-                Connect with our analysis department to discuss parameters, scoping documents, or training workflows tailored to your company&apos;s product line.
-              </p>
+      {!isServiceSelected ? (
+        <div className="max-w-7xl mx-auto px-6 pt-24 pb-4xl relative z-10">
+          {/* Header Block */}
+          <AnimatedReveal>
+            <div className="border-b border-hairline pb-xl mb-4xl">
+              <SectionEyebrow text="Professional Capabilities" />
+              <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
+                Consultancy Services
+              </h1>
             </div>
+          </AnimatedReveal>
 
-            <div>
-              <WhatsAppButton 
-                message="Hello Simuflux, I would like to inquire about a consultancy project/simulation proposal."
-              >
-                Inquire About Project
-              </WhatsAppButton>
+          {/* Services Grid */}
+          <ServicesGrid services={services} />
+
+          {/* CTA Banner */}
+          <AnimatedReveal delay={0.4}>
+            <div className="bg-white/[0.02] border border-white/10 rounded-xl p-xl sm:p-3xl flex flex-col lg:flex-row items-center justify-between gap-xl relative overflow-hidden">
+              <div className="max-w-xl">
+                <h2 className="font-sans font-bold text-h3 text-offwhite mb-lg">
+                  Have a project or custom simulation requirement?
+                </h2>
+                <p className="font-sans text-body text-steelblue leading-relaxed">
+                  Connect with our analysis department to discuss parameters, scoping documents, or training workflows tailored to your company&apos;s product line.
+                </p>
+              </div>
+              <div>
+                <WhatsAppButton 
+                  message="Hello Simuflux, I would like to inquire about a consultancy project/simulation proposal."
+                >
+                  Inquire About Project
+                </WhatsAppButton>
+              </div>
             </div>
-          </div>
-        </AnimatedReveal>
-      </div>
+          </AnimatedReveal>
+        </div>
+      ) : (
+        <div className="pt-24 relative z-10">
+          <ServicesGrid services={services} />
+        </div>
+      )}
     </section>
   );
 }

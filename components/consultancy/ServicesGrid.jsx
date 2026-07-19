@@ -1,188 +1,168 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
-import Link from 'next/link';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
 import AnimatedReveal from '@/components/shared/AnimatedReveal';
+import InquiryTrigger from '@/components/shared/InquiryTrigger';
 
-const ITEMS_PER_PAGE = 6;
+const CORE_CAPABILITIES = [
+  "Finite Element Analysis (FEA)",
+  "Computational Fluid Dynamics (CFD)",
+  "Thermal Analysis",
+  "Structural Analysis",
+  "Product Design & Development",
+  "CAD & 3D Modelling",
+  "Engineering Optimization",
+  "Technical Reports & Design Validation"
+];
 
 function ServicesGridInner({ services = [] }) {
-  const [currentPage, setCurrentPage] = useState(1);
   const searchParams = useSearchParams();
   const activeSlug = searchParams.get('service');
 
-  // Filter by slug if query param is present
-  const filteredServices = activeSlug
-    ? services.filter((s) => s.slug === activeSlug)
-    : services;
+  const selectedService = activeSlug
+    ? services.find((s) => s.slug === activeSlug)
+    : null;
 
-  const totalPages = Math.ceil(filteredServices.length / ITEMS_PER_PAGE);
-  const showPagination = !activeSlug && filteredServices.length > ITEMS_PER_PAGE;
+  if (activeSlug && selectedService) {
+    return (
+      <AnimatedReveal>
+        {/* Full-width grid: left text, right image */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
 
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const visibleServices = activeSlug
-    ? filteredServices
-    : filteredServices.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+          {/* ─── Left Column: Content ─── */}
+          <div className="px-8 md:px-12 xl:px-20 py-xl lg:py-3xl flex flex-col justify-start">
 
-  const goToPage = (page) => {
-    setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
 
-  return (
-    <>
-
-      {/* No result fallback */}
-      {activeSlug && filteredServices.length === 0 && (
-        <AnimatedReveal>
-          <div className="text-center py-4xl border border-hairline rounded-lg mb-4xl">
-            <p className="font-mono text-label text-steelblue/60 uppercase tracking-wider mb-lg">No service found for this filter.</p>
-            <Link
-              href="/consultancy"
-              className="font-mono text-label uppercase tracking-wider text-accent border border-accent/30 px-lg py-sm rounded-md hover:bg-accent/5 transition-colors"
-            >
-              View All Services
-            </Link>
-          </div>
-        </AnimatedReveal>
-      )}
-
-      {/* Services Grid */}
-      {visibleServices.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl mb-4xl">
-          {visibleServices.map((service, index) => (
-            <AnimatedReveal key={service._id || service.id} delay={index * 0.1}>
-              <Link
-                href={`/consultancy/${service.slug}`}
-                className="bg-white/[0.02] border border-white/10 rounded-xl overflow-hidden transition-all duration-300 relative group cursor-pointer flex flex-col h-full"
-              >
-                {/* Image Thumbnail at Top - 16:9 aspect ratio */}
-                {service.image ? (
-                  <div className="relative w-full aspect-video bg-navy/40 overflow-hidden border-b border-white/10">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover transition-transform duration-300"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
-                        e.target.parentElement.innerHTML = '<div class="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40"><svg class="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5" /></svg></div>';
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full aspect-video bg-navy/50 flex items-center justify-center border-b border-white/10">
-                    <div className="w-16 h-16 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
-                      <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5M12 13l8 5m-8-5l-8 5" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-
-                {/* Card Content */}
-                <div className="p-lg flex flex-col flex-grow h-full">
-                  {/* Structural Motif: Number in Accent color */}
-                  <div className="flex justify-between items-start mb-md border-b border-hairline/40 pb-md">
-                    <span className="font-mono text-label text-steelblue">
-                      SERVICE REF
-                    </span>
-                    <span className="font-mono text-h3 font-bold text-accent/90">
-                      {service.id}
-                    </span>
-                  </div>
-
-                  <div className="flex-grow mb-md">
-                    <h3 className="font-sans font-semibold text-h3 text-offwhite mb-sm group-hover:text-accent/90 transition-colors leading-tight">
-                      {service.title}
-                    </h3>
-                    <p className="font-sans text-body text-steelblue/80 leading-relaxed">
-                      {service.shortDescription.length > 150
-                        ? service.shortDescription.substring(0, 150) + '...'
-                        : service.shortDescription}
-                    </p>
-                  </div>
-
-                  <div className="pt-sm mt-auto">
-                    <Link
-                      href={`/consultancy/${service.slug}`}
-                      className="w-full inline-flex items-center justify-center gap-sm font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] py-sm rounded-md transition-all duration-300"
-                    >
-                      <span>View Details →</span>
-                      <svg className="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              </Link>
-            </AnimatedReveal>
-          ))}
-        </div>
-      )}
-
-      {/* Pagination Controls — only rendered when there are more items than one page */}
-      {showPagination && (
-        <AnimatedReveal>
-          <div className="flex flex-wrap items-center justify-center gap-sm mb-4xl">
-            {/* Previous Button */}
-            <button
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="font-mono text-label uppercase tracking-wider px-md py-sm border border-hairline text-steelblue hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed select-none rounded-md"
-              aria-label="Go to previous page"
-            >
-              ← Prev
-            </button>
-
-            {/* Page Number Buttons */}
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => goToPage(page)}
-                aria-current={page === currentPage ? 'page' : undefined}
-                className={`font-mono text-label uppercase tracking-wider px-md py-sm border transition-colors select-none rounded-md ${
-                  page === currentPage
-                    ? 'border-accent bg-accent/10 text-accent'
-                    : 'border-hairline text-steelblue hover:border-accent hover:text-accent'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-
-            {/* Next Button */}
-            <button
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="font-mono text-label uppercase tracking-wider px-md py-sm border border-hairline text-steelblue hover:border-accent hover:text-accent transition-colors disabled:opacity-30 disabled:cursor-not-allowed select-none rounded-md"
-              aria-label="Go to next page"
-            >
-              Next →
-            </button>
-
-            {/* Page counter */}
-            <span className="font-mono text-label text-steelblue/50 ml-sm">
-              PAGE {currentPage} / {totalPages}
+            {/* Eyebrow */}
+            <span className="font-mono text-label text-accent tracking-widest block mb-sm">
+              {`SERVICE REF ${selectedService.id}`}
             </span>
+
+            {/* Title */}
+            <h1 className="font-sans font-bold text-h1 sm:text-display text-offwhite uppercase tracking-tight leading-tight mb-md">
+              {selectedService.title}
+            </h1>
+
+            {/* Accent underline decoration */}
+            <div className="w-16 h-[3px] bg-accent mb-xl" />
+
+            {/* Short description */}
+            <p className="font-sans text-h4 text-steelblue leading-relaxed mb-xl">
+              {selectedService.shortDescription}
+            </p>
+
+            {/* Full detail */}
+            {selectedService.detail && (
+              <p className="font-sans text-body text-offwhite/80 leading-relaxed whitespace-pre-wrap mb-xl">
+                {selectedService.detail}
+              </p>
+            )}
+
+            {/* Capabilities list */}
+            {selectedService.points && selectedService.points.length > 0 && (
+              <div className="mb-xl">
+                <h3 className="font-mono text-label text-accent mb-md select-none">
+                  [ KEY CAPABILITIES ]
+                </h3>
+                <ul className="space-y-sm">
+                  {selectedService.points.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-sm text-body text-steelblue leading-relaxed">
+                      <span className="text-accent font-bold select-none mt-[2px]">✓</span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* CTA */}
+            <div className="border-t border-white/10 pt-xl mt-auto">
+              <p className="font-sans text-small text-steelblue/70 mb-md">
+                Discuss parameters, coordinate files, or review technical workflows with our engineering team.
+              </p>
+              <InquiryTrigger
+                targetName={selectedService.title}
+                targetType="service"
+                buttonText="Inquire About This Service"
+              />
+            </div>
+
           </div>
-        </AnimatedReveal>
-      )}
-    </>
+
+          {/* ─── Right Column: Image ─── */}
+          <div className="relative hidden lg:block">
+            <div className="sticky top-24 h-[60vh] overflow-hidden rounded-xl mr-8 xl:mr-16">
+              {selectedService.image ? (
+                <Image
+                  src={selectedService.image}
+                  alt={`Technical visual for ${selectedService.title}`}
+                  width={800}
+                  height={600}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-navy/60 flex flex-col items-center justify-center gap-md border-l border-white/10">
+                  <div className="w-20 h-20 border border-dashed border-white/20 flex items-center justify-center text-steelblue/40">
+                    <svg className="w-10 h-10 stroke-current fill-none" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5" />
+                    </svg>
+                  </div>
+                  <p className="font-mono text-caption text-steelblue/40 uppercase tracking-widest">
+                    DWG REF: WS-{selectedService.id}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </AnimatedReveal>
+    );
+  }
+
+  // Welcome State: Elegant list of capabilities
+  return (
+    <div className="max-w-3xl mx-auto py-xl">
+      <AnimatedReveal>
+        <div className="text-center mb-xl">
+          <span className="font-mono text-label text-accent tracking-widest block mb-md">
+            [ SIMUFLUX DEPARTMENTS ]
+          </span>
+          <h2 className="font-sans font-bold text-h1 text-offwhite uppercase tracking-tight mb-md">
+            Engineering Consultancy
+          </h2>
+          <p className="font-sans text-body text-steelblue leading-relaxed max-w-xl mx-auto">
+            Select a specific service from the <strong>Consultancy</strong> dropdown menu in the navigation bar above to view detailed technical specifications and validation parameters.
+          </p>
+        </div>
+
+        {/* Core Capabilities List */}
+        <div className="border-t border-white/10 pt-xl mt-xl">
+          <h3 className="font-mono text-label text-steelblue/55 text-center mb-lg tracking-wider">
+            [ PRIMARY EXPERTISE & SERVICE AREAS ]
+          </h3>
+          <ul className="grid grid-cols-1 md:grid-cols-2 gap-y-md gap-x-xl max-w-2xl mx-auto">
+            {CORE_CAPABILITIES.map((capability, idx) => (
+              <li key={idx} className="flex items-center gap-sm text-body text-offwhite/90 py-sm border-b border-white/5 last:border-b-0 md:border-b border-white/5">
+                <span className="text-accent font-bold text-lg select-none">•</span>
+                <span>{capability}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </AnimatedReveal>
+    </div>
   );
 }
 
-// Wrap in Suspense because useSearchParams() requires it in Next.js
 export default function ServicesGrid({ services = [] }) {
   return (
     <Suspense fallback={
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-xl mb-4xl">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-white/[0.02] border border-white/10 rounded-xl aspect-video animate-pulse" />
-        ))}
-      </div>
+      <div className="max-w-4xl mx-auto p-xl bg-white/[0.01] border border-white/5 rounded-2xl h-96 animate-pulse" />
     }>
       <ServicesGridInner services={services} />
     </Suspense>
