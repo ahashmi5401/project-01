@@ -11,6 +11,7 @@ import { calculatePricing, getCourseBadge, getDiscountSourceLabel } from '@/lib/
 const EnrollFormContent = React.memo(function EnrollFormContent({ courses, discountTiers, comboDeals }) {
   const searchParams = useSearchParams();
   const initialCourseSlug = searchParams.get('course') || '';
+  const initialComboSlug = searchParams.get('combo') || '';
 
   const [selectedCourseIds, setSelectedCourseIds] = useState([]);
   const [name, setName] = useState('');
@@ -44,6 +45,43 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialCourseSlug, courses]);
+
+  // Pre-check combo deal courses from query param
+  useEffect(() => {
+    if (initialComboSlug && comboDeals.length > 0 && courses.length > 0) {
+      const matchCombo = comboDeals.find(d => d.slug === initialComboSlug);
+      if (matchCombo) {
+        const courseIdsToSelect = [];
+        if (matchCombo.courseIds && matchCombo.courseIds.length > 0) {
+          matchCombo.courseIds.forEach(id => {
+            if (courses.some(c => c._id === id)) {
+              courseIdsToSelect.push(id);
+            }
+          });
+        } else if (matchCombo.courseSlugs && matchCombo.courseSlugs.length > 0) {
+          matchCombo.courseSlugs.forEach(slug => {
+            const matchCourse = courses.find(c => c.slug === slug);
+            if (matchCourse) {
+              courseIdsToSelect.push(matchCourse._id);
+            }
+          });
+        }
+
+        if (courseIdsToSelect.length > 0) {
+          setSelectedCourseIds(prev => {
+            const newIds = [...prev];
+            courseIdsToSelect.forEach(id => {
+              if (!newIds.includes(id)) {
+                newIds.push(id);
+              }
+            });
+            return newIds;
+          });
+        }
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialComboSlug, comboDeals, courses]);
 
   // Initialize Turnstile widget
   useEffect(() => {

@@ -26,7 +26,14 @@ export default function ManageDiscountsPage() {
     discountPercent: '',
     label: '',
     expiryDate: '',
+    title: '',
+    description: '',
+    image: '',
+    duration: '',
+    classesPerWeek: '',
+    classHours: '',
   });
+  const [uploadingComboImage, setUploadingComboImage] = useState(false);
 
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(null);
@@ -76,6 +83,41 @@ export default function ManageDiscountsPage() {
       }
     } catch (err) {
       console.error('Failed to load combo data:', err);
+    }
+  };
+
+  // Combo Image Upload handler
+  const handleComboImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('File size exceeds the 5MB limit.');
+      return;
+    }
+
+    setUploadingComboImage(true);
+    setSubmitError(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'combo-deals');
+
+    try {
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setComboFormFields((prev) => ({ ...prev, image: data.url }));
+      } else {
+        setSubmitError(data.error || 'Failed to upload image.');
+      }
+    } catch (err) {
+      setSubmitError('Failed to upload image. Server unreachable.');
+    } finally {
+      setUploadingComboImage(false);
     }
   };
 
@@ -170,8 +212,14 @@ export default function ManageDiscountsPage() {
         body: JSON.stringify({
           courseIds: comboFormFields.courseIds,
           discountPercent: discountPercentVal,
-          label: comboFormFields.label,
+          label: comboFormFields.label || comboFormFields.title,
           expiryDate: comboFormFields.expiryDate || null,
+          title: comboFormFields.title,
+          description: comboFormFields.description,
+          image: comboFormFields.image,
+          duration: comboFormFields.duration,
+          classesPerWeek: comboFormFields.classesPerWeek,
+          classHours: comboFormFields.classHours,
         }),
       });
       const data = await res.json();
@@ -212,6 +260,12 @@ export default function ManageDiscountsPage() {
       discountPercent: deal.discountPercent.toString(),
       label: deal.label || '',
       expiryDate: deal.expiryDate ? deal.expiryDate.split('T')[0] : '',
+      title: deal.title || deal.label || '',
+      description: deal.description || '',
+      image: deal.image || '',
+      duration: deal.duration || '',
+      classesPerWeek: deal.classesPerWeek || '',
+      classHours: deal.classHours || '',
     });
     setSubmitError(null);
     setSubmitSuccess(null);
@@ -226,6 +280,12 @@ export default function ManageDiscountsPage() {
       discountPercent: '',
       label: '',
       expiryDate: '',
+      title: '',
+      description: '',
+      image: '',
+      duration: '',
+      classesPerWeek: '',
+      classHours: '',
     });
     setSubmitError(null);
     setSubmitSuccess(null);
@@ -461,6 +521,39 @@ export default function ManageDiscountsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
                 <div>
+                  <label htmlFor="comboTitle" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                    Title <span className="text-accent">*</span>
+                  </label>
+                  <input
+                    id="comboTitle"
+                    type="text"
+                    name="title"
+                    value={comboFormFields.title}
+                    onChange={(e) => setComboFormFields(prev => ({ ...prev, title: e.target.value }))}
+                    className="w-full bg-navy/50 border border-hairline rounded px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                    placeholder="ANSYS Fluent + Creo Bundle"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="comboLabel" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                    Label (Optional)
+                  </label>
+                  <input
+                    id="comboLabel"
+                    type="text"
+                    name="label"
+                    value={comboFormFields.label}
+                    onChange={(e) => setComboFormFields(prev => ({ ...prev, label: e.target.value }))}
+                    className="w-full bg-navy/50 border border-hairline rounded px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                    placeholder="ANSYS CFD + Structural Combo"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                <div>
                   <label htmlFor="comboDiscountPercent" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
                     Discount Percentage <span className="text-accent">*</span>
                   </label>
@@ -481,20 +574,114 @@ export default function ManageDiscountsPage() {
                     <span className="absolute right-lg top-1/2 -translate-y-1/2 text-steelblue font-sans text-body">%</span>
                   </div>
                 </div>
-                
+
                 <div>
-                  <label htmlFor="comboLabel" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                    Label (Optional)
+                  <label htmlFor="comboDuration" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                    Course Duration <span className="text-accent">*</span>
                   </label>
                   <input
-                    id="comboLabel"
+                    id="comboDuration"
                     type="text"
-                    name="label"
-                    value={comboFormFields.label}
-                    onChange={(e) => setComboFormFields(prev => ({ ...prev, label: e.target.value }))}
+                    name="duration"
+                    value={comboFormFields.duration}
+                    onChange={(e) => setComboFormFields(prev => ({ ...prev, duration: e.target.value }))}
                     className="w-full bg-navy/50 border border-hairline rounded px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
-                    placeholder="ANSYS CFD + Structural Combo"
+                    placeholder="8 Weeks"
+                    required
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                <div>
+                  <label htmlFor="comboClassesPerWeek" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                    Classes Per Week <span className="text-accent">*</span>
+                  </label>
+                  <input
+                    id="comboClassesPerWeek"
+                    type="text"
+                    name="classesPerWeek"
+                    value={comboFormFields.classesPerWeek}
+                    onChange={(e) => setComboFormFields(prev => ({ ...prev, classesPerWeek: e.target.value }))}
+                    className="w-full bg-navy/50 border border-hairline rounded px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                    placeholder="2 Classes"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="comboClassHours" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                    Classes Hours <span className="text-accent">*</span>
+                  </label>
+                  <input
+                    id="comboClassHours"
+                    type="text"
+                    name="classHours"
+                    value={comboFormFields.classHours}
+                    onChange={(e) => setComboFormFields(prev => ({ ...prev, classHours: e.target.value }))}
+                    className="w-full bg-navy/50 border border-hairline rounded px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                    placeholder="1.5 Hours"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="comboDescription" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                  Description <span className="text-accent">*</span>
+                </label>
+                <textarea
+                  id="comboDescription"
+                  name="description"
+                  value={comboFormFields.description}
+                  onChange={(e) => setComboFormFields(prev => ({ ...prev, description: e.target.value }))}
+                  className="w-full bg-navy/50 border border-hairline rounded px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all min-h-[100px]"
+                  placeholder="Detailed description of this bundle package..."
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                <div>
+                  <label htmlFor="comboImage" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                    Image URL
+                  </label>
+                  <input
+                    id="comboImage"
+                    type="text"
+                    name="image"
+                    value={comboFormFields.image}
+                    onChange={(e) => setComboFormFields(prev => ({ ...prev, image: e.target.value }))}
+                    className="w-full bg-navy/50 border border-hairline rounded px-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                    placeholder="/images/combo-deals/simu-fluent.jpg"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
+                    Upload Card Image
+                  </label>
+                  <div className="flex gap-md">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleComboImageUpload}
+                      className="hidden"
+                      id="combo-file-upload"
+                      disabled={uploadingComboImage}
+                    />
+                    <label
+                      htmlFor="combo-file-upload"
+                      className="flex-1 cursor-pointer border border-hairline hover:border-accent hover:bg-accent/5 font-sans text-label px-lg py-sm rounded transition-colors text-center text-steelblue hover:text-accent"
+                    >
+                      {uploadingComboImage ? 'Uploading...' : 'Choose File'}
+                    </label>
+                    {comboFormFields.image && (
+                      <span className="flex items-center text-green-400 font-sans text-label">
+                        ✓ Uploaded
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -621,18 +808,27 @@ export default function ManageDiscountsPage() {
                 {comboDeals.map((deal) => (
                   <div key={deal._id} className="flex-shrink-0 w-80 border border-hairline bg-navy/60 shadow-elevation-sm hover:shadow-elevation-md hover:border-accent/50 rounded-lg transition-all duration-200">
                     <div className="p-lg flex flex-col h-full">
+                      {deal.image && (
+                        <div className="aspect-video w-full mb-md overflow-hidden rounded border border-hairline/40 bg-navy/80">
+                          <img src={deal.image} alt={deal.title || deal.label} className="w-full h-full object-cover" />
+                        </div>
+                      )}
                       <div className="flex items-center justify-between mb-md">
-                        <span className="font-mono font-bold text-accent text-h3">{deal.discountPercent}%</span>
-                        <span className="font-mono text-offwhite text-sm">{deal.courseSlugs.length} Course{deal.courseSlugs.length > 1 ? 's' : ''}</span>
+                        <span className="font-mono font-bold text-accent text-h3">{deal.discountPercent}% OFF</span>
+                        <span className="font-mono text-offwhite text-sm">{deal.courseIds?.length || deal.courseSlugs?.length || 0} Course{(deal.courseIds?.length || deal.courseSlugs?.length || 0) > 1 ? 's' : ''}</span>
                       </div>
                       
-                      {deal.label && (
-                        <p className="text-steelblue text-caption leading-relaxed mb-sm font-medium">
-                          {deal.label}
+                      <p className="text-offwhite font-sans text-body leading-relaxed mb-xs font-semibold">
+                        {deal.title || deal.label}
+                      </p>
+                      
+                      {(deal.duration || deal.classesPerWeek) && (
+                        <p className="text-steelblue font-sans text-caption leading-relaxed mb-sm font-medium">
+                          {deal.duration || '8 Weeks'} | {deal.classesPerWeek || '2 classes/wk'}
                         </p>
                       )}
-                      
-                      <div className="text-steelblue text-caption leading-relaxed mb-lg">
+
+                      <div className="text-steelblue/75 text-caption leading-relaxed mb-lg line-clamp-2">
                         {deal.courseIds ? deal.courseIds.map(courseId => {
                           const course = courses.find(c => c._id === courseId);
                           return course ? course.title : courseId;

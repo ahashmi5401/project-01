@@ -23,8 +23,8 @@ export default function Hero() {
           <SectionEyebrow text="Engineering Design & Simulation Lab" />
           
           <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display tracking-tight text-offwhite mb-lg sm:mb-xl leading-[1.1]">
-            Design.<br className="hidden sm:inline" />
-            Simulate. <span className="text-accent">Innovate.</span>
+            Design|<br className="hidden sm:inline" />
+            Simulate| <span className="text-accent">Innovate.</span>
           </h1>
 
           <p className="font-sans text-small sm:text-body lg:text-h3 text-steelblue mb-lg sm:mb-xl max-w-full sm:max-w-2xl leading-relaxed">

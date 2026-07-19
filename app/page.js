@@ -160,7 +160,7 @@ export default async function Home() {
       {/* <StatsBar /> */}
       {/* <ScopeList services={services} /> */}
       <CoursesPreview courses={courses} />
-      <ComboDealsSection comboDeals={comboDeals} />
+      <ComboDealsSection comboDeals={comboDeals} courses={courses} />
       <VolumePricingSection discountTiers={discountTiers} />
     </>
   );

@@ -21,6 +21,16 @@ export async function GET() {
   }
 }
 
+// Helper to generate a URL-safe slug from title
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 // POST: Add new combo deal (Admin Protected)
 export async function POST(req) {
   try {
@@ -42,7 +52,18 @@ export async function POST(req) {
     }
 
     const body = await req.json();
-    const { courseIds, discountPercent, label, expiryDate } = body;
+    const {
+      courseIds,
+      discountPercent,
+      label,
+      expiryDate,
+      title,
+      description,
+      image,
+      duration,
+      classesPerWeek,
+      classHours
+    } = body;
 
     // Validation
     if (!Array.isArray(courseIds) || courseIds.length === 0) {
@@ -81,11 +102,21 @@ export async function POST(req) {
     // Extract course slugs for backward compatibility
     const courseSlugs = courses.map(c => c.slug).sort();
 
+    const comboTitle = title || label || 'New Course Combo';
+    const generatedSlug = generateSlug(comboTitle);
+
     const newComboDeal = {
       courseIds: sortedCourseIds,
       courseSlugs: courseSlugs,
       discountPercent: parseFloat(discountPercent),
-      label: label || '',
+      label: label || comboTitle,
+      title: comboTitle,
+      slug: generatedSlug,
+      description: description || '',
+      image: image || '',
+      duration: duration || '',
+      classesPerWeek: classesPerWeek || '',
+      classHours: classHours || '',
       expiryDate: parsedExpiryDate,
       createdAt: new Date(),
       updatedAt: new Date()

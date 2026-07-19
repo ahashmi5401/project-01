@@ -5,6 +5,16 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
+// Helper to generate a URL-safe slug from title
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 // PUT: Update combo deal (Admin Protected)
 export async function PUT(req, { params }) {
   try {
@@ -31,7 +41,18 @@ export async function PUT(req, { params }) {
     }
 
     const body = await req.json();
-    const { courseIds, discountPercent, label, expiryDate } = body;
+    const {
+      courseIds,
+      discountPercent,
+      label,
+      expiryDate,
+      title,
+      description,
+      image,
+      duration,
+      classesPerWeek,
+      classHours
+    } = body;
 
     // Validation
     if (!Array.isArray(courseIds) || courseIds.length === 0) {
@@ -77,11 +98,21 @@ export async function PUT(req, { params }) {
     // Extract course slugs for backward compatibility
     const courseSlugs = courses.map(c => c.slug).sort();
 
+    const comboTitle = title || label || 'Updated Course Combo';
+    const generatedSlug = generateSlug(comboTitle);
+
     const updateFields = {
       courseIds: sortedCourseIds,
       courseSlugs: courseSlugs,
       discountPercent: parseFloat(discountPercent),
-      label: label || '',
+      label: label || comboTitle,
+      title: comboTitle,
+      slug: generatedSlug,
+      description: description || '',
+      image: image || '',
+      duration: duration || '',
+      classesPerWeek: classesPerWeek || '',
+      classHours: classHours || '',
       expiryDate: parsedExpiryDate,
       updatedAt: new Date()
     };

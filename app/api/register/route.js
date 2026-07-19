@@ -269,10 +269,11 @@ export async function POST(req) {
       process.env.GOOGLE_SHEET_ID
     ) {
       try {
-        let privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
-        if (!privateKey.includes('\n')) {
-          privateKey = privateKey.replace(/\\n/g, '\n');
-        }
+        // Normalize the private key: strip any wrapping quotes, then always
+        // replace literal "\n" sequences (from .env parsing) with real newlines.
+        let privateKey = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
+          .replace(/^["']|["']$/g, '')   // strip leading/trailing " or '
+          .replace(/\\n/g, '\n');         // literal \n → real newline
 
         const auth = new google.auth.GoogleAuth({
           credentials: {

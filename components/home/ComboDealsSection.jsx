@@ -5,7 +5,17 @@ import Link from 'next/link';
 import SectionEyebrow from '@/components/shared/SectionEyebrow';
 import AnimatedReveal from '@/components/shared/AnimatedReveal';
 
-export default function ComboDealsSection({ comboDeals = [] }) {
+// Helper to generate a URL-safe slug from title (fallback)
+function generateSlug(title) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export default function ComboDealsSection({ comboDeals = [], courses = [] }) {
   if (!comboDeals || comboDeals.length === 0) return null;
 
   return (
@@ -18,7 +28,7 @@ export default function ComboDealsSection({ comboDeals = [] }) {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
 
-        {/* Header Block — same style as original */}
+        {/* Header Block */}
         <AnimatedReveal>
           <div className="border-b border-hairline pb-lg sm:pb-xl mb-2xl sm:mb-3xl">
             <SectionEyebrow text="Bundle & Save" />
@@ -31,60 +41,138 @@ export default function ComboDealsSection({ comboDeals = [] }) {
           </div>
         </AnimatedReveal>
 
-        {/* Combo Deal Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-lg sm:gap-xl">
-          {comboDeals.map((deal, index) => (
-            <AnimatedReveal key={`deal-${deal._id || index}`} delay={index * 0.1}>
-              <Link
-                href="/enroll"
-                className="group relative bg-navy rounded-2xl overflow-hidden transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-accent/10 min-h-[340px] sm:min-h-[380px]"
-              >
-                <div className="absolute inset-0 bg-gradient-to-t from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Combo Deal Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg sm:gap-xl">
+          {comboDeals.map((deal, index) => {
+            // Find courses belonging to this deal
+            const dealCourses = courses.filter(c => 
+              deal.courseIds?.includes(c._id) || 
+              deal.courseSlugs?.includes(c.slug)
+            );
 
-                <div className="p-xl sm:p-2xl flex flex-col h-full relative z-10">
-                  {/* Deal Badge */}
-                  <div className="flex justify-between items-start mb-lg sm:mb-xl">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1 h-8 bg-gradient-to-b from-accent to-accent/50 rounded-full" />
-                      <span className="font-sans text-[10px] sm:text-caption uppercase tracking-widest text-steelblue font-semibold">
-                        COMBO DEAL
+            // Calculate pricing
+            const originalPrice = dealCourses.reduce((sum, c) => sum + (c.price || 0), 0);
+            const finalPrice = originalPrice > 0 
+              ? Math.round(originalPrice * (1 - deal.discountPercent / 100))
+              : 0;
+
+            const courseCount = deal.courseIds?.length || deal.courseSlugs?.length || 0;
+            const courseBadgeText = `${courseCount} Course Combo`;
+            
+            const comboTitle = deal.title || deal.label || 'Course Combo Package';
+            const comboDescription = deal.description || `Register for ${dealCourses.map(c => c.title).join(' + ')} as a bundle and save instantly.`;
+            const comboSlug = deal.slug || generateSlug(comboTitle);
+
+            const durationText = deal.duration 
+              ? `${deal.duration} | ${deal.classesPerWeek || '2 classes/wk'}`
+              : dealCourses.map(c => c.duration?.totalDuration || c.duration || '').filter(Boolean)[0] || '';
+
+            return (
+              <AnimatedReveal key={`deal-${deal._id || index}`} delay={index * 0.1}>
+                <div className="group relative bg-navy border border-white/10 rounded-xl overflow-hidden transition-all duration-300 w-full flex flex-col min-h-[380px] sm:min-h-[400px] pb-md">
+                  
+                  {/* Image - clickable to details */}
+                  <Link href={`/courses/combos/${comboSlug}`} className="block relative w-full aspect-video overflow-hidden bg-navy border-b border-white/10">
+                    {deal.image ? (
+                      <img
+                        src={deal.image}
+                        alt={comboTitle}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.parentElement.innerHTML = `
+                            <div class="w-full h-full flex items-center justify-center bg-navy/60">
+                              <svg class="w-16 h-16 text-steelblue/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 3L4 8v8l8 5 8-5V8z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 3v18M4 8l8 5 8-5M12 13l8 5m-8-5l-8 5" />
+                              </svg>
+                            </div>
+                          `;
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-navy/60">
+                        <svg className="w-16 h-16 text-steelblue/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3L4 8v8l8 5 8-5V8z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M12 3v18M4 8l8 5 8-5M12 13l8 5m-8-5l-8 5" />
+                        </svg>
+                      </div>
+                    )}
+                  </Link>
+
+                  {/* Card Content */}
+                  <div className="p-lg flex flex-col flex-grow">
+                    
+                    {/* Category/Combo Badge */}
+                    <div className="mb-sm">
+                      <span className="inline-flex items-center px-sm py-xs text-caption font-sans font-medium text-accent bg-accent/10 rounded border border-accent/30">
+                        {courseBadgeText}
                       </span>
                     </div>
-                    <span className="font-sans text-[10px] sm:text-caption font-bold text-accent bg-accent/10 px-sm py-xs rounded shadow-elevation-sm">
-                      {deal.courseIds?.length || deal.courseSlugs?.length || 0} COURSES
-                    </span>
-                  </div>
 
-                  {/* Discount Percentage */}
-                  <div className="mb-lg sm:mb-xl">
-                    <div className="font-sans font-bold text-h2 sm:text-display text-accent leading-none mb-sm group-hover:scale-105 transition-transform duration-300">
-                      {deal.discountPercent}% OFF
+                    {/* Discount Badge */}
+                    <div className="mb-sm">
+                      <span className="font-sans text-label font-bold text-accent">
+                        {deal.discountPercent}% OFF
+                      </span>
                     </div>
-                    <div className="font-sans text-small sm:text-body text-offwhite/70 tracking-wide font-medium">
-                      BUNDLE PACKAGE
-                    </div>
-                  </div>
 
-                  {/* Label */}
-                  {deal.label && (
-                    <p className="font-sans text-small sm:text-body text-offwhite/90 leading-relaxed mb-lg sm:mb-xl flex-grow">
-                      {deal.label}
+                    {/* Title - clickable to details */}
+                    <Link href={`/courses/combos/${comboSlug}`} className="block">
+                      <h3 className="font-sans font-semibold text-h4 text-offwhite mb-sm line-clamp-2 leading-tight group-hover:text-accent transition-colors">
+                        {comboTitle}
+                      </h3>
+                    </Link>
+
+                    {/* Description */}
+                    <p className="font-sans text-caption sm:text-small text-steelblue/70 line-clamp-2 mb-sm leading-relaxed">
+                      {comboDescription}
                     </p>
-                  )}
 
-                  {/* CTA */}
-                  <div className="border-t border-white/10 pt-lg sm:pt-xl mt-auto">
-                    <div className="font-sans text-label uppercase tracking-wider text-offwhite/80 group-hover:text-accent transition-colors flex items-center gap-sm font-semibold">
-                      <span>View Bundle</span>
-                      <svg className="w-4 h-4 stroke-current fill-none transform group-hover:translate-x-2 transition-transform" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                      </svg>
+                    {/* Duration Info */}
+                    {durationText && (
+                      <div className="flex items-center gap-sm mb-sm mt-xs">
+                        <svg className="w-4 h-4 text-steelblue/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="font-sans text-caption text-steelblue/60">
+                          {durationText}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Pricing & CTA */}
+                    <div className="flex items-center justify-between pt-sm border-t border-white/10 mt-auto gap-sm">
+                      <div>
+                        {originalPrice > 0 && (
+                          <span className="font-sans text-caption text-steelblue/50 line-through block">
+                            PKR {originalPrice.toLocaleString()}
+                          </span>
+                        )}
+                        {finalPrice > 0 ? (
+                          <span className="font-sans text-body font-bold text-accent">
+                            PKR {finalPrice.toLocaleString()}
+                          </span>
+                        ) : (
+                          <span className="font-sans text-body font-bold text-accent">
+                            Custom Pricing
+                          </span>
+                        )}
+                      </div>
+
+                      <Link
+                        href={`/courses/combos/${comboSlug}`}
+                        className="px-md py-sm bg-accent text-offwhite font-sans text-label uppercase font-medium rounded-md hover:bg-[#d04e1b] transition-all duration-300 font-semibold text-sm"
+                      >
+                        View Details →
+                      </Link>
                     </div>
+
                   </div>
                 </div>
-              </Link>
-            </AnimatedReveal>
-          ))}
+              </AnimatedReveal>
+            );
+          })}
         </div>
 
       </div>
