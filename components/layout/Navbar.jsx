@@ -10,6 +10,7 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [services, setServices] = useState([]);
   const [consultancyOpen, setConsultancyOpen] = useState(false);
+  const [mobileConsultancyOpen, setMobileConsultancyOpen] = useState(false);
   const pathname = usePathname();
   const dropdownRef = useRef(null);
   const hoverTimeout = useRef(null);
@@ -186,13 +187,25 @@ export default function Navbar() {
             if (link.name === 'Consultancy') {
               return (
                 <div key={link.name}>
-                  <div
-                    className="block px-6 py-4 text-white font-semibold border-b border-white/5 cursor-default select-none"
+                  {/* Consultancy toggle row */}
+                  <button
+                    onClick={() => setMobileConsultancyOpen((prev) => !prev)}
+                    className="w-full flex items-center justify-between px-6 py-4 text-white font-semibold border-b border-white/5 focus:outline-none"
                   >
-                    {link.name}
-                  </div>
-                  {/* Nested services list under Consultancy */}
-                  {services.length > 0 && (
+                    <span>{link.name}</span>
+                    <svg
+                      className={`w-4 h-4 fill-none stroke-current transition-transform duration-200 ${mobileConsultancyOpen ? 'rotate-180' : ''}`}
+                      viewBox="0 0 24 24"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </button>
+
+                  {/* Collapsible services list */}
+                  {mobileConsultancyOpen && services.length > 0 && (
                     <div className="bg-white/[0.02] border-b border-white/5">
                       {services.map((service) => (
                         <Link
