@@ -388,13 +388,13 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                               
                               {/* Price Section */}
                               <div className="flex items-baseline gap-2">
-                                {badge && discountSource === 'individual' && (
+                                {badge && discountSource === 'individual' && course.price > 0 && course.price !== -1 && (
                                   <span className="font-mono text-sm text-steelblue/60 line-through">
-                                    PKR {course.price?.toLocaleString() || 'N/A'}
+                                    PKR {course.price.toLocaleString()}
                                   </span>
                                 )}
                                 <span className={`font-mono text-lg font-semibold ${badge ? 'text-accent' : 'text-offwhite'}`}>
-                                  PKR {finalPrice?.toLocaleString() || 'N/A'}
+                                  {finalPrice > 0 && finalPrice !== -1 ? `PKR ${finalPrice.toLocaleString()}` : 'Price Inquiry'}
                                 </span>
                               </div>
 
