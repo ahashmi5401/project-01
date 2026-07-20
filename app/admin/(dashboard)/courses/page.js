@@ -611,7 +611,7 @@ export default function ManageCoursesPage() {
 
                 <div>
                   <label htmlFor="price" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                    Course Price (PKR) <span className="text-accent">*</span>
+                    Course Price (PKR) (Optional)
                   </label>
                   <div className="relative">
                     <span className="absolute left-lg top-1/2 -translate-y-1/2 text-steelblue font-sans text-body">PKR</span>
@@ -623,7 +623,6 @@ export default function ManageCoursesPage() {
                       onChange={handleChange}
                       className="w-full bg-navy/50 border border-hairline rounded pl-16 pr-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                       placeholder="15000"
-                      required
                     />
                   </div>
                 </div>
@@ -1059,17 +1058,23 @@ export default function ManageCoursesPage() {
                           <div className="flex items-center justify-between mb-sm">
                             <span className="font-mono font-bold text-accent/90 text-sm">REF: {course.id}</span>
                             <div className="text-right">
-                              {course.discountPercent && course.discountPercent > 0 ? (
+                              {course.price > 0 && course.price !== -1 ? (
                                 <>
-                                  <span className="font-mono text-steelblue/50 line-through block text-xs">
-                                    PKR {course.price?.toLocaleString() || '0'}
-                                  </span>
-                                  <span className="font-mono text-accent font-bold text-sm">
-                                    PKR {Math.round((course.price || 0) * (1 - course.discountPercent / 100)).toLocaleString()}
-                                  </span>
+                                  {course.discountPercent && course.discountPercent > 0 ? (
+                                    <>
+                                      <span className="font-mono text-steelblue/50 line-through block text-xs">
+                                        PKR {course.price.toLocaleString()}
+                                      </span>
+                                      <span className="font-mono text-accent font-bold text-sm">
+                                        PKR {Math.round(course.price * (1 - course.discountPercent / 100)).toLocaleString()}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="font-mono text-offwhite text-sm">PKR {course.price.toLocaleString()}</span>
+                                  )}
                                 </>
                               ) : (
-                                <span className="font-mono text-offwhite text-sm">PKR {course.price?.toLocaleString() || '0'}</span>
+                                <span className="font-mono text-accent font-bold text-sm">Price Inquiry</span>
                               )}
                             </div>
                           </div>

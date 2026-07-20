@@ -13,7 +13,7 @@ export default function CourseCard({
   slug,
   discountPercent = 0
 }) {
-  const finalPrice = discountPercent > 0
+  const finalPrice = discountPercent > 0 && price > 0 && price !== -1
     ? Math.round(price * (1 - discountPercent / 100))
     : price;
 
@@ -97,14 +97,22 @@ export default function CourseCard({
         {/* Price & Enroll CTA */}
         <div className="flex items-center justify-between pt-sm border-t border-white/10 mt-auto gap-sm">
           <div>
-            {discountPercent > 0 && (
-              <span className="font-sans text-caption text-steelblue/50 line-through block">
-                PKR {price.toLocaleString()}
+            {price > 0 && price !== -1 ? (
+              <>
+                {discountPercent > 0 && (
+                  <span className="font-sans text-caption text-steelblue/50 line-through block">
+                    PKR {price.toLocaleString()}
+                  </span>
+                )}
+                <span className="font-sans text-body font-bold text-accent">
+                  PKR {finalPrice.toLocaleString()}
+                </span>
+              </>
+            ) : (
+              <span className="font-sans text-body font-bold text-accent">
+                Price Inquiry
               </span>
             )}
-            <span className="font-sans text-body font-bold text-accent">
-              PKR {finalPrice.toLocaleString()}
-            </span>
           </div>
         {/* Description Button */}
           <Link

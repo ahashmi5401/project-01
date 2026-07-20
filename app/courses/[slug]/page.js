@@ -177,7 +177,7 @@ export default async function CourseDetailPage({ params }) {
                   <span className="inline-flex items-center gap-sm font-mono text-label uppercase tracking-wider text-accent/80 border border-accent/25 bg-accent/5 px-md py-sm rounded">
                     ● Delivered Online
                   </span>
-                  {displayCourse.price && (
+                  {displayCourse.price && displayCourse.price > 0 && displayCourse.price !== -1 ? (
                     <>
                       {displayCourse.discountPercent && displayCourse.discountPercent > 0 ? (
                         <>
@@ -195,6 +195,10 @@ export default async function CourseDetailPage({ params }) {
                         </span>
                       )}
                     </>
+                  ) : (
+                    <span className="inline-flex items-center gap-sm font-mono text-label uppercase tracking-wider text-accent border border-accent/25 bg-accent/5 px-md py-sm rounded">
+                      Price Inquiry
+                    </span>
                   )}
                 </div>
               </div>
@@ -247,6 +251,12 @@ export default async function CourseDetailPage({ params }) {
                     Initialize registration and secure custom package discount:
                   </p>
                   <div className="flex flex-wrap gap-md sm:gap-lg items-center">
+                    {/* Price inquiry message when price is not set */}
+                    {!displayCourse.price || displayCourse.price === 0 ? (
+                      <p className="text-steelblue font-sans text-body w-full">
+                        Contact on WhatsApp or inquire for price
+                      </p>
+                    ) : null}
                     {/* Primary WhatsApp CTA Button */}
                     <WhatsAppButton message="Hello Simuflux, I would like to inquire about your engineering training  services." />
 

@@ -84,7 +84,7 @@ export default function CoursesGrid({ courses = [] }) {
                       ? course.description.substring(0, 150) + '...' 
                       : course.description}
                   </p>
-                  {course.price && (
+                  {course.price > 0 && course.price !== -1 && (
                     <div className="mt-sm">
                       {course.discountPercent && course.discountPercent > 0 ? (
                         <>
@@ -100,6 +100,13 @@ export default function CoursesGrid({ courses = [] }) {
                           PKR {course.price.toLocaleString()}
                         </span>
                       )}
+                    </div>
+                  )}
+                  {(!course.price || course.price === 0 || course.price === -1) && (
+                    <div className="mt-sm">
+                      <span className="font-mono text-caption text-accent font-bold">
+                        Price Inquiry
+                      </span>
                     </div>
                   )}
                 </div>
