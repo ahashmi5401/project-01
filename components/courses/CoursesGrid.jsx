@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import AnimatedReveal from '@/components/shared/AnimatedReveal';
+import { formatPrice } from '@/lib/price';
 
 const ITEMS_PER_PAGE = 6;
 
@@ -84,7 +85,7 @@ export default function CoursesGrid({ courses = [] }) {
                       ? course.description.substring(0, 150) + '...' 
                       : course.description}
                   </p>
-                  {course.price > 0 && course.price !== -1 && (
+                  {course.price !== null && course.price > 0 && (
                     <div className="mt-sm">
                       {course.discountPercent && course.discountPercent > 0 ? (
                         <>
@@ -102,7 +103,14 @@ export default function CoursesGrid({ courses = [] }) {
                       )}
                     </div>
                   )}
-                  {(!course.price || course.price === 0 || course.price === -1) && (
+                  {course.price === 0 && (
+                    <div className="mt-sm">
+                      <span className="font-mono text-caption text-offwhite border border-white/20 bg-white/10 px-sm py-xs rounded">
+                        Free
+                      </span>
+                    </div>
+                  )}
+                  {course.price === null && (
                     <div className="mt-sm">
                       <span className="font-mono text-caption text-accent font-bold">
                         Price Inquiry

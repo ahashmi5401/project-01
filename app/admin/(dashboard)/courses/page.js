@@ -69,6 +69,8 @@ export default function ManageCoursesPage() {
   const [toast, setToast] = useState(null);
   const [registrationLinks, setRegistrationLinks] = useState({});
   const [generatingLink, setGeneratingLink] = useState(null);
+  // negotiatedPrices: maps courseSlug -> string value from the admin input
+  const [negotiatedPrices, setNegotiatedPrices] = useState({});
 
   useEffect(() => {
     if (toast) {
@@ -77,13 +79,25 @@ export default function ManageCoursesPage() {
     }
   }, [toast]);
 
-  const handleGenerateLink = async (slug) => {
+  const handleGenerateLink = async (course) => {
+    const slug = course.slug;
     setGeneratingLink(slug);
     try {
+      const body = { courseSlug: slug };
+      // If course has no fixed price, pass the admin-entered negotiated price
+      if (course.price === null) {
+        const agreed = negotiatedPrices[slug];
+        if (!agreed || isNaN(Number(agreed)) || Number(agreed) < 0) {
+          setToast('Enter the agreed price before generating a link.');
+          setGeneratingLink(null);
+          return;
+        }
+        body.negotiatedPrice = Number(agreed);
+      }
       const res = await fetch('/api/registration-links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ courseSlug: slug }),
+        body: JSON.stringify(body),
       });
       const data = await res.json();
       if (res.ok) {
@@ -313,7 +327,7 @@ export default function ManageCoursesPage() {
       title: course.title || '',
       description: course.description || '',
       image: course.image || '',
-      price: course.price !== undefined ? course.price : '',
+      price: course.price === null ? '' : course.price,
       discountPercent: course.discountPercent !== undefined ? course.discountPercent : '',
       points: Array.isArray(course.points) && course.points.length > 0 ? course.points : [''],
       curriculum: Array.isArray(course.curriculum) ? course.curriculum.join('\n') : '',
@@ -1058,7 +1072,7 @@ export default function ManageCoursesPage() {
                           <div className="flex items-center justify-between mb-sm">
                             <span className="font-mono font-bold text-accent/90 text-sm">REF: {course.id}</span>
                             <div className="text-right">
-                              {course.price > 0 && course.price !== -1 ? (
+                              {course.price !== null && course.price > 0 ? (
                                 <>
                                   {course.discountPercent && course.discountPercent > 0 ? (
                                     <>
@@ -1073,6 +1087,8 @@ export default function ManageCoursesPage() {
                                     <span className="font-mono text-offwhite text-sm">PKR {course.price.toLocaleString()}</span>
                                   )}
                                 </>
+                              ) : course.price === 0 ? (
+                                <span className="font-mono text-offwhite text-sm">Free</span>
                               ) : (
                                 <span className="font-mono text-accent font-bold text-sm">Price Inquiry</span>
                               )}
@@ -1084,8 +1100,21 @@ export default function ManageCoursesPage() {
                           <p className="text-steelblue/80 text-caption leading-relaxed line-clamp-2 mb-sm">{course.description}</p>
                           
                           <div className="flex gap-sm pt-sm border-t border-hairline/40 mt-auto">
+                            {/* Negotiated price input — only shown for null-price courses */}
+                            {course.price === null && (
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={negotiatedPrices[course.slug] || ''}
+                                onChange={(e) => setNegotiatedPrices(prev => ({ ...prev, [course.slug]: e.target.value }))}
+                                placeholder="Agreed price (PKR)"
+                                className="flex-1 bg-navy/50 border border-hairline rounded px-sm py-xs text-offwhite placeholder-steelblue/30 font-mono text-xs focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent/20 transition-all"
+                                aria-label={`Agreed price for ${course.title}`}
+                              />
+                            )}
                             <button
-                              onClick={() => handleGenerateLink(course.slug)}
+                              onClick={() => handleGenerateLink(course)}
                               disabled={generatingLink === course.slug}
                               className="flex-1 font-mono text-label uppercase tracking-wider text-green-400 border border-green-400/30 hover:bg-green-400/10 px-sm py-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Generate single-use registration link"

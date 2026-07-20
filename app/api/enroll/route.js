@@ -5,6 +5,7 @@ import { escapeHtml } from '@/lib/escapeHtml';
 import { calculatePricing, getDiscountSourceLabel } from '@/lib/pricingEngine';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { verifyTurnstileToken } from '@/lib/turnstile';
+import { formatPrice } from '@/lib/price';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -101,8 +102,8 @@ export async function POST(req) {
     if (resend) {
       const safeName = escapeHtml(name.trim());
       const safePhone = escapeHtml(phone.trim());
-      const safeCoursesText = dbCourses.map(c => `- ${escapeHtml(c.title)} (PKR ${c.price?.toLocaleString() || 'N/A'})`).join('\n');
-      const safeCoursesHtml = dbCourses.map(c => `<li>${escapeHtml(c.title)} (PKR ${c.price?.toLocaleString() || 'N/A'})</li>`).join('');
+      const safeCoursesText = dbCourses.map(c => `- ${escapeHtml(c.title)} (${formatPrice(c.price)})`).join('\n');
+      const safeCoursesHtml = dbCourses.map(c => `<li>${escapeHtml(c.title)} (${formatPrice(c.price)})</li>`).join('');
 
       // Admin notification email
       try {
@@ -118,11 +119,11 @@ Phone Number:     ${phone.trim()}
 Timestamp:        ${new Date().toLocaleString()}
 
 Selected Courses:
-${dbCourses.map(c => `- ${c.title} (PKR ${c.price?.toLocaleString() || 'N/A'})`).join('\n')}
+${dbCourses.map(c => `- ${c.title} (${formatPrice(c.price)})`).join('\n')}
 
-Subtotal:         PKR ${actualSubtotal.toLocaleString()}
+Subtotal:         ${formatPrice(actualSubtotal)}
 Discount Applied: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})
-Total Price:      PKR ${actualTotalPrice.toLocaleString()}
+Total Price:      ${formatPrice(actualTotalPrice)}
           `,
           html: `
             <h3>New Multi-Course Enrollment Inquiry</h3>
@@ -136,9 +137,9 @@ Total Price:      PKR ${actualTotalPrice.toLocaleString()}
             </ul>
 
             <table cellpadding="6" style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:13px;border-top:1px solid #ddd;">
-              <tr><td><strong>Subtotal</strong></td><td>PKR ${actualSubtotal.toLocaleString()}</td></tr>
+              <tr><td><strong>Subtotal</strong></td><td>${formatPrice(actualSubtotal)}</td></tr>
               <tr style="background:#f5f5f5;color:#e8622c;"><td><strong>Discount Applied</strong></td><td>${discountPercent}% (-PKR ${discountAmount.toLocaleString()})</td></tr>
-              <tr style="font-weight:bold;font-size:14px;"><td><strong>Total Package Price</strong></td><td>PKR ${actualTotalPrice?.toLocaleString() || 'N/A'}</td></tr>
+              <tr style="font-weight:bold;font-size:14px;"><td><strong>Total Package Price</strong></td><td>${formatPrice(actualTotalPrice)}</td></tr>
             </table>
           `
         });

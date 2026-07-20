@@ -56,6 +56,36 @@ export async function POST(req) {
       );
     }
 
+    // If course has no fixed price (price is null), we require a negotiated price.
+    let negotiatedPrice = null;
+    if (course.price === null) {
+      const rawNegotiated = body.negotiatedPrice;
+      if (rawNegotiated === undefined || rawNegotiated === null || rawNegotiated === '') {
+        return NextResponse.json(
+          { error: 'negotiatedPrice is required for courses with Price Inquiry.' },
+          { status: 400 }
+        );
+      }
+      negotiatedPrice = Number(rawNegotiated);
+      if (isNaN(negotiatedPrice) || negotiatedPrice < 0) {
+        return NextResponse.json(
+          { error: 'negotiatedPrice must be a non-negative number.' },
+          { status: 400 }
+        );
+      }
+    } else {
+      // If course has a price, negotiatedPrice can optionally be set or left null
+      if (body.negotiatedPrice !== undefined && body.negotiatedPrice !== null && body.negotiatedPrice !== '') {
+        negotiatedPrice = Number(body.negotiatedPrice);
+        if (isNaN(negotiatedPrice) || negotiatedPrice < 0) {
+          return NextResponse.json(
+            { error: 'negotiatedPrice must be a non-negative number.' },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Generate unique token
     const token = generateToken();
 
@@ -64,6 +94,7 @@ export async function POST(req) {
       token,
       courseSlug,
       status: 'pending',
+      negotiatedPrice,
       createdAt: new Date(),
       usedAt: null,
     };
@@ -110,6 +141,7 @@ export async function GET(req) {
         token: link.token,
         status: link.status,
         courseSlug: link.courseSlug,
+        negotiatedPrice: link.negotiatedPrice !== undefined ? link.negotiatedPrice : null,
         createdAt: link.createdAt,
         usedAt: link.usedAt,
       });
@@ -133,6 +165,7 @@ export async function GET(req) {
         links: links.map(link => ({
           token: link.token,
           status: link.status,
+          negotiatedPrice: link.negotiatedPrice !== undefined ? link.negotiatedPrice : null,
           createdAt: link.createdAt,
           usedAt: link.usedAt,
         })),

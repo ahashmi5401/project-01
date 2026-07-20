@@ -200,6 +200,35 @@ const pass12 = result12.discountSource === 'tier'
   && result12.totalPrice === 21600;
 console.log('✓ PASS:', pass12);
 
+// Test Case 13: Null-price course alone (Price Inquiry state)
+console.log('\n=== Test Case 13: Null-price course alone ===');
+const nullCourse = { _id: '5', title: 'Special Consulting', slug: 'special-consulting', price: null, discountPercent: 0 };
+const selected13 = [nullCourse];
+const result13 = calculatePricing(selected13, comboDeals, discountTiers);
+console.log('Selected:', selected13.map(c => c.title));
+console.log('Discount Source:', result13.discountSource);
+console.log('Original Total:', result13.subtotal, '(expected: null)');
+console.log('Final Price:', result13.totalPrice, '(expected: null)');
+console.log('Expected: No promotion, subtotal and totalPrice should be null for null price');
+const pass13 = result13.discountSource === 'none' && result13.subtotal === null && result13.totalPrice === null;
+console.log('✓ PASS:', pass13);
+
+// Test Case 14: Null-price + fixed-price in combo package
+console.log('\n=== Test Case 14: Null-price + fixed-price in combo ===');
+const fixedCourse = courses.find(c => c._id === '2'); // ANSYS Fluent (15000)
+const selected14 = [nullCourse, fixedCourse];
+const comboDealsWithNull = [
+  { courseIds: ['5', '2'], discountPercent: 50, label: 'Custom Consulting Combo' }
+];
+const result14 = calculatePricing(selected14, comboDealsWithNull, discountTiers);
+console.log('Selected:', selected14.map(c => c.title));
+console.log('Discount Source:', result14.discountSource);
+console.log('Original Total:', result14.subtotal, '(expected: null)');
+console.log('Final Price:', result14.totalPrice, '(expected: null)');
+console.log('Expected: Subtotal and totalPrice should be null because one course has an inquiry price');
+const pass14 = result14.discountSource === 'none' && result14.subtotal === null && result14.totalPrice === null;
+console.log('✓ PASS:', pass14);
+
 // Test discount source label function
 console.log('\n=== Test Discount Source Label Function ===');
 console.log('Combo label:', getDiscountSourceLabel('combo'));

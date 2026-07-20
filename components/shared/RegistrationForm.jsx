@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculatePricing, getCourseBadge, getDiscountSourceLabel } from '@/lib/pricingEngine';
+import { formatPrice } from '@/lib/price';
 
 // Step components extracted outside to prevent remounting on parent re-renders
 const Step1 = memo(function Step1({ formData, errors, handleChange, handleCnicChange }) {
@@ -194,7 +195,9 @@ const Step3 = memo(function Step3({
   discountReason,
   getDiscountSourceLabel,
   turnstileContainerRef,
-  siteKey
+  siteKey,
+  isLocked,
+  initialCourse
 }) {
   return (
     <motion.div
@@ -211,28 +214,49 @@ const Step3 = memo(function Step3({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
         {courses.map((c) => {
           const isChecked = selectedCourses.includes(c.title);
-          return (
-            <label key={c._id || c.id} className={`flex items-center gap-sm border px-md py-md cursor-pointer hover:border-accent/60 transition-colors rounded ${
-              isChecked ? 'border-accent bg-accent/5' : 'border-hairline/60 bg-navy/40'
-            }`}>
-              <input
-                type="checkbox"
-                name="courses"
-                value={c.title}
-                checked={isChecked}
-                onChange={(e) => {
-                  const { value, checked } = e.target;
-                  setSelectedCourses(prev =>
-                    checked ? [...prev, value] : prev.filter(item => item !== value)
-                  );
-                }}
-                className="accent-accent w-4 h-4 cursor-pointer"
-              />
+          const isLockedCourse = isLocked && c.title === initialCourse;
+            const isInquiryCourse = c.price === null && c.title !== initialCourse;
+            const isDisabled = isLockedCourse || isInquiryCourse;
+            return (
+              <label 
+                key={c._id || c.id} 
+                className={`flex items-center gap-sm border px-md py-md transition-colors rounded ${
+                  isChecked ? 'border-accent bg-accent/5' : 'border-hairline/60 bg-navy/40'
+                } ${
+                  isLockedCourse 
+                    ? 'opacity-75 cursor-not-allowed' 
+                    : isInquiryCourse 
+                      ? 'opacity-50 cursor-not-allowed' 
+                      : 'cursor-pointer hover:border-accent/60'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  name="courses"
+                  value={c.title}
+                  checked={isChecked}
+                  disabled={isDisabled}
+                  aria-disabled={isInquiryCourse ? "true" : undefined}
+                  onChange={(e) => {
+                    if (isDisabled) return;
+                    const { value, checked } = e.target;
+                    setSelectedCourses(prev =>
+                      checked ? [...prev, value] : prev.filter(item => item !== value)
+                    );
+                  }}
+                  className="accent-accent w-4 h-4 cursor-pointer disabled:cursor-not-allowed"
+                />
               <div className="select-none">
                 <span className="text-body font-bold text-offwhite block">{c.title}</span>
-                {c.price && (
                   <div>
                     {(() => {
+                      if (c.price === null || c.price === undefined) {
+                        return (
+                          <span className="text-caption font-mono text-accent block">
+                            Contact for pricing
+                          </span>
+                        );
+                      }
                       const badge = getCourseBadge(c, discountSource);
                       const finalPrice = badge && discountSource === 'individual' 
                         ? Math.round(c.price * (1 - c.discountPercent / 100))
@@ -240,13 +264,13 @@ const Step3 = memo(function Step3({
                       
                       return (
                         <div>
-                          {badge && discountSource === 'individual' && (
+                          {badge && discountSource === 'individual' && c.price > 0 && (
                             <span className="text-caption font-mono text-steelblue/60 line-through block">
                               PKR {c.price.toLocaleString()}
                             </span>
                           )}
                           <span className={`text-caption font-mono ${badge ? 'text-accent' : 'text-steelblue/75'}`}>
-                            PKR {finalPrice.toLocaleString()}
+                            {finalPrice === 0 ? 'Free' : `PKR ${finalPrice.toLocaleString()}`}
                           </span>
                           {badge && (
                             <div className="text-caption font-mono text-accent mt-1">
@@ -257,7 +281,6 @@ const Step3 = memo(function Step3({
                       );
                     })()}
                   </div>
-                )}
               </div>
             </label>
           );
@@ -271,7 +294,7 @@ const Step3 = memo(function Step3({
           <div className="absolute top-0 right-0 w-4 h-4 border-r border-t border-white/5 pointer-events-none rounded-tr" />
           <div className="flex justify-between items-center text-body">
             <span className="text-steelblue">Original Total</span>
-            <span className="font-mono text-offwhite">PKR {subtotal.toLocaleString()}</span>
+            <span className="font-mono text-offwhite">{formatPrice(subtotal)}</span>
           </div>
           {discountPercent > 0 && (
             <>
@@ -286,7 +309,7 @@ const Step3 = memo(function Step3({
           )}
           <div className="border-t border-hairline pt-md flex justify-between items-center text-h3 font-bold text-offwhite">
             <span>Final Payable Amount</span>
-            <span className="font-mono text-accent">PKR {totalPrice.toLocaleString()}</span>
+            <span className="font-mono text-accent">{formatPrice(totalPrice)}</span>
           </div>
         </div>
       )}
@@ -348,7 +371,15 @@ const Step3 = memo(function Step3({
   );
 });
 
-export default function RegistrationForm({ courses, discountTiers = [], comboDeals = [], initialCourse = '', isLocked = false, token = null }) {
+export default function RegistrationForm({
+  courses,
+  discountTiers = [],
+  comboDeals = [],
+  initialCourse = '',
+  isLocked = false,
+  token = null,
+  priceOverride = null
+}) {
   const [selectedCourses, setSelectedCourses] = useState(initialCourse ? [initialCourse] : []);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
@@ -628,8 +659,23 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
   const qualificationOptions = ['Matric', 'Intermediate', "Bachelor's", "Master's", 'PhD', 'Other'];
   const degreeOptions = ['BS', 'BE', 'ADP', 'MS', 'Not currently studying', 'Other'];
 
+  // Map courses to override price for the specific token-based course if needed
+  const mappedCourses = courses.map(c => {
+    if (c.title === initialCourse && priceOverride !== null) {
+      return { ...c, price: priceOverride };
+    }
+    return c;
+  });
+
+  // Filter selectedCourses to strip any unpriced courses (safety net)
+  const cleanSelectedCourses = selectedCourses.filter(title => {
+    const course = mappedCourses.find(c => c.title === title);
+    // Keep it if it has a price or is the token course
+    return course && (course.price !== null || course.title === initialCourse);
+  });
+
   // Pricing calculations using shared engine
-  const selectedCoursesList = courses.filter(c => selectedCourses.includes(c.title));
+  const selectedCoursesList = mappedCourses.filter(c => cleanSelectedCourses.includes(c.title));
   const pricing = calculatePricing(selectedCoursesList, comboDeals, discountTiers);
   
   const {
@@ -727,8 +773,8 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
                   handleChange={handleChange}
                   handleFileChange={handleFileChange}
                   screenshot={screenshot}
-                  courses={courses}
-                  selectedCourses={selectedCourses}
+                  courses={mappedCourses}
+                  selectedCourses={cleanSelectedCourses}
                   setSelectedCourses={setSelectedCourses}
                   discountSource={discountSource}
                   subtotal={subtotal}
@@ -740,6 +786,8 @@ export default function RegistrationForm({ courses, discountTiers = [], comboDea
                   getDiscountSourceLabel={getDiscountSourceLabel}
                   turnstileContainerRef={turnstileContainerRef}
                   siteKey={siteKey}
+                  isLocked={isLocked}
+                  initialCourse={initialCourse}
                 />
               )}
             </AnimatePresence>

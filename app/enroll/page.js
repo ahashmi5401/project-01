@@ -43,7 +43,7 @@ async function getEnrollData() {
       id: c.id,
       title: c.title,
       slug: c.slug,
-      price: c.price || 0,
+      price: c.price === null || c.price === undefined ? null : Number(c.price),
       discountPercent: c.discountPercent || 0,
     }));
 

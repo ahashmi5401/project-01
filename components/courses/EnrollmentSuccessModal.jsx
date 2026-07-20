@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
+import { formatPrice } from '@/lib/price';
 
 export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDetails }) {
   const [mounted, setMounted] = useState(false);
@@ -98,11 +99,11 @@ export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDeta
               </div>
             )}
             
-            {enrollmentDetails?.subtotal && (
+            {enrollmentDetails && (
               <div className="pt-md border-t border-hairline/40">
                 <div className="flex justify-between items-center text-body">
                   <span className="text-steelblue">Subtotal</span>
-                  <span className="font-mono text-offwhite">PKR {enrollmentDetails.subtotal.toLocaleString()}</span>
+                  <span className="font-mono text-offwhite">{formatPrice(enrollmentDetails.subtotal)}</span>
                 </div>
                 {enrollmentDetails.discountPercent > 0 && (
                   <div className="flex justify-between items-center text-accent">
@@ -112,7 +113,7 @@ export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDeta
                 )}
                 <div className="flex justify-between items-center pt-sm font-bold text-h3 text-offwhite">
                   <span>Total</span>
-                  <span className="font-mono text-accent">PKR {enrollmentDetails.totalPrice.toLocaleString()}</span>
+                  <span className="font-mono text-accent">{formatPrice(enrollmentDetails.totalPrice)}</span>
                 </div>
               </div>
             )}

@@ -7,6 +7,7 @@ import DiscountGauge from './DiscountGauge';
 import EnrollmentSuccessModal from './EnrollmentSuccessModal';
 import Toast from '@/components/shared/Toast';
 import { calculatePricing, getCourseBadge, getDiscountSourceLabel } from '@/lib/pricingEngine';
+import { formatPrice } from '@/lib/price';
 
 const EnrollFormContent = React.memo(function EnrollFormContent({ courses, discountTiers, comboDeals }) {
   const searchParams = useSearchParams();
@@ -236,9 +237,9 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
       // 2. Open prefilled WhatsApp chat window
       const adminPhone = process.env.NEXT_PUBLIC_ADMIN_WHATSAPP_PHONE || '923463517689';
       
-      let coursesText = selectedCourses.map(c => `- ${c.title} (PKR ${c.price?.toLocaleString() || 'N/A'})`).join('\n');
+      let coursesText = selectedCourses.map(c => `- ${c.title} (${formatPrice(c.price)})`).join('\n');
       
-      const whatsappText = `Hello Simuflux, my name is ${name.trim()}.\n\nI would like to enroll in the following course(s):\n${coursesText}\n\nSubtotal: PKR ${subtotal.toLocaleString()}\nDiscount: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})\nTotal Price: PKR ${totalPrice.toLocaleString()}\n\nPlease contact me back at ${phone.trim()}.`;
+      const whatsappText = `Hello Simuflux, my name is ${name.trim()}.\n\nI would like to enroll in the following course(s):\n${coursesText}\n\nSubtotal: ${formatPrice(subtotal)}\nDiscount: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})\nTotal Price: ${formatPrice(totalPrice)}\n\nPlease contact me back at ${phone.trim()}.`;
       
       const encodedText = encodeURIComponent(whatsappText);
       const waUrl = `https://wa.me/${adminPhone}?text=${encodedText}`;
@@ -388,13 +389,17 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                               
                               {/* Price Section */}
                               <div className="flex items-baseline gap-2">
-                                {badge && discountSource === 'individual' && course.price > 0 && course.price !== -1 && (
+                                {badge && discountSource === 'individual' && course.price !== null && course.price > 0 && (
                                   <span className="font-mono text-sm text-steelblue/60 line-through">
                                     PKR {course.price.toLocaleString()}
                                   </span>
                                 )}
                                 <span className={`font-mono text-lg font-semibold ${badge ? 'text-accent' : 'text-offwhite'}`}>
-                                  {finalPrice > 0 && finalPrice !== -1 ? `PKR ${finalPrice.toLocaleString()}` : 'Price Inquiry'}
+                                  {finalPrice !== null && finalPrice > 0 
+                                    ? `PKR ${finalPrice.toLocaleString()}` 
+                                    : finalPrice === 0 
+                                      ? 'Free' 
+                                      : 'Price Inquiry'}
                                 </span>
                               </div>
 
@@ -572,7 +577,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                             {course.title}
                           </span>
                           <span className="font-mono text-steelblue/70 whitespace-nowrap">
-                            PKR {course.price?.toLocaleString() || 'N/A'}
+                            {formatPrice(course.price)}
                           </span>
                         </div>
                       ))}
@@ -583,7 +588,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                   <div className="space-y-4 pt-4 border-t border-hairline">
                     <div className="flex justify-between items-center">
                       <span className="font-sans text-sm text-steelblue">Original Total</span>
-                      <span className="font-mono text-sm text-offwhite">PKR {subtotal.toLocaleString()}</span>
+                      <span className="font-mono text-sm text-offwhite">{formatPrice(subtotal)}</span>
                     </div>
                     
                     {discountPercent > 0 && (
@@ -605,7 +610,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                     <div className="flex justify-between items-center pt-4 border-t border-hairline">
                       <span className="font-sans font-semibold text-base text-offwhite">Final Total</span>
                       <span className="font-mono font-bold text-2xl text-offwhite">
-                        PKR {totalPrice.toLocaleString()}
+                        {formatPrice(totalPrice)}
                       </span>
                     </div>
                   </div>

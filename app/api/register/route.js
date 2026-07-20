@@ -7,6 +7,7 @@ import { google } from 'googleapis';
 import { calculatePricing, getDiscountSourceLabel } from '@/lib/pricingEngine';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 import { verifyTurnstileToken } from '@/lib/turnstile';
+import { formatPrice } from '@/lib/price';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -204,6 +205,32 @@ export async function POST(req) {
       );
     }
 
+    // Apply token price override for the matched course slug if applicable
+    const finalTokenLink = tokenLink?.value || tokenLink;
+    if (finalTokenLink && finalTokenLink.negotiatedPrice !== undefined && finalTokenLink.negotiatedPrice !== null) {
+      dbCourses.forEach(c => {
+        if (c.slug === finalTokenLink.courseSlug) {
+          c.price = finalTokenLink.negotiatedPrice;
+        }
+      });
+    }
+
+    // Check if any selected course does not have a price set
+    for (const c of dbCourses) {
+      if (c.price === null || c.price === undefined) {
+        if (token) {
+          await db.collection('registrationLinks').updateOne(
+            { token },
+            { $set: { status: 'pending', usedAt: null } }
+          );
+        }
+        return NextResponse.json(
+          { error: `The price for course "${c.title}" is not set. Please contact support via WhatsApp to obtain a valid registration link.` },
+          { status: 400 }
+        );
+      }
+    }
+
     // Fetch combo deals and discount tiers from MongoDB
     const [dbComboDeals, dbTiers] = await Promise.all([
       db.collection('comboDeals').find({}).toArray(),
@@ -336,15 +363,27 @@ export async function POST(req) {
     if (resend) {
       // A. Student confirmation email
       try {
+        const studentCoursesListText = dbCourses.map(c => `- ${c.title} (${formatPrice(c.price)})`).join('\n');
+        const studentCoursesListHtml = dbCourses.map(c => `<li><strong>${escapeHtml(c.title)}</strong> (${formatPrice(c.price)})</li>`).join('');
         await resend.emails.send({
           from: process.env.RESEND_FROM_EMAIL,
           to: cleanEmail,
           subject: `Registration Received: ${cleanCourses.join(', ')}`,
-          text: `Hello ${name.trim()},\n\nWe have received your registration and payment proof for the following courses: ${cleanCourses.join(', ')}. Our team will verify the payment and contact you shortly to confirm your seat.\n\nThank you for choosing Simuflux Lab.\n\nBest Regards,\nSimuflux Lab Team`,
+          text: `Hello ${name.trim()},\n\nWe have received your registration and payment proof for the following courses:\n${studentCoursesListText}\n\nSubtotal: PKR ${actualSubtotal.toLocaleString()}\nDiscount Applied: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})\nTotal Price: ${formatPrice(totalPrice)}\n\nOur team will verify the payment and contact you shortly to confirm your seat.\n\nThank you for choosing Simuflux Lab.\n\nBest Regards,\nSimuflux Lab Team`,
           html: `
             <h3>Registration Received</h3>
             <p>Hello <strong>${safeName}</strong>,</p>
-            <p>We've received your registration and payment proof for: <strong>${safeCourses}</strong>.</p>
+            <p>We've received your registration and payment proof for:</p>
+            <ul>${studentCoursesListHtml}</ul>
+            
+            <table cellpadding="6" style="border-collapse:collapse;width:100%;max-width:400px;font-family:sans-serif;font-size:13px;border-top:1px solid #ddd;margin-top:15px;margin-bottom:15px;">
+              <tr><td><strong>Subtotal</strong></td><td>PKR ${actualSubtotal.toLocaleString()}</td></tr>
+              ${discountPercent > 0 ? `
+                <tr style="color:#e8622c;"><td><strong>Discount Applied</strong></td><td>${discountPercent}% (-PKR ${discountAmount.toLocaleString()})</td></tr>
+              ` : ''}
+              <tr style="background:#f5f5f5;font-weight:bold;font-size:14px;"><td><strong>Total Price Paid</strong></td><td>${formatPrice(totalPrice)}</td></tr>
+            </table>
+
             <p>Our training coordination team will verify the payment receipt and contact you shortly with class schedule details.</p>
             <br/>
             <p>Best Regards,</p>
@@ -372,10 +411,11 @@ University:            ${university.trim()}
 City:                  ${city.trim()}
 Highest Qualification: ${highestQual.trim()}
 Currently Pursuing:    ${currentlyPursuing.trim()}
-Courses:               ${cleanCourses.join(', ')}
+Courses:
+${dbCourses.map(c => `- ${c.title} (${formatPrice(c.price)})`).join('\n')}
 Subtotal:              PKR ${actualSubtotal.toLocaleString()}
 Discount Applied:      ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})
-Total Price:           PKR ${totalPrice.toLocaleString()}
+Total Price:           ${formatPrice(totalPrice)}
 Reason:                ${reason.trim()}
 Screenshot:            ${screenshotUrl}
 Date:                  ${new Date().toLocaleString()}
@@ -392,10 +432,14 @@ Google Sheets Synced:  ${sheetsSyncSuccess ? 'Yes' : 'NO — check server logs'}
               <tr style="background:#f5f5f5;"><td><strong>City</strong></td><td>${safeCity}</td></tr>
               <tr><td><strong>Highest Qualification</strong></td><td>${safeHighestQual}</td></tr>
               <tr style="background:#f5f5f5;"><td><strong>Currently Pursuing</strong></td><td>${safeCurrentlyPursuing}</td></tr>
-              <tr><td><strong>Courses</strong></td><td>${safeCourses}</td></tr>
+              <tr><td><strong>Courses</strong></td><td>
+                <ul>
+                  ${dbCourses.map(c => `<li><strong>${escapeHtml(c.title)}</strong> (${formatPrice(c.price)})</li>`).join('')}
+                </ul>
+              </td></tr>
               <tr style="background:#f5f5f5;"><td><strong>Subtotal</strong></td><td>PKR ${actualSubtotal.toLocaleString()}</td></tr>
               <tr style="color:#e8622c;"><td><strong>Discount Applied</strong></td><td>${discountPercent}% (-PKR ${discountAmount.toLocaleString()})</td></tr>
-              <tr style="background:#f5f5f5;font-weight:bold;"><td><strong>Total Price</strong></td><td>PKR ${totalPrice.toLocaleString()}</td></tr>
+              <tr style="background:#f5f5f5;font-weight:bold;"><td><strong>Total Price</strong></td><td>${formatPrice(totalPrice)}</td></tr>
               <tr><td><strong>Reason for Enrollment</strong></td><td>${safeReason}</td></tr>
               <tr style="background:#f5f5f5;"><td><strong>Payment Receipt</strong></td><td><a href="${safeScreenshotUrl}" target="_blank">View Screenshot</a></td></tr>
               <tr><td><strong>Sheets Synced</strong></td><td>${sheetsSyncSuccess ? '<span style="color:green">Yes</span>' : '<span style="color:red;font-weight:bold">NO — check logs</span>'}</td></tr>
