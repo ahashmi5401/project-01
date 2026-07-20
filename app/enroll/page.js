@@ -29,6 +29,15 @@ async function getEnrollData() {
       .sort({ createdAt: -1 })
       .toArray();
 
+    // Filter out expired discounts and combo deals
+    const now = new Date();
+    const activeDiscountTiers = discountTiersData.filter(t =>
+      !t.expiryDate || new Date(t.expiryDate) > now
+    );
+    const activeComboDeals = comboDealsData.filter(d =>
+      !d.expiryDate || new Date(d.expiryDate) > now
+    );
+
     const courses = coursesData.map(c => ({
       _id: c._id.toString(),
       id: c.id,
@@ -38,13 +47,13 @@ async function getEnrollData() {
       discountPercent: c.discountPercent || 0,
     }));
 
-    const discountTiers = discountTiersData.map(t => ({
+    const discountTiers = activeDiscountTiers.map(t => ({
       _id: t._id.toString(),
       minCourses: t.minCourses,
       discountPercent: t.discountPercent,
     }));
 
-    const comboDeals = comboDealsData.map(d => ({
+    const comboDeals = activeComboDeals.map(d => ({
       _id: d._id.toString(),
       courseIds: (d.courseIds || []).map(String),
       courseSlugs: d.courseSlugs || [],

@@ -5,12 +5,18 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
-// GET: Fetch all combo deals (Public)
+// GET: Fetch active (non-expired) combo deals (Public)
 export async function GET() {
   try {
     const { db } = await connectToDatabase();
+    const now = new Date();
     const comboDeals = await db.collection('comboDeals')
-      .find({})
+      .find({
+        $or: [
+          { expiryDate: null },
+          { expiryDate: { $gt: now } }
+        ]
+      })
       .sort({ createdAt: -1 })
       .toArray();
 
@@ -82,9 +88,14 @@ export async function POST(req) {
     // Sort courseIds to ensure consistent comparison
     const sortedCourseIds = [...courseIds].sort();
 
-    // Check for duplicate course-set (exact match regardless of order)
+    // Check for duplicate course-set — only block if an active (non-expired) deal exists
+    const now = new Date();
     const existing = await db.collection('comboDeals').findOne({
-      courseIds: { $size: sortedCourseIds.length, $all: sortedCourseIds }
+      courseIds: { $size: sortedCourseIds.length, $all: sortedCourseIds },
+      $or: [
+        { expiryDate: null },
+        { expiryDate: { $gt: now } }
+      ]
     });
     if (existing) {
       return NextResponse.json({ error: 'A combo deal for this exact course combination already exists.' }, { status: 400 });

@@ -20,18 +20,27 @@ async function getRegistrationData() {
     const tiersData = await db.collection('discountTiers').find({}).sort({ minCourses: 1 }).toArray();
     const comboDealsData = await db.collection('comboDeals').find({}).sort({ createdAt: -1 }).toArray();
 
+    // Filter out expired discounts and combo deals
+    const now = new Date();
+    const activeTiers = tiersData.filter(t =>
+      !t.expiryDate || new Date(t.expiryDate) > now
+    );
+    const activeComboDeals = comboDealsData.filter(d =>
+      !d.expiryDate || new Date(d.expiryDate) > now
+    );
+
     const courses = coursesData.map(c => ({
       ...c,
       _id: c._id.toString(),
     }));
 
-    const discountTiers = tiersData.map(t => ({
+    const discountTiers = activeTiers.map(t => ({
       _id: t._id.toString(),
       minCourses: t.minCourses,
       discountPercent: t.discountPercent,
     }));
 
-    const comboDeals = comboDealsData.map(d => ({
+    const comboDeals = activeComboDeals.map(d => ({
       _id: d._id.toString(),
       courseIds: (d.courseIds || []).map(String),
       courseSlugs: d.courseSlugs || [],

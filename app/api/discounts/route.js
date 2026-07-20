@@ -4,12 +4,18 @@ import { authOptions } from '../auth/[...nextauth]/route';
 import { connectToDatabase } from '@/lib/mongodb';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
-// GET: Fetch all discount tiers (Public)
+// GET: Fetch active (non-expired) discount tiers (Public)
 export async function GET() {
   try {
     const { db } = await connectToDatabase();
+    const now = new Date();
     const tiers = await db.collection('discountTiers')
-      .find({})
+      .find({
+        $or: [
+          { expiryDate: null },
+          { expiryDate: { $gt: now } }
+        ]
+      })
       .sort({ minCourses: 1 })
       .toArray();
 

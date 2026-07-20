@@ -59,22 +59,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* CFD Facebook Video Placeholder comment */}
-      {/* TODO: client has a real CFD simulation video on their Facebook page — request the original file and drop it in /public/videos/cfd-demo.mp4, then uncomment this block */}
-      {/* 
-      <div className="absolute bottom-6 left-6 hidden md:block">
-        <div className="w-[180px] border border-hairline bg-navy/60 p-2 font-mono text-[9px] text-steelblue flex flex-col gap-1.5">
-          <div className="flex items-center justify-between border-b border-hairline pb-1 text-[8px] uppercase tracking-wider text-accent font-bold">
-            <span>Video Feed</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-          </div>
-          <p className="leading-tight">Simulation video clip to be loaded here.</p>
-          <div className="aspect-video bg-white/5 border border-dashed border-white/20 flex items-center justify-center">
-            <span className="opacity-40">cfd-demo.mp4</span>
-          </div>
-        </div>
-      </div>
-      */}
     </section>
   );
 }

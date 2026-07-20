@@ -21,10 +21,10 @@ export default async function sitemap() {
     ]);
 
     const serviceEntries = services.map((service) => ({
-      url: `${BASE_URL}/consultancy?service=${service.slug}`,
+      url: `${BASE_URL}/consultancy/${service.slug}`,
       lastModified: new Date(),
       changeFrequency: 'monthly',
-      priority: 0.6,
+      priority: 0.7,
     }));
 
     const courseEntries = courses.map((course) => ({

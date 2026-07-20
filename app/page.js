@@ -93,7 +93,7 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "Simuflux Lab",
-    "image": "https://simufluxlab.com/images/logo.png", // fallback placeholder
+    "image": "https://simufluxlab.com/logo.webp",
     "@id": "https://simufluxlab.com/#local-business",
     "url": "https://simufluxlab.com",
     "telephone": "+92 346 3517689", // TODO: Replace with client's actual phone number
