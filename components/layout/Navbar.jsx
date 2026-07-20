@@ -48,23 +48,25 @@ export default function Navbar() {
     }, 150);
   };
 
+  //bg-navy
   return (
-    <nav className="bg-navy border-b border-hairline">
+    <nav className="bg-white border-b border-hairline">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="group flex items-center select-none">
           <Image
-            src="/logo.webp"
+            src="/logo.svg"
             alt="Simuflux Lab"
             width={64}
-            height={64}
-            className="h-10 sm:h-12 lg:h-16 w-auto transition-opacity group-hover:opacity-90"
+            height={60}
+            unoptimized
+            className="h-15 sm:h-12 lg:h-20 w-auto transition-opacity group-hover:opacity-90"
           />
         </Link>
 
         {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center gap-lg font-sans text-label uppercase tracking-wider font-semibold">
-          <div className="flex items-center gap-sm bg-white/5 border border-hairline rounded-full px-sm py-sm">
+        <div className="hidden md:flex items-center  gap-lg font-sans text-label uppercase tracking-wider font-semibold">
+          <div className="flex items-center gap-sm bg-navy border border-hairline rounded-full px-sm py-sm">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname?.startsWith(link.href));
 
@@ -170,7 +172,7 @@ export default function Navbar() {
           aria-label="Toggle Navigation Menu"
           aria-expanded={isOpen}
         >
-          <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+          <svg className="w-6 h-6 fill-current text-black" viewBox="0 0 24 24">
             {isOpen ? (
               <path fillRule="evenodd" clipRule="evenodd" d="M18.278 16.864a1 1 0 0 1-1.414 1.414l-4.829-4.828-4.828 4.828a1 1 0 0 1-1.414-1.414l4.828-4.829-4.828-4.828a1 1 0 0 1 1.414-1.414l4.829 4.828 4.828-4.828a1 1 0 1 1 1.414 1.414l-4.828 4.828 4.828 4.9z" />
             ) : (
