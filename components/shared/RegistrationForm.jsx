@@ -197,7 +197,8 @@ const Step3 = memo(function Step3({
   turnstileContainerRef,
   siteKey,
   isLocked,
-  initialCourse
+  initialCourse,
+  lockedSlugs
 }) {
   return (
     <motion.div
@@ -214,9 +215,10 @@ const Step3 = memo(function Step3({
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-md">
         {courses.map((c) => {
           const isChecked = selectedCourses.includes(c.title);
-          const isLockedCourse = isLocked && c.title === initialCourse;
-            const isInquiryCourse = c.price === null && c.title !== initialCourse;
-            const isDisabled = isLockedCourse || isInquiryCourse;
+          // A course is locked if its slug appears in lockedSlugs OR if it's the primary locked course
+          const isLockedCourse = (lockedSlugs && lockedSlugs.includes(c.slug)) || (isLocked && c.title === initialCourse);
+          const isInquiryCourse = c.price === null && !isLockedCourse;
+          const isDisabled = isLockedCourse || isInquiryCourse;
             return (
               <label 
                 key={c._id || c.id} 
@@ -378,9 +380,22 @@ export default function RegistrationForm({
   initialCourse = '',
   isLocked = false,
   token = null,
-  priceOverride = null
+  priceOverridesMap = {},
+  lockedSlugs = []
 }) {
-  const [selectedCourses, setSelectedCourses] = useState(initialCourse ? [initialCourse] : []);
+  // Derive initial selected courses from lockedSlugs (all token courses pre-checked) + initialCourse
+  const getInitialSelected = () => {
+    const titles = new Set();
+    if (initialCourse) titles.add(initialCourse);
+    if (lockedSlugs && lockedSlugs.length > 0) {
+      lockedSlugs.forEach(slug => {
+        const course = courses.find(c => c.slug === slug);
+        if (course) titles.add(course.title);
+      });
+    }
+    return Array.from(titles);
+  };
+  const [selectedCourses, setSelectedCourses] = useState(getInitialSelected);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
 
@@ -659,19 +674,19 @@ export default function RegistrationForm({
   const qualificationOptions = ['Matric', 'Intermediate', "Bachelor's", "Master's", 'PhD', 'Other'];
   const degreeOptions = ['BS', 'BE', 'ADP', 'MS', 'Not currently studying', 'Other'];
 
-  // Map courses to override price for the specific token-based course if needed
+  // Map courses to apply price overrides from the priceOverridesMap
   const mappedCourses = courses.map(c => {
-    if (c.title === initialCourse && priceOverride !== null) {
-      return { ...c, price: priceOverride };
+    if (priceOverridesMap && priceOverridesMap[c.slug] !== undefined && priceOverridesMap[c.slug] !== null) {
+      return { ...c, price: priceOverridesMap[c.slug] };
     }
     return c;
   });
 
-  // Filter selectedCourses to strip any unpriced courses (safety net)
+  // Filter selectedCourses to strip any unpriced courses (safety net — keep token courses)
   const cleanSelectedCourses = selectedCourses.filter(title => {
     const course = mappedCourses.find(c => c.title === title);
-    // Keep it if it has a price or is the token course
-    return course && (course.price !== null || course.title === initialCourse);
+    // Keep it if it has a price or if its slug is in lockedSlugs
+    return course && (course.price !== null || (lockedSlugs && lockedSlugs.includes(course.slug)) || course.title === initialCourse);
   });
 
   // Pricing calculations using shared engine
@@ -788,6 +803,7 @@ export default function RegistrationForm({
                   siteKey={siteKey}
                   isLocked={isLocked}
                   initialCourse={initialCourse}
+                  lockedSlugs={lockedSlugs}
                 />
               )}
             </AnimatePresence>

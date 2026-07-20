@@ -205,12 +205,27 @@ export async function POST(req) {
       );
     }
 
-    // Apply token price override for the matched course slug if applicable
+    // Apply token price overrides from the token's courses array
     const finalTokenLink = tokenLink?.value || tokenLink;
-    if (finalTokenLink && finalTokenLink.negotiatedPrice !== undefined && finalTokenLink.negotiatedPrice !== null) {
+    if (finalTokenLink) {
+      // Build a slug->negotiatedPrice map from the token's courses array (new schema)
+      // with fallback to old single-course format for backward compatibility
+      const tokenCoursesArr = finalTokenLink.courses
+        ? finalTokenLink.courses
+        : (finalTokenLink.courseSlug
+            ? [{ courseSlug: finalTokenLink.courseSlug, negotiatedPrice: finalTokenLink.negotiatedPrice ?? null }]
+            : []);
+      const tokenPriceMap = {};
+      for (const tc of tokenCoursesArr) {
+        const slug = tc.courseSlug || tc.slug;
+        if (slug && tc.negotiatedPrice !== null && tc.negotiatedPrice !== undefined) {
+          tokenPriceMap[slug] = tc.negotiatedPrice;
+        }
+      }
+      // Apply negotiated prices to matched dbCourses
       dbCourses.forEach(c => {
-        if (c.slug === finalTokenLink.courseSlug) {
-          c.price = finalTokenLink.negotiatedPrice;
+        if (tokenPriceMap[c.slug] !== undefined) {
+          c.price = tokenPriceMap[c.slug];
         }
       });
     }

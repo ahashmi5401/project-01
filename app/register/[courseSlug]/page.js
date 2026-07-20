@@ -55,12 +55,24 @@ async function getRegistrationData() {
   }
 }
 
-// Validate registration token
+// Validate registration token — supports new array-based tokens and old single-course tokens
 async function validateToken(token, courseSlug) {
   try {
     const { db } = await connectToDatabase();
-    const link = await db.collection('registrationLinks').findOne({ token, courseSlug });
-    return link;
+    // Find by token only; slug membership is validated below
+    const link = await db.collection('registrationLinks').findOne({ token });
+    if (!link) return null;
+
+    // Normalize courses array (support old schema too)
+    const tokenCourses = link.courses
+      ? link.courses
+      : (link.courseSlug ? [{ courseSlug: link.courseSlug, negotiatedPrice: link.negotiatedPrice ?? null }] : []);
+
+    // Check if the current page slug is included in the token's course list
+    const matchesSlug = tokenCourses.some(c => (c.courseSlug || c.slug) === courseSlug);
+    if (!matchesSlug) return null;
+
+    return { ...link, _tokenCourses: tokenCourses };
   } catch (error) {
     console.error('Failed to validate token:', error);
     return null;
@@ -82,16 +94,26 @@ export default async function RegisterCoursePage({ params, searchParams }) {
   const token = searchParams.token;
   let tokenStatus = null;
   let isLocked = false;
-  let priceOverride = null;
+  // priceOverridesMap: courseSlug -> negotiatedPrice (for all token courses)
+  let priceOverridesMap = null;
 
   if (token) {
     const link = await validateToken(token, params.courseSlug);
     if (link) {
       tokenStatus = link.status;
-      isLocked = link.status === 'used';
-      priceOverride = link.negotiatedPrice !== undefined ? link.negotiatedPrice : null;
+      // Build priceOverridesMap from all token courses
+      priceOverridesMap = {};
+      for (const tc of (link._tokenCourses || [])) {
+        const slug = tc.courseSlug || tc.slug;
+        if (slug && tc.negotiatedPrice !== null && tc.negotiatedPrice !== undefined) {
+          priceOverridesMap[slug] = tc.negotiatedPrice;
+        }
+      }
     }
   }
+
+  // priceOverride for the current course (used for Price Inquiry gate check)
+  const priceOverride = priceOverridesMap ? (priceOverridesMap[params.courseSlug] ?? null) : null;
 
   // Handle courses with no fixed price (price is null, requires Price Inquiry/Negotiation)
   if (matchedCourse.price === null) {
@@ -136,6 +158,13 @@ export default async function RegisterCoursePage({ params, searchParams }) {
     // For price inquiry courses, if token is valid, lock the course input so user cannot deselect it
     isLocked = true;
   }
+
+  // Build locked slugs list from the token (all token courses are pre-selected and locked)
+  const lockedSlugs = priceOverridesMap ? Object.keys(priceOverridesMap).filter(s => priceOverridesMap[s] !== null && priceOverridesMap[s] !== undefined) : (isLocked && matchedCourse ? [matchedCourse.slug] : []);
+  // If token is pending, lock all courses that are part of the token
+  const allTokenSlugs = priceOverridesMap && tokenStatus === 'pending'
+    ? (Object.keys(priceOverridesMap).length > 0 ? Object.keys(priceOverridesMap) : (matchedCourse ? [matchedCourse.slug] : []))
+    : (isLocked && matchedCourse ? [matchedCourse.slug] : []);
 
   // Show closed state if token is used
   if (tokenStatus === 'used') {
@@ -187,7 +216,8 @@ export default async function RegisterCoursePage({ params, searchParams }) {
           initialCourse={matchedCourse.title}
           isLocked={isLocked}
           token={token}
-          priceOverride={priceOverride}
+          priceOverridesMap={priceOverridesMap || {}}
+          lockedSlugs={allTokenSlugs}
         />
       </div>
     </section>
