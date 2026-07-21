@@ -8,9 +8,17 @@ export async function POST(req) {
     const { email, password, turnstileToken } = body;
 
     // Validate required fields
-    if (!email || !password) {
+    if (!email || !password || !turnstileToken) {
       return NextResponse.json(
         { error: 'Please enter both email and password.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate input lengths to prevent oversized payloads
+    if (email.length > 254 || password.length > 128) {
+      return NextResponse.json(
+        { error: 'Invalid email or password.' },
         { status: 400 }
       );
     }
