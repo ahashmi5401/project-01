@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -11,6 +11,9 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileContainerRef = useRef(null);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -20,10 +23,55 @@ function LoginForm() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (!siteKey) return;
+
+    let turnstileWidgetId = null;
+
+    const initializeTurnstile = () => {
+      if (window.turnstile && turnstileContainerRef.current && turnstileWidgetId === null) {
+        try {
+          turnstileWidgetId = window.turnstile.render(turnstileContainerRef.current, {
+            sitekey: siteKey,
+            callback: (token) => {
+              setTurnstileToken(token);
+              setError((prev) => prev?.includes('CAPTCHA') ? null : prev);
+            },
+            'expired-callback': () => {
+              setTurnstileToken('');
+            },
+            'error-callback': () => {
+              setTurnstileToken('');
+            },
+          });
+        } catch (e) {
+          console.error('Turnstile render error:', e);
+        }
+      }
+    };
+
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          initializeTurnstile();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [siteKey]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !password) {
       setError('Please fill in all fields.');
+      return;
+    }
+
+    if (siteKey && !turnstileToken) {
+      setError('Please complete the CAPTCHA verification.');
       return;
     }
 
@@ -32,27 +80,56 @@ function LoginForm() {
     setSuccess(null);
 
     try {
-      const res = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
+      // Call custom login API with Turnstile and rate limiting
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          turnstileToken,
+        }),
       });
 
-      if (res?.error) {
-        setError(res.error || 'Invalid credentials.');
-        setLoading(false);
-      } else {
-        // Fetch the session dynamically to determine user role
-        const sessionRes = await fetch('/api/auth/session');
-        const session = await sessionRes.json();
-        const role = session?.user?.role || 'user';
+      const data = await response.json();
 
-        if (role === 'admin') {
-          router.push('/admin');
-        } else {
-          router.push('/dashboard');
+      if (!response.ok) {
+        setError(data.error || 'Invalid credentials.');
+        setLoading(false);
+        setTurnstileToken('');
+        if (window.turnstile) {
+          window.turnstile.reset();
         }
-        router.refresh();
+      } else {
+        // If custom API validation passed, proceed with NextAuth signIn
+        const res = await signIn('credentials', {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (res?.error) {
+          setError(res.error || 'Invalid credentials.');
+          setLoading(false);
+          setTurnstileToken('');
+          if (window.turnstile) {
+            window.turnstile.reset();
+          }
+        } else {
+          // Fetch the session dynamically to determine user role
+          const sessionRes = await fetch('/api/auth/session');
+          const session = await sessionRes.json();
+          const role = session?.user?.role || 'user';
+
+          if (role === 'admin') {
+            router.push('/admin');
+          } else {
+            router.push('/dashboard');
+          }
+          router.refresh();
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
@@ -117,6 +194,13 @@ function LoginForm() {
           {success && (
             <div className="p-lg border border-green-500/30 bg-green-500/5 text-green-400 font-mono text-label shadow-elevation-sm rounded">
               {success}
+            </div>
+          )}
+
+          {/* Turnstile widget */}
+          {siteKey && (
+            <div className="py-sm flex justify-start">
+              <div ref={turnstileContainerRef} />
             </div>
           )}
 

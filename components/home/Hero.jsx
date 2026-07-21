@@ -3,18 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import WhatsAppButton from '@/components/shared/WhatsAppButton';
 import SectionEyebrow from '@/components/shared/SectionEyebrow';
 
 export default function Hero() {
-  const teethCount = 18;
-  const cx = 200;
-  const cy = 200;
-  const rOuter = 100;
-  const toothWidth = 22;
-  const toothHeight = 16;
-
   return (
     <section className="relative min-h-screen pt-20 pb-3xl sm:pt-24 flex items-center overflow-hidden border-b border-hairline">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-2xl lg:gap-3xl items-center relative z-10 w-full">

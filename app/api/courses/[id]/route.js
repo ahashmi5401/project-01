@@ -4,6 +4,7 @@ import { authOptions } from '../../auth/[...nextauth]/route';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { normalizePrice } from '@/lib/price';
 
 // Helper to generate a URL-safe slug from title
 function generateSlug(title) {
@@ -51,6 +52,13 @@ export async function PUT(req, { params }) {
       return NextResponse.json({ error: 'Discount percent must be between 0 and 100.' }, { status: 400 });
     }
 
+    let normalizedPrice;
+    try {
+      normalizedPrice = normalizePrice(price);
+    } catch (priceErr) {
+      return NextResponse.json({ error: priceErr.message }, { status: 400 });
+    }
+
     const { db } = await connectToDatabase();
     
     // Check if the course exists
@@ -74,7 +82,7 @@ export async function PUT(req, { params }) {
       title: title.trim(),
       slug,
       description: description.trim(),
-      price: price ? Number(price) : 0,
+      price: normalizedPrice,
       discountPercent: discountPercent !== undefined ? Number(discountPercent) : (course.discountPercent || 0),
       points: Array.isArray(points) ? points.map(p => p.trim()).filter(Boolean) : [],
       image: image || course.image,

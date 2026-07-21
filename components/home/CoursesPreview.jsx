@@ -78,7 +78,7 @@ export default function CoursesPreview({ courses = [] }) {
               title={course.title}
               description={course.description}
               duration={course.duration}
-              price={course.price || 0}
+              price={course.price}
               discountPercent={course.discountPercent || 0}
               slug={course.slug}
             />

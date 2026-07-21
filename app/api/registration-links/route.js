@@ -36,24 +36,76 @@ export async function POST(req) {
     if (auth.error) return auth.error;
 
     const body = await req.json();
-    const { courseSlug } = body;
+    let coursesInput = [];
 
-    if (!courseSlug || typeof courseSlug !== 'string') {
+    if (body.courses && Array.isArray(body.courses)) {
+      coursesInput = body.courses;
+    } else if (body.courseSlug) {
+      coursesInput = [{
+        courseSlug: body.courseSlug,
+        negotiatedPrice: body.negotiatedPrice !== undefined ? body.negotiatedPrice : null
+      }];
+    }
+
+    if (coursesInput.length === 0) {
       return NextResponse.json(
-        { error: 'courseSlug is required and must be a string.' },
+        { error: 'At least one course is required.' },
         { status: 400 }
       );
     }
 
     const { db } = await connectToDatabase();
+    const coursesToSave = [];
 
-    // Verify the course exists
-    const course = await db.collection('courses').findOne({ slug: courseSlug });
-    if (!course) {
-      return NextResponse.json(
-        { error: 'Course not found.' },
-        { status: 404 }
-      );
+    // Validate each course in the list
+    for (const item of coursesInput) {
+      const { courseSlug, negotiatedPrice } = item;
+      if (!courseSlug || typeof courseSlug !== 'string') {
+        return NextResponse.json(
+          { error: 'courseSlug is required for each course and must be a string.' },
+          { status: 400 }
+        );
+      }
+
+      const course = await db.collection('courses').findOne({ slug: courseSlug });
+      if (!course) {
+        return NextResponse.json(
+          { error: `Course "${courseSlug}" not found.` },
+          { status: 404 }
+        );
+      }
+
+      let finalNegotiatedPrice = null;
+      if (course.price === null) {
+        if (negotiatedPrice === undefined || negotiatedPrice === null || negotiatedPrice === '') {
+          return NextResponse.json(
+            { error: `negotiatedPrice is required for Price Inquiry course "${course.title}".` },
+            { status: 400 }
+          );
+        }
+        finalNegotiatedPrice = Number(negotiatedPrice);
+        if (isNaN(finalNegotiatedPrice) || finalNegotiatedPrice < 0) {
+          return NextResponse.json(
+            { error: `negotiatedPrice for "${course.title}" must be a non-negative number.` },
+            { status: 400 }
+          );
+        }
+      } else {
+        if (negotiatedPrice !== undefined && negotiatedPrice !== null && negotiatedPrice !== '') {
+          finalNegotiatedPrice = Number(negotiatedPrice);
+          if (isNaN(finalNegotiatedPrice) || finalNegotiatedPrice < 0) {
+            return NextResponse.json(
+              { error: `negotiatedPrice for "${course.title}" must be a non-negative number.` },
+              { status: 400 }
+            );
+          }
+        }
+      }
+
+      coursesToSave.push({
+        courseSlug,
+        negotiatedPrice: finalNegotiatedPrice
+      });
     }
 
     // Generate unique token
@@ -62,7 +114,7 @@ export async function POST(req) {
     // Create registration link document
     const registrationLink = {
       token,
-      courseSlug,
+      courses: coursesToSave,
       status: 'pending',
       createdAt: new Date(),
       usedAt: null,
@@ -73,7 +125,7 @@ export async function POST(req) {
     return NextResponse.json({
       success: true,
       token,
-      registrationUrl: `/register/${courseSlug}?token=${token}`,
+      registrationUrl: `/register/${coursesToSave[0].courseSlug}?token=${token}`,
     });
   } catch (error) {
     console.error('Error generating registration link:', error);
@@ -109,7 +161,10 @@ export async function GET(req) {
         success: true,
         token: link.token,
         status: link.status,
-        courseSlug: link.courseSlug,
+        courses: link.courses || [{
+          courseSlug: link.courseSlug,
+          negotiatedPrice: link.negotiatedPrice !== undefined ? link.negotiatedPrice : null
+        }],
         createdAt: link.createdAt,
         usedAt: link.usedAt,
       });
@@ -123,7 +178,12 @@ export async function GET(req) {
       const { db } = await connectToDatabase();
 
       const links = await db.collection('registrationLinks')
-        .find({ courseSlug })
+        .find({
+          $or: [
+            { courseSlug },
+            { "courses.courseSlug": courseSlug }
+          ]
+        })
         .sort({ createdAt: -1 })
         .limit(50)
         .toArray();
@@ -133,16 +193,40 @@ export async function GET(req) {
         links: links.map(link => ({
           token: link.token,
           status: link.status,
+          courses: link.courses || [{
+            courseSlug: link.courseSlug,
+            negotiatedPrice: link.negotiatedPrice !== undefined ? link.negotiatedPrice : null
+          }],
           createdAt: link.createdAt,
           usedAt: link.usedAt,
         })),
       });
     }
 
-    return NextResponse.json(
-      { error: 'Either token or courseSlug query parameter is required.' },
-      { status: 400 }
-    );
+    // If no specific param is provided, return all links for general admin history management
+    const auth = await requireAdminSession(req);
+    if (auth.error) return auth.error;
+
+    const { db } = await connectToDatabase();
+    const links = await db.collection('registrationLinks')
+      .find({})
+      .sort({ createdAt: -1 })
+      .limit(100)
+      .toArray();
+
+    return NextResponse.json({
+      success: true,
+      links: links.map(link => ({
+        token: link.token,
+        status: link.status,
+        courses: link.courses || [{
+          courseSlug: link.courseSlug,
+          negotiatedPrice: link.negotiatedPrice !== undefined ? link.negotiatedPrice : null
+        }],
+        createdAt: link.createdAt,
+        usedAt: link.usedAt,
+      })),
+    });
   } catch (error) {
     console.error('Error in registration links API:', error);
     return NextResponse.json(

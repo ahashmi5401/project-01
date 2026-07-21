@@ -30,7 +30,7 @@ export default function ContactPage() {
           <div className="border-b border-hairline pb-xl mb-4xl">
             <SectionEyebrow text="Get In Touch" />
             <h1 className="font-sans font-bold text-h2 sm:text-h1 lg:text-display text-offwhite uppercase tracking-tight">
-              Contact Simuflux
+              Contact Simuflux Lab 
             </h1>
           </div>
         </AnimatedReveal>
@@ -59,7 +59,7 @@ export default function ContactPage() {
                 </div>
                 <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ ENVELOPE PARAMETERS ]</span>
-                  <span className="text-steelblue">Email: info@Simufluxlab.com</span>
+                  <span className="text-steelblue">Email: info@simufluxlab.com</span>
                 </div>
                 <div className="space-y-sm">
                   <span className="text-accent block uppercase tracking-wider">[ PHYSICAL STATION ]</span>

@@ -4,6 +4,7 @@ import { authOptions } from '../auth/[...nextauth]/route';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { normalizePrice } from '@/lib/price';
 
 // Helper to generate a URL-safe slug from title
 function generateSlug(title) {
@@ -62,6 +63,13 @@ export async function POST(req) {
       return NextResponse.json({ error: 'Discount percent must be between 0 and 100.' }, { status: 400 });
     }
 
+    let normalizedPrice;
+    try {
+      normalizedPrice = normalizePrice(price);
+    } catch (priceErr) {
+      return NextResponse.json({ error: priceErr.message }, { status: 400 });
+    }
+
     const { db } = await connectToDatabase();
 
     // Determine custom numeric ID or generate next sequentially
@@ -93,7 +101,7 @@ export async function POST(req) {
       slug,
       title: title.trim(),
       description: description.trim(),
-      price: price ? Number(price) : 0,
+      price: normalizedPrice,
       discountPercent: discountPercent !== undefined ? Number(discountPercent) : 0,
       points: Array.isArray(points) ? points.map(p => p.trim()).filter(Boolean) : [],
       image: image || '/images/courses/placeholder.jpg',

@@ -70,6 +70,10 @@ export default async function CoursesPage() {
       a: "Contact our team on WhatsApp to receive the current account or JazzCash details. Once you transfer the registration fee, upload the payment screenshot in our Registration Form below to reserve your seat instantly."
     },
     {
+      q: "What does 'Price Inquiry' mean?",
+      a: "Price Inquiry means the course fee is not fixed and varies based on your requirements, background, or customization needs. For these courses, please contact our team via WhatsApp to discuss pricing tailored to your specific situation."
+    },
+    {
       q: "Is training done online or in-person?",
       a: "All Simuflux training is delivered fully online. Our live virtual sessions are conducted via video conferencing, making our courses accessible to engineering students and working professionals anywhere in the world — no in-person attendance required."
     }

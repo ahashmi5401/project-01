@@ -200,6 +200,46 @@ const pass12 = result12.discountSource === 'tier'
   && result12.totalPrice === 21600;
 console.log('✓ PASS:', pass12);
 
+// Test Case 13: Null-price course alone (Price Inquiry state)
+console.log('\n=== Test Case 13: Null-price course alone ===');
+const nullCourse = { _id: '5', title: 'Special Consulting', slug: 'special-consulting', price: null, discountPercent: 0 };
+const selected13 = [nullCourse];
+const result13 = calculatePricing(selected13, comboDeals, discountTiers);
+console.log('Selected:', selected13.map(c => c.title));
+console.log('Discount Source:', result13.discountSource);
+console.log('Original Total:', result13.subtotal, '(expected: null)');
+console.log('Final Price:', result13.totalPrice, '(expected: null)');
+console.log('Expected: No promotion, subtotal and totalPrice should be null for null price');
+const pass13 = result13.discountSource === 'none' && result13.subtotal === null && result13.totalPrice === null;
+console.log('✓ PASS:', pass13);
+
+// Test Case 14: Null-price + fixed-price in combo package
+console.log('\n=== Test Case 14: Null-price + fixed-price in combo ===');
+const fixedCourse = courses.find(c => c._id === '2'); // ANSYS Fluent (15000)
+const selected14 = [nullCourse, fixedCourse];
+const comboDealsWithNull = [
+  { courseIds: ['5', '2'], discountPercent: 50, label: 'Custom Consulting Combo' }
+];
+const result14 = calculatePricing(selected14, comboDealsWithNull, discountTiers);
+console.log('Original Total:', result14.subtotal, '(expected: null)');
+console.log('Final Price:', result14.totalPrice, '(expected: null)');
+console.log('Discount Source:', result14.discountSource, '(expected: tier, because 2 courses total selected)');
+console.log('Expected: Subtotal and totalPrice should be null, but discountSource should be tier');
+const pass14 = result14.discountSource === 'tier' && result14.subtotal === null && result14.totalPrice === null;
+console.log('✓ PASS:', pass14);
+
+// Test Case 15: Mixed cart subtotalDisplay and totalPriceDisplay formatting
+console.log('\n=== Test Case 15: Mixed cart display strings ===');
+const result15 = calculatePricing([nullCourse, fixedCourse], comboDeals, discountTiers);
+console.log('Subtotal Display:', result15.subtotalDisplay);
+console.log('Total Price Display:', result15.totalPriceDisplay);
+console.log('Discount Source:', result15.discountSource);
+console.log('Expected: Subtotal and Total display strings formatted with "+ Price Inquiry" suffix');
+const pass15 = result15.subtotalDisplay === 'PKR 15,000 + Price Inquiry' &&
+               result15.totalPriceDisplay === 'PKR 13,500 + Price Inquiry' &&
+               result15.discountSource === 'tier';
+console.log('✓ PASS:', pass15);
+
 // Test discount source label function
 console.log('\n=== Test Discount Source Label Function ===');
 console.log('Combo label:', getDiscountSourceLabel('combo'));

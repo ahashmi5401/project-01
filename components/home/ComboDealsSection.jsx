@@ -51,10 +51,13 @@ export default function ComboDealsSection({ comboDeals = [], courses = [] }) {
             );
 
             // Calculate pricing
-            const originalPrice = dealCourses.reduce((sum, c) => sum + (c.price || 0), 0);
-            const finalPrice = originalPrice > 0 
-              ? Math.round(originalPrice * (1 - deal.discountPercent / 100))
-              : 0;
+            const hasInquiryCourse = dealCourses.some(c => c.price === null || c.price === undefined);
+            const knownTotal = dealCourses.reduce(
+              (sum, c) => sum + (c.price !== null && c.price !== undefined ? c.price : 0), 0
+            );
+            const finalPrice = !hasInquiryCourse && knownTotal > 0
+              ? Math.round(knownTotal * (1 - deal.discountPercent / 100))
+              : null;
 
             const courseCount = deal.courseIds?.length || deal.courseSlugs?.length || 0;
             const courseBadgeText = `${courseCount} Course Combo`;
@@ -144,19 +147,17 @@ export default function ComboDealsSection({ comboDeals = [], courses = [] }) {
                     {/* Pricing & CTA */}
                     <div className="flex items-center justify-between pt-sm border-t border-white/10 mt-auto gap-sm">
                       <div>
-                        {originalPrice > 0 && (
+                        {knownTotal > 0 && (
                           <span className="font-sans text-caption text-steelblue/50 line-through block">
-                            PKR {originalPrice.toLocaleString()}
+                            PKR {knownTotal.toLocaleString()}{hasInquiryCourse ? ' + Price Inquiry' : ''}
                           </span>
                         )}
-                        {finalPrice > 0 ? (
-                          <span className="font-sans text-body font-bold text-accent">
-                            PKR {finalPrice.toLocaleString()}
-                          </span>
+                        {hasInquiryCourse ? (
+                          <span className="font-sans text-body font-bold text-accent">Price Inquiry</span>
+                        ) : finalPrice > 0 ? (
+                          <span className="font-sans text-body font-bold text-accent">PKR {finalPrice.toLocaleString()}</span>
                         ) : (
-                          <span className="font-sans text-body font-bold text-accent">
-                            Custom Pricing
-                          </span>
+                          <span className="font-sans text-body font-bold text-accent">Custom Pricing</span>
                         )}
                       </div>
 

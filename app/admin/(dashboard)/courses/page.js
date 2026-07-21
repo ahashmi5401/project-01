@@ -65,10 +65,19 @@ export default function ManageCoursesPage() {
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(null);
   
-  // Toast notifications for link copying
+  // Toast notifications
   const [toast, setToast] = useState(null);
-  const [registrationLinks, setRegistrationLinks] = useState({});
-  const [generatingLink, setGeneratingLink] = useState(null);
+
+  // ─── Link Generator Modal State ───────────────────────────────────────────
+  const [showLinkModal, setShowLinkModal] = useState(false);
+  const [modalSelectedSlugs, setModalSelectedSlugs] = useState([]);
+  const [modalNegotiatedPrices, setModalNegotiatedPrices] = useState({});
+  const [modalGenerating, setModalGenerating] = useState(false);
+  const [modalGeneratedUrl, setModalGeneratedUrl] = useState(null);
+  const [modalError, setModalError] = useState(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [allLinks, setAllLinks] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   useEffect(() => {
     if (toast) {
@@ -77,55 +86,99 @@ export default function ManageCoursesPage() {
     }
   }, [toast]);
 
-  const handleGenerateLink = async (slug) => {
-    setGeneratingLink(slug);
+  // Fetch all registration links for the history panel
+  const fetchAllLinks = async () => {
+    setLoadingHistory(true);
     try {
+      const res = await fetch('/api/registration-links');
+      const data = await res.json();
+      if (res.ok) setAllLinks(data.links || []);
+    } catch (err) {
+      // ignore
+    } finally {
+      setLoadingHistory(false);
+    }
+  };
+
+  const openLinkModal = () => {
+    setModalSelectedSlugs([]);
+    setModalNegotiatedPrices({});
+    setModalGeneratedUrl(null);
+    setModalError(null);
+    setShowHistory(false);
+    setShowLinkModal(true);
+  };
+
+  const closeLinkModal = () => {
+    setShowLinkModal(false);
+    setModalGeneratedUrl(null);
+    setModalError(null);
+  };
+
+  const toggleModalCourse = (slug) => {
+    setModalSelectedSlugs(prev =>
+      prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug]
+    );
+    setModalGeneratedUrl(null);
+    setModalError(null);
+  };
+
+  const handleModalGenerateLink = async () => {
+    setModalError(null);
+    setModalGeneratedUrl(null);
+    if (modalSelectedSlugs.length === 0) {
+      setModalError('Please select at least one course.');
+      return;
+    }
+    // Validate negotiated prices for Price Inquiry courses
+    for (const slug of modalSelectedSlugs) {
+      const course = courses.find(c => c.slug === slug);
+      if (course && course.price === null) {
+        const p = modalNegotiatedPrices[slug];
+        if (!p || isNaN(Number(p)) || Number(p) < 0) {
+          setModalError(`Enter a valid agreed price for "${course.title}".`);
+          return;
+        }
+      }
+    }
+    setModalGenerating(true);
+    try {
+      const coursesPayload = modalSelectedSlugs.map(slug => {
+        const course = courses.find(c => c.slug === slug);
+        return {
+          courseSlug: slug,
+          negotiatedPrice: course && course.price === null
+            ? Number(modalNegotiatedPrices[slug])
+            : undefined,
+        };
+      });
       const res = await fetch('/api/registration-links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ courseSlug: slug }),
+        body: JSON.stringify({ courses: coursesPayload }),
       });
       const data = await res.json();
       if (res.ok) {
         const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
         const fullUrl = `${siteUrl}${data.registrationUrl}`;
+        setModalGeneratedUrl(fullUrl);
         await navigator.clipboard.writeText(fullUrl);
-        setToast('Registration link copied!');
-        // Refresh links for this course
-        fetchRegistrationLinks(slug);
+        setToast('Registration link copied to clipboard!');
+        // Refresh history if open
+        if (showHistory) fetchAllLinks();
       } else {
-        setToast(data.error || 'Failed to generate link.');
+        setModalError(data.error || 'Failed to generate link.');
       }
     } catch (err) {
-      setToast('Failed to generate link.');
+      setModalError('Network error. Failed to generate link.');
     } finally {
-      setGeneratingLink(null);
+      setModalGenerating(false);
     }
   };
 
-  const fetchRegistrationLinks = async (slug) => {
-    try {
-      const res = await fetch(`/api/registration-links?courseSlug=${slug}`);
-      const data = await res.json();
-      if (res.ok) {
-        setRegistrationLinks(prev => ({ ...prev, [slug]: data.links }));
-      }
-    } catch (err) {
-      console.error('Failed to fetch registration links:', err);
-    }
-  };
-
-  const handleCopyLink = (slug) => {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (typeof window !== 'undefined' ? window.location.origin : '');
-    const registerUrl = `${siteUrl}/register/${slug}`;
-    
-    navigator.clipboard.writeText(registerUrl)
-      .then(() => {
-        setToast('Link copied!');
-      })
-      .catch(() => {
-        setToast('Failed to copy link.');
-      });
+  const handleToggleHistory = () => {
+    if (!showHistory) fetchAllLinks();
+    setShowHistory(prev => !prev);
   };
 
   // Load Courses
@@ -150,14 +203,6 @@ export default function ManageCoursesPage() {
     fetchCourses();
   }, []);
 
-  // Fetch registration links when courses are loaded
-  useEffect(() => {
-    if (courses.length > 0) {
-      courses.forEach(course => {
-        fetchRegistrationLinks(course.slug);
-      });
-    }
-  }, [courses]);
 
   // Form Field Change
   const handleChange = (e) => {
@@ -313,7 +358,7 @@ export default function ManageCoursesPage() {
       title: course.title || '',
       description: course.description || '',
       image: course.image || '',
-      price: course.price !== undefined ? course.price : '',
+      price: course.price === null ? '' : course.price,
       discountPercent: course.discountPercent !== undefined ? course.discountPercent : '',
       points: Array.isArray(course.points) && course.points.length > 0 ? course.points : [''],
       curriculum: Array.isArray(course.curriculum) ? course.curriculum.join('\n') : '',
@@ -444,20 +489,186 @@ export default function ManageCoursesPage() {
             Manage Courses
           </h1>
         </div>
-        <button
-          onClick={() => window.location.href = '/api/admin/course-template'}
-          className="font-mono text-label uppercase tracking-wider text-accent border border-accent/30 hover:bg-accent/10 px-lg py-sm rounded transition-colors shadow-elevation-sm hover:shadow-elevation-md"
-        >
-          Download Document Template
-        </button>
+        <div className="flex gap-md flex-wrap">
+          <button
+            onClick={openLinkModal}
+            className="font-mono text-label uppercase tracking-wider text-green-400 border border-green-400/30 hover:bg-green-400/10 px-lg py-sm rounded transition-colors shadow-elevation-sm hover:shadow-elevation-md"
+          >
+            + Create Registration Link
+          </button>
+          <button
+            onClick={() => window.location.href = '/api/admin/course-template'}
+            className="font-mono text-label uppercase tracking-wider text-accent border border-accent/30 hover:bg-accent/10 px-lg py-sm rounded transition-colors shadow-elevation-sm hover:shadow-elevation-md"
+          >
+            Download Document Template
+          </button>
+        </div>
       </div>
 
-      {/* Form Section - Premium Dark Design */}
+      {/* Link Generator Modal */}
+      {showLinkModal && (
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/60 p-4 sm:p-6" onClick={closeLinkModal}>
+          <div
+            className="bg-navy border border-hairline w-full max-w-lg rounded-lg overflow-hidden flex flex-col"
+            style={{ maxHeight: 'calc(100vh - 2rem)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-hairline flex-shrink-0">
+              <div>
+                <span className="font-mono text-label uppercase tracking-widest text-accent block mb-1">[ LINK GENERATOR ]</span>
+                <h2 className="font-sans font-semibold text-h3 text-offwhite">Create Registration Link</h2>
+              </div>
+              <button
+                onClick={closeLinkModal}
+                className="w-8 h-8 flex items-center justify-center text-steelblue hover:text-offwhite border border-hairline hover:border-accent rounded transition-colors font-mono text-body leading-none flex-shrink-0 ml-4"
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Modal Body — scrollable */}
+            <div className="overflow-y-auto flex-1 px-6 py-5 space-y-5">
+
+              {/* Course selection */}
+              <div>
+                <p className="font-mono text-label uppercase tracking-wider text-steelblue mb-3">Select Courses</p>
+                {courses.length === 0 ? (
+                  <p className="text-steelblue font-sans text-caption">No courses available.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {courses.map(course => {
+                      const isSelected = modalSelectedSlugs.includes(course.slug);
+                      return (
+                        <div key={course.slug}>
+                          <label className={`flex items-center gap-3 cursor-pointer border px-4 py-3 rounded transition-colors ${
+                            isSelected ? 'border-accent bg-navy text-offwhite' : 'border-hairline bg-navy hover:border-accent/50 text-offwhite'
+                          }`}>
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => toggleModalCourse(course.slug)}
+                              className="w-4 h-4 flex-shrink-0 accent-accent"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <span className="font-sans text-body text-offwhite block truncate">{course.title}</span>
+                              <span className="font-mono text-caption text-steelblue">
+                                {course.price === null ? 'Price Inquiry' : course.price === 0 ? 'Free' : `PKR ${course.price.toLocaleString()}`}
+                              </span>
+                            </div>
+                          </label>
+                          {/* Conditional price input for Price Inquiry courses */}
+                          {isSelected && course.price === null && (
+                            <div className="mt-2 pl-7">
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={modalNegotiatedPrices[course.slug] || ''}
+                                onChange={e => setModalNegotiatedPrices(prev => ({ ...prev, [course.slug]: e.target.value }))}
+                                placeholder={`Agreed price for "${course.title}" (PKR)`}
+                                className="w-full bg-navy border border-hairline rounded px-3 py-2 text-offwhite placeholder-steelblue/50 font-mono text-caption focus:outline-none focus:border-accent transition-colors"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Error message */}
+              {modalError && (
+                <div className="px-4 py-3 border border-red-500/40 rounded text-red-400 font-sans text-caption">
+                  {modalError}
+                </div>
+              )}
+
+              {/* Generated URL display */}
+              {modalGeneratedUrl && (
+                <div className="px-4 py-3 border border-accent/40 rounded space-y-3">
+                  <p className="font-mono text-caption text-accent uppercase tracking-wider">✓ Link Generated &amp; Copied</p>
+                  <p className="font-mono text-xs text-steelblue break-all select-all leading-relaxed">{modalGeneratedUrl}</p>
+                  <button
+                    onClick={() => { navigator.clipboard.writeText(modalGeneratedUrl); setToast('Copied!'); }}
+                    className="font-mono text-label uppercase tracking-wider text-accent border border-accent/40 hover:border-accent px-4 py-1 rounded transition-colors"
+                  >
+                    Copy Again
+                  </button>
+                </div>
+              )}
+
+              {/* Generate button */}
+              <button
+                onClick={handleModalGenerateLink}
+                disabled={modalGenerating}
+                className="w-full font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-accent/90 px-6 py-3 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {modalGenerating ? 'Generating...' : 'Generate Link'}
+              </button>
+
+              {/* History toggle */}
+              <div className="border-t border-hairline pt-4">
+                <button
+                  onClick={handleToggleHistory}
+                  className="flex items-center gap-2 font-mono text-label uppercase tracking-wider text-steelblue hover:text-offwhite transition-colors"
+                >
+                  <span style={{ display: 'inline-block', transition: 'transform 0.2s', transform: showHistory ? 'rotate(90deg)' : 'rotate(0deg)' }}>▶</span>
+                  View Link History
+                </button>
+
+                {showHistory && (
+                  <div className="mt-3">
+                    {loadingHistory ? (
+                      <p className="font-mono text-caption text-steelblue">Loading history...</p>
+                    ) : allLinks.length === 0 ? (
+                      <p className="font-mono text-caption text-steelblue/60">No links generated yet.</p>
+                    ) : (
+                      <div className="overflow-x-auto border border-hairline rounded">
+                        <table className="w-full text-xs font-mono border-collapse">
+                          <thead>
+                            <tr className="border-b border-hairline text-steelblue uppercase tracking-wider">
+                              <th className="text-left px-3 py-2">Courses</th>
+                              <th className="text-left px-3 py-2">Status</th>
+                              <th className="text-left px-3 py-2">Created</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {allLinks.map((link, idx) => (
+                              <tr key={idx} className="border-b border-hairline/40">
+                                <td className="px-3 py-2 text-offwhite/80 max-w-[160px] truncate">
+                                  {(link.courses || []).map(c => c.courseSlug || c.slug).join(', ')}
+                                </td>
+                                <td className="px-3 py-2">
+                                  <span className={link.status === 'pending' ? 'text-green-400' : 'text-steelblue/60'}>
+                                    {link.status === 'pending' ? '● Pending' : '○ Used'}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2 text-steelblue/60 whitespace-nowrap">
+                                  {new Date(link.createdAt).toLocaleDateString()}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Form Section */}
       <div className="flex justify-center">
         <div className="w-full max-w-2xl">
-          <div className="bg-navy/80 backdrop-blur-sm rounded-xl shadow-elevation-sm overflow-hidden border border-hairline">
+          <div className="bg-navy border border-hairline rounded-xl overflow-hidden">
             {/* Header */}
-            <div className="bg-gradient-to-r from-navy/60 to-navy/80 px-xl py-lg border-b border-hairline">
+            <div className="px-xl py-lg border-b border-hairline">
               <h3 className="font-sans font-semibold text-h3 text-offwhite">
                 {isEditing ? 'Edit Course Details' : 'Create New Training Course'}
               </h3>
@@ -611,7 +822,7 @@ export default function ManageCoursesPage() {
 
                 <div>
                   <label htmlFor="price" className="block font-mono text-label uppercase tracking-wider text-steelblue mb-sm">
-                    Course Price (PKR) <span className="text-accent">*</span>
+                    Course Price (PKR) (Optional)
                   </label>
                   <div className="relative">
                     <span className="absolute left-lg top-1/2 -translate-y-1/2 text-steelblue font-sans text-body">PKR</span>
@@ -623,7 +834,6 @@ export default function ManageCoursesPage() {
                       onChange={handleChange}
                       className="w-full bg-navy/50 border border-hairline rounded pl-16 pr-lg py-sm text-offwhite placeholder-steelblue/30 font-sans focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                       placeholder="15000"
-                      required
                     />
                   </div>
                 </div>
@@ -1027,20 +1237,19 @@ export default function ManageCoursesPage() {
           </div>
         ) : (
           <>
-            <div className="relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-accent/5 to-accent/5 rounded-lg opacity-30 blur-sm" />
-              <div className="relative overflow-x-auto bg-navy/40 backdrop-blur-sm shadow-elevation-md p-lg">
+            <div>
+              <div className="relative overflow-x-auto bg-navy p-lg border border-hairline rounded-lg">
                 <div className="flex gap-lg pb-sm min-w-max">
                   {paginatedCourses.map((course) => (
-                    <div key={course._id} className="flex-shrink-0 w-80 border border-hairline/60 bg-gradient-to-b from-navy/60 to-navy/80 shadow-elevation-sm hover:shadow-elevation-lg hover:border-accent/40 rounded-xl transition-all duration-500 overflow-hidden group">
+                    <div key={course._id} className="flex-shrink-0 w-80 border border-hairline bg-navy rounded-lg overflow-hidden group">
                       <div className="flex flex-col h-full">
                         {/* Image Thumbnail at Top */}
                         {course.image ? (
-                          <div className="relative w-full h-40 bg-navy/40 overflow-hidden border-b border-hairline/40">
+                          <div className="relative w-full h-40 bg-navy overflow-hidden border-b border-hairline">
                             <img
                               src={course.image}
                               alt={course.title}
-                              className="w-full h-full object-cover group-hover:scale-105 group-hover:brightness-110 transition-transform duration-500"
+                              className="w-full h-full object-cover group-hover:brightness-115 transition-all"
                               onError={(e) => {
                                 e.target.style.display = 'none';
                                 e.target.parentElement.classList.add('flex', 'items-center', 'justify-center');
@@ -1049,7 +1258,7 @@ export default function ManageCoursesPage() {
                             />
                           </div>
                         ) : (
-                          <div className="w-full h-40 bg-navy/50 border-b border-hairline flex items-center justify-center">
+                          <div className="w-full h-40 bg-navy border-b border-hairline flex items-center justify-center">
                             <span className="text-steelblue/40 font-mono text-xs">No Image</span>
                           </div>
                         )}
@@ -1059,34 +1268,34 @@ export default function ManageCoursesPage() {
                           <div className="flex items-center justify-between mb-sm">
                             <span className="font-mono font-bold text-accent/90 text-sm">REF: {course.id}</span>
                             <div className="text-right">
-                              {course.discountPercent && course.discountPercent > 0 ? (
+                              {course.price !== null && course.price > 0 ? (
                                 <>
-                                  <span className="font-mono text-steelblue/50 line-through block text-xs">
-                                    PKR {course.price?.toLocaleString() || '0'}
-                                  </span>
-                                  <span className="font-mono text-accent font-bold text-sm">
-                                    PKR {Math.round((course.price || 0) * (1 - course.discountPercent / 100)).toLocaleString()}
-                                  </span>
+                                  {course.discountPercent && course.discountPercent > 0 ? (
+                                    <>
+                                      <span className="font-mono text-steelblue/50 line-through block text-xs">
+                                        PKR {course.price.toLocaleString()}
+                                      </span>
+                                      <span className="font-mono text-accent font-bold text-sm">
+                                        PKR {Math.round(course.price * (1 - course.discountPercent / 100)).toLocaleString()}
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="font-mono text-offwhite text-sm">PKR {course.price.toLocaleString()}</span>
+                                  )}
                                 </>
+                              ) : course.price === 0 ? (
+                                <span className="font-mono text-offwhite text-sm">Free</span>
                               ) : (
-                                <span className="font-mono text-offwhite text-sm">PKR {course.price?.toLocaleString() || '0'}</span>
+                                <span className="font-mono text-accent font-bold text-sm">Price Inquiry</span>
                               )}
                             </div>
                           </div>
                           
-                          <h4 className="font-semibold text-offwhite text-h3 leading-tight mb-sm group-hover:text-accent/90 transition-colors">{course.title}</h4>
+                          <h4 className="font-semibold text-offwhite text-h3 leading-tight mb-sm group-hover:text-accent transition-colors">{course.title}</h4>
                           
                           <p className="text-steelblue/80 text-caption leading-relaxed line-clamp-2 mb-sm">{course.description}</p>
                           
-                          <div className="flex gap-sm pt-sm border-t border-hairline/40 mt-auto">
-                            <button
-                              onClick={() => handleGenerateLink(course.slug)}
-                              disabled={generatingLink === course.slug}
-                              className="flex-1 font-mono text-label uppercase tracking-wider text-green-400 border border-green-400/30 hover:bg-green-400/10 px-sm py-xs rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                              title="Generate single-use registration link"
-                            >
-                              {generatingLink === course.slug ? 'Generating...' : 'Generate Link'}
-                            </button>
+                          <div className="flex gap-sm pt-sm border-t border-hairline mt-auto">
                             <button
                               onClick={() => handleEditSelect(course)}
                               className="flex-1 font-mono text-label uppercase tracking-wider text-accent border border-accent/30 hover:bg-accent/10 px-sm py-xs rounded transition-colors"
@@ -1100,32 +1309,6 @@ export default function ManageCoursesPage() {
                               Delete
                             </button>
                           </div>
-
-                          {/* Registration Links Status */}
-                          {registrationLinks[course.slug] && registrationLinks[course.slug].length > 0 && (
-                            <div className="mt-sm pt-sm border-t border-hairline/40">
-                              <div className="font-mono text-caption uppercase tracking-wider text-steelblue mb-xs">
-                                Generated Links ({registrationLinks[course.slug].length})
-                              </div>
-                              <div className="space-y-xs max-h-24 overflow-y-auto custom-scrollbar">
-                                {registrationLinks[course.slug].slice(0, 3).map((link, idx) => (
-                                  <div key={idx} className="flex items-center justify-between text-xs">
-                                    <span className={`font-mono ${link.status === 'pending' ? 'text-green-400' : 'text-steelblue/60'}`}>
-                                      {link.status === 'pending' ? '● Pending' : '○ Used'}
-                                    </span>
-                                    <span className="font-mono text-steelblue/50">
-                                      {new Date(link.createdAt).toLocaleDateString()}
-                                    </span>
-                                  </div>
-                                ))}
-                                {registrationLinks[course.slug].length > 3 && (
-                                  <div className="font-mono text-steelblue/50 text-xs">
-                                    +{registrationLinks[course.slug].length - 3} more
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          )}
                         </div>
                       </div>
                     </div>
