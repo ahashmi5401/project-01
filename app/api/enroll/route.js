@@ -121,9 +121,9 @@ Timestamp:        ${new Date().toLocaleString()}
 Selected Courses:
 ${dbCourses.map(c => `- ${c.title} (${formatPrice(c.price)})`).join('\n')}
 
-Subtotal:         ${formatPrice(actualSubtotal)}
+Subtotal:         ${pricing.subtotalDisplay || formatPrice(actualSubtotal)}
 Discount Applied: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})
-Total Price:      ${formatPrice(actualTotalPrice)}
+Total Price:      ${pricing.totalPriceDisplay || formatPrice(actualTotalPrice)}
           `,
           html: `
             <h3>New Multi-Course Enrollment Inquiry</h3>
@@ -137,9 +137,9 @@ Total Price:      ${formatPrice(actualTotalPrice)}
             </ul>
 
             <table cellpadding="6" style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:13px;border-top:1px solid #ddd;">
-              <tr><td><strong>Subtotal</strong></td><td>${formatPrice(actualSubtotal)}</td></tr>
+              <tr><td><strong>Subtotal</strong></td><td>${pricing.subtotalDisplay || formatPrice(actualSubtotal)}</td></tr>
               <tr style="background:#f5f5f5;color:#e8622c;"><td><strong>Discount Applied</strong></td><td>${discountPercent}% (-PKR ${discountAmount.toLocaleString()})</td></tr>
-              <tr style="font-weight:bold;font-size:14px;"><td><strong>Total Package Price</strong></td><td>${formatPrice(actualTotalPrice)}</td></tr>
+              <tr style="font-weight:bold;font-size:14px;"><td><strong>Total Package Price</strong></td><td>${pricing.totalPriceDisplay || formatPrice(actualTotalPrice)}</td></tr>
             </table>
           `
         });

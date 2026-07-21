@@ -15,9 +15,7 @@ export const metadata = {
 
 async function getHomeData() {
   try {
-    console.log('[Home] Fetching home page data from database...');
     const { db } = await connectToDatabase();
-    console.log('[Home] Database connection established, fetching collections...');
     
     const servicesData = await db.collection('services')
       .find({})

@@ -221,13 +221,24 @@ const comboDealsWithNull = [
   { courseIds: ['5', '2'], discountPercent: 50, label: 'Custom Consulting Combo' }
 ];
 const result14 = calculatePricing(selected14, comboDealsWithNull, discountTiers);
-console.log('Selected:', selected14.map(c => c.title));
-console.log('Discount Source:', result14.discountSource);
 console.log('Original Total:', result14.subtotal, '(expected: null)');
 console.log('Final Price:', result14.totalPrice, '(expected: null)');
-console.log('Expected: Subtotal and totalPrice should be null because one course has an inquiry price');
-const pass14 = result14.discountSource === 'none' && result14.subtotal === null && result14.totalPrice === null;
+console.log('Discount Source:', result14.discountSource, '(expected: tier, because 2 courses total selected)');
+console.log('Expected: Subtotal and totalPrice should be null, but discountSource should be tier');
+const pass14 = result14.discountSource === 'tier' && result14.subtotal === null && result14.totalPrice === null;
 console.log('✓ PASS:', pass14);
+
+// Test Case 15: Mixed cart subtotalDisplay and totalPriceDisplay formatting
+console.log('\n=== Test Case 15: Mixed cart display strings ===');
+const result15 = calculatePricing([nullCourse, fixedCourse], comboDeals, discountTiers);
+console.log('Subtotal Display:', result15.subtotalDisplay);
+console.log('Total Price Display:', result15.totalPriceDisplay);
+console.log('Discount Source:', result15.discountSource);
+console.log('Expected: Subtotal and Total display strings formatted with "+ Price Inquiry" suffix');
+const pass15 = result15.subtotalDisplay === 'PKR 15,000 + Price Inquiry' &&
+               result15.totalPriceDisplay === 'PKR 13,500 + Price Inquiry' &&
+               result15.discountSource === 'tier';
+console.log('✓ PASS:', pass15);
 
 // Test discount source label function
 console.log('\n=== Test Discount Source Label Function ===');

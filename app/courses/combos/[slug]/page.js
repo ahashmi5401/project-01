@@ -99,10 +99,13 @@ export default async function ComboDetailPage({ params }) {
   }
 
   // Calculate pricing
-  const originalPrice = courses.reduce((sum, c) => sum + (c.price || 0), 0);
-  const finalPrice = originalPrice > 0 
-    ? Math.round(originalPrice * (1 - combo.discountPercent / 100))
-    : 0;
+  const hasInquiryCourse = courses.some(c => c.price === null || c.price === undefined);
+  const knownTotal = courses.reduce(
+    (sum, c) => sum + (c.price !== null && c.price !== undefined ? c.price : 0), 0
+  );
+  const finalPrice = !hasInquiryCourse && knownTotal > 0
+    ? Math.round(knownTotal * (1 - combo.discountPercent / 100))
+    : null;
 
   const displayCombo = {
     ...combo,
@@ -121,13 +124,16 @@ export default async function ComboDetailPage({ params }) {
     "name": displayCombo.title,
     "description": displayCombo.description,
     "image": displayCombo.image || 'https://simufluxlab.com/images/og-banner.jpg',
-    "offers": {
+  };
+
+  if (!hasInquiryCourse && finalPrice !== null) {
+    comboJsonLd.offers = {
       "@type": "Offer",
       "price": finalPrice,
       "priceCurrency": "PKR",
       "availability": "https://schema.org/InStock"
-    }
-  };
+    };
+  }
 
   return (
     <>
@@ -170,17 +176,21 @@ export default async function ComboDetailPage({ params }) {
                     ● Delivered Online
                   </span>
                   
-                  {originalPrice > 0 && (
-                    <>
-                      <span className="inline-flex items-center gap-sm font-mono text-label uppercase tracking-wider text-steelblue/60 line-through border border-white/10 bg-white/5 px-md py-sm rounded">
-                        PKR {originalPrice.toLocaleString()}
-                      </span>
-                      <span className="inline-flex items-center gap-sm font-mono text-label uppercase tracking-wider text-accent border border-accent/25 bg-accent/5 px-md py-sm rounded">
-                        PKR {finalPrice.toLocaleString()}
-                        <span className="text-accent/70">({displayCombo.discountPercent}% OFF)</span>
-                      </span>
-                    </>
+                  {knownTotal > 0 && (
+                    <span className="inline-flex items-center gap-sm font-mono text-label uppercase tracking-wider text-steelblue/60 line-through border border-white/10 bg-white/5 px-md py-sm rounded">
+                      PKR {knownTotal.toLocaleString()}{hasInquiryCourse ? ' + Price Inquiry' : ''}
+                    </span>
                   )}
+                  {hasInquiryCourse ? (
+                    <span className="inline-flex items-center gap-sm font-mono text-label uppercase tracking-wider text-accent border border-accent/25 bg-accent/5 px-md py-sm rounded">
+                      Price Inquiry
+                    </span>
+                  ) : finalPrice > 0 ? (
+                    <span className="inline-flex items-center gap-sm font-mono text-label uppercase tracking-wider text-accent border border-accent/25 bg-accent/5 px-md py-sm rounded">
+                      PKR {finalPrice.toLocaleString()}
+                      <span className="text-accent/70">({displayCombo.discountPercent}% OFF)</span>
+                    </span>
+                  ) : null}
                 </div>
               </div>
               

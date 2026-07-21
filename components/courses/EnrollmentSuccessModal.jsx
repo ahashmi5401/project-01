@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { motion } from 'framer-motion';
 import { formatPrice } from '@/lib/price';
 
 export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDetails }) {
@@ -16,64 +15,38 @@ export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDeta
   if (!isOpen || !mounted) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 select-none">
-      {/* Background Overlay */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="absolute inset-0 bg-navy/95 backdrop-blur-lg"
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+      {/* Flat Background Overlay (No glassmorphism/blur) */}
+      <div 
+        className="absolute inset-0 bg-black/75"
         onClick={onClose}
       />
 
-      {/* Modal Box */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="w-full max-w-lg border border-hairline bg-navy/95 p-xl relative z-10 shadow-2xl rounded-lg"
+      {/* Modal Box (Solid flat background, responsive scroll) */}
+      <div 
+        className="w-full max-w-lg border border-hairline bg-navy p-6 relative z-10 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh]"
       >
-        {/* Decorative corners */}
-        <div className="absolute top-0 right-0 w-8 h-8 border-r border-t border-accent/30 pointer-events-none rounded-tr-lg" />
-        <div className="absolute bottom-0 left-0 w-8 h-8 border-l border-b border-accent/30 pointer-events-none rounded-bl-lg" />
-        <div className="absolute top-0 left-0 w-4 h-4 border-l border-t border-white/5 pointer-events-none rounded-tl" />
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-r border-b border-white/5 pointer-events-none rounded-br" />
-
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 text-steelblue hover:text-accent font-sans text-xl transition-all duration-300 hover:rotate-90 opacity-70 hover:opacity-100 p-1"
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center text-steelblue hover:text-offwhite border border-hairline hover:border-accent rounded transition-colors font-mono text-body leading-none"
           aria-label="Close modal"
         >
           ✕
         </button>
 
         {/* Success Content */}
-        <div className="text-center space-y-xl">
-          {/* Success Icon */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-            className="w-20 h-20 border-2 border-accent bg-accent/10 flex items-center justify-center mx-auto shadow-elevation-md rounded-full"
-          >
-            <svg className="w-10 h-10 text-accent fill-none stroke-current" viewBox="0 0 24 24">
-              <motion.path
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2.5"
-                d="M5 13l4 4L19 7"
-              />
+        <div className="text-center space-y-6 pt-4">
+          {/* Flat Clean Checkmark Icon */}
+          <div className="w-16 h-16 border-2 border-accent bg-accent/10 flex items-center justify-center mx-auto rounded-full">
+            <svg className="w-8 h-8 text-accent fill-none stroke-current" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
-          </motion.div>
+          </div>
 
           {/* Header */}
-          <div className="space-y-sm">
+          <div className="space-y-1">
             <span className="font-mono text-caption uppercase tracking-widest text-accent block">
               [ ENROLLMENT CONFIRMED ]
             </span>
@@ -83,13 +56,13 @@ export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDeta
           </div>
 
           {/* Details */}
-          <div className="border border-hairline/40 bg-navy/40 p-lg space-y-md text-left">
+          <div className="border border-hairline bg-navy p-4 space-y-4 text-left rounded">
             {enrollmentDetails?.selectedCourses && (
               <div>
-                <span className="font-mono text-caption uppercase tracking-wider text-steelblue block mb-sm">
+                <span className="font-mono text-caption uppercase tracking-wider text-steelblue block mb-2">
                   Selected Courses
                 </span>
-                <ul className="space-y-xs">
+                <ul className="space-y-1">
                   {enrollmentDetails.selectedCourses.map((course, idx) => (
                     <li key={idx} className="font-sans text-body text-offwhite flex justify-between">
                       <span>{course}</span>
@@ -100,10 +73,12 @@ export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDeta
             )}
             
             {enrollmentDetails && (
-              <div className="pt-md border-t border-hairline/40">
+              <div className="pt-3 border-t border-hairline">
                 <div className="flex justify-between items-center text-body">
                   <span className="text-steelblue">Subtotal</span>
-                  <span className="font-mono text-offwhite">{formatPrice(enrollmentDetails.subtotal)}</span>
+                  <span className="font-mono text-offwhite">
+                    {enrollmentDetails.subtotalDisplay || formatPrice(enrollmentDetails.subtotal)}
+                  </span>
                 </div>
                 {enrollmentDetails.discountPercent > 0 && (
                   <div className="flex justify-between items-center text-accent">
@@ -111,9 +86,11 @@ export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDeta
                     <span className="font-mono">- PKR {enrollmentDetails.discountAmount.toLocaleString()}</span>
                   </div>
                 )}
-                <div className="flex justify-between items-center pt-sm font-bold text-h3 text-offwhite">
+                <div className="flex justify-between items-center pt-2 border-t border-hairline font-bold text-h3 text-offwhite">
                   <span>Total</span>
-                  <span className="font-mono text-accent">{formatPrice(enrollmentDetails.totalPrice)}</span>
+                  <span className="font-mono text-accent">
+                    {enrollmentDetails.totalPriceDisplay || formatPrice(enrollmentDetails.totalPrice)}
+                  </span>
                 </div>
               </div>
             )}
@@ -125,22 +102,22 @@ export default function EnrollmentSuccessModal({ isOpen, onClose, enrollmentDeta
           </p>
 
           {/* Actions */}
-          <div className="flex gap-sm pt-lg">
+          <div className="flex gap-3 pt-2">
             <button
               onClick={onClose}
-              className="flex-1 font-mono text-label uppercase tracking-wider text-accent border border-accent/30 px-xl py-sm hover:bg-accent/10 transition-colors rounded shadow-elevation-sm hover:shadow-elevation-md"
+              className="flex-1 font-mono text-label uppercase tracking-wider text-accent border border-accent/30 hover:border-accent px-4 py-3 rounded transition-colors"
             >
               Configure Another
             </button>
             <button
               onClick={onClose}
-              className="flex-1 font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-[#d04e1b] active:bg-[#b03f13] px-xl py-sm border border-transparent transition-colors rounded shadow-elevation-sm hover:shadow-elevation-md"
+              className="flex-1 font-mono text-label uppercase tracking-wider text-offwhite bg-accent hover:bg-accent/90 px-4 py-3 rounded transition-colors"
             >
               Close
             </button>
           </div>
         </div>
-      </motion.div>
+      </div>
     </div>,
     document.body
   );

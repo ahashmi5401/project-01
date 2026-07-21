@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -10,7 +10,50 @@ export default function AdminLoginForm({ adminExists }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const turnstileContainerRef = useRef(null);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const router = useRouter();
+
+  useEffect(() => {
+    if (!siteKey) return;
+
+    let turnstileWidgetId = null;
+
+    const initializeTurnstile = () => {
+      if (window.turnstile && turnstileContainerRef.current && turnstileWidgetId === null) {
+        try {
+          turnstileWidgetId = window.turnstile.render(turnstileContainerRef.current, {
+            sitekey: siteKey,
+            callback: (token) => {
+              setTurnstileToken(token);
+              setError((prev) => prev?.includes('CAPTCHA') ? null : prev);
+            },
+            'expired-callback': () => {
+              setTurnstileToken('');
+            },
+            'error-callback': () => {
+              setTurnstileToken('');
+            },
+          });
+        } catch (e) {
+          console.error('Turnstile render error:', e);
+        }
+      }
+    };
+
+    if (window.turnstile) {
+      initializeTurnstile();
+    } else {
+      const interval = setInterval(() => {
+        if (window.turnstile) {
+          initializeTurnstile();
+          clearInterval(interval);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [siteKey]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,25 +62,59 @@ export default function AdminLoginForm({ adminExists }) {
       return;
     }
 
+    if (siteKey && !turnstileToken) {
+      setError('Please complete the CAPTCHA verification.');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const res = await signIn('credentials', {
-        redirect: false,
-        email,
-        password,
+      // Call custom login API with Turnstile and rate limiting
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          turnstileToken,
+        }),
       });
 
-      if (res?.error) {
-        setError(res.error || 'Invalid credentials.');
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Invalid credentials.');
+        setLoading(false);
+        setTurnstileToken('');
+        if (window.turnstile) {
+          window.turnstile.reset();
+        }
       } else {
-        router.push('/admin');
-        router.refresh();
+        // If custom API validation passed, proceed with NextAuth signIn
+        const res = await signIn('credentials', {
+          redirect: false,
+          email,
+          password,
+        });
+
+        if (res?.error) {
+          setError(res.error || 'Invalid credentials.');
+          setLoading(false);
+          setTurnstileToken('');
+          if (window.turnstile) {
+            window.turnstile.reset();
+          }
+        } else {
+          router.push('/admin');
+          router.refresh();
+        }
       }
     } catch (err) {
       setError('An unexpected error occurred. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
@@ -93,6 +170,13 @@ export default function AdminLoginForm({ adminExists }) {
           {error && (
             <div className="p-3 border border-accent bg-accent/5 text-offwhite font-mono text-xs">
               {error}
+            </div>
+          )}
+
+          {/* Turnstile widget */}
+          {siteKey && (
+            <div className="py-sm flex justify-start">
+              <div ref={turnstileContainerRef} />
             </div>
           )}
 

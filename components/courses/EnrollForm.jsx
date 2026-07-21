@@ -239,7 +239,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
       
       let coursesText = selectedCourses.map(c => `- ${c.title} (${formatPrice(c.price)})`).join('\n');
       
-      const whatsappText = `Hello Simuflux, my name is ${name.trim()}.\n\nI would like to enroll in the following course(s):\n${coursesText}\n\nSubtotal: ${formatPrice(subtotal)}\nDiscount: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})\nTotal Price: ${formatPrice(totalPrice)}\n\nPlease contact me back at ${phone.trim()}.`;
+      const whatsappText = `Hello Simuflux, my name is ${name.trim()}.\n\nI would like to enroll in the following course(s):\n${coursesText}\n\nSubtotal: ${pricing.subtotalDisplay || formatPrice(subtotal)}\nDiscount: ${discountPercent}% (-PKR ${discountAmount.toLocaleString()})\nTotal Price: ${pricing.totalPriceDisplay || formatPrice(totalPrice)}\n\nPlease contact me back at ${phone.trim()}.`;
       
       const encodedText = encodeURIComponent(whatsappText);
       const waUrl = `https://wa.me/${adminPhone}?text=${encodedText}`;
@@ -403,14 +403,20 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                                 </span>
                               </div>
 
-                              {/* Discount Badge */}
-                              {badge && (
+                              {/* Discount Badge / Price Inquiry Indicator */}
+                              {badge ? (
                                 <div className="inline-block mt-3 px-2 py-1 bg-accent/20 border border-accent/30 rounded-md">
                                   <span className="font-mono text-xs text-accent font-medium">
                                     {badge}
                                   </span>
                                 </div>
-                              )}
+                              ) : course.price === null ? (
+                                <div className="inline-block mt-3 px-2 py-1 bg-steelblue/10 border border-steelblue/20 rounded-md">
+                                  <span className="font-mono text-xs text-steelblue font-medium">
+                                    Manual Quote
+                                  </span>
+                                </div>
+                              ) : null}
                             </div>
                           </button>
                         );
@@ -588,7 +594,7 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                   <div className="space-y-4 pt-4 border-t border-hairline">
                     <div className="flex justify-between items-center">
                       <span className="font-sans text-sm text-steelblue">Original Total</span>
-                      <span className="font-mono text-sm text-offwhite">{formatPrice(subtotal)}</span>
+                      <span className="font-mono text-sm text-offwhite">{pricing.subtotalDisplay || formatPrice(subtotal)}</span>
                     </div>
                     
                     {discountPercent > 0 && (
@@ -610,9 +616,14 @@ const EnrollFormContent = React.memo(function EnrollFormContent({ courses, disco
                     <div className="flex justify-between items-center pt-4 border-t border-hairline">
                       <span className="font-sans font-semibold text-base text-offwhite">Final Total</span>
                       <span className="font-mono font-bold text-2xl text-offwhite">
-                        {formatPrice(totalPrice)}
+                        {pricing.totalPriceDisplay || formatPrice(totalPrice)}
                       </span>
                     </div>
+                    {pricing.hasInquiry && (
+                      <div className="text-xs text-accent/90 font-mono italic leading-relaxed pt-2 border-t border-dashed border-hairline/60">
+                        * Quote for inquiry courses will be verified on WhatsApp.
+                      </div>
+                    )}
                   </div>
                 </div>
 
